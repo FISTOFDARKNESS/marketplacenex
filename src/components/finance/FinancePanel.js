@@ -18,7 +18,7 @@ export default function FinancePanel({ user, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  function fetchFinanceData() {
     if (!user) return;
     fetch('/api/balance')
       .then(r => r.json())
@@ -31,7 +31,10 @@ export default function FinancePanel({ user, onClose }) {
       if (r.success) setWithdrawals(prev => ({ ...prev, receber: r.withdrawals }));
       if (e.success) setWithdrawals(prev => ({ ...prev, enviar: e.withdrawals }));
     }).catch(() => {});
-  }, [user]);
+  }
+
+  useEffect(() => { fetchFinanceData(); }, [user]);
+  useEffect(() => { if (user && tab === 'balance') fetchFinanceData(); }, [tab, user]);
 
   async function handleWithdraw(e) {
     e.preventDefault();
@@ -46,12 +49,13 @@ export default function FinancePanel({ user, onClose }) {
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
       setWithdrawAmount('');
-      const [balRes, qRes] = await Promise.all([
-        fetch('/api/balance'),
-        fetch(`/api/withdraw?type=${withdrawType}`),
-      ]);
-      const balData = await balRes.json();
-      if (balData.success) setBalance(balData.balance);
+      if (data.newBalance != null) setBalance(data.newBalance);
+      else {
+        const balRes = await fetch('/api/balance');
+        const balData = await balRes.json();
+        if (balData.success) setBalance(balData.balance);
+      }
+      const qRes = await fetch(`/api/withdraw?type=${withdrawType}`);
       const qData = await qRes.json();
       if (qData.success) setWithdrawals(prev => ({ ...prev, [withdrawType]: qData.withdrawals }));
     } catch { setError('Connection failed'); }

@@ -59,7 +59,7 @@ export async function POST(req) {
       data: { balance: { decrement: usdValue } },
     });
 
-    return NextResponse.json({ success: true, withdrawal });
+    return NextResponse.json({ success: true, withdrawal, newBalance: user.balance - usdValue });
   } catch (error) {
     console.error('Withdrawal error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
