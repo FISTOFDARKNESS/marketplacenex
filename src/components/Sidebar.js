@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard, Tag, Package, Clock, ArrowLeftRight, HelpCircle, Settings, Crown, LogOut
+  LayoutDashboard, Tag, Package, Clock, ArrowLeftRight, HelpCircle, Settings, Crown, LogOut, ArrowLeft
 } from 'lucide-react';
 
 const navItems = [
@@ -21,10 +21,10 @@ export default function Sidebar({ onLogout }) {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">
+      <Link href="/" className="sidebar-logo" style={{ textDecoration: 'none' }}>
         <Crown size={22} style={{ color: '#f59e0b' }} />
         <span>NexBlox</span>
-      </div>
+      </Link>
 
       <nav className="sidebar-nav">
         {navItems.map(item => {
@@ -45,6 +45,10 @@ export default function Sidebar({ onLogout }) {
       </nav>
 
       <div className="sidebar-footer">
+        <Link href="/" className="sidebar-link" style={{ width: '100%', color: '#9ca3af' }}>
+          <ArrowLeft size={18} />
+          <span>Back to Menu</span>
+        </Link>
         <button className="sidebar-link" onClick={onLogout} style={{ color: '#ef4444', width: '100%' }}>
           <LogOut size={18} />
           <span>Logout</span>
