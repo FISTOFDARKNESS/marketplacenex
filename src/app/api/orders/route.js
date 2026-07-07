@@ -23,10 +23,19 @@ export async function GET(req) {
       return NextResponse.json({ success: true, orders });
     }
 
-    // Simple direct query by userId — same as dashboard uses
+    // Return orders where the current user is the buyer OR the recipient
     const orders = await prisma.order.findMany({
-      where: { userId: decoded.id },
-      include: { item: true },
+      where: {
+        OR: [
+          { userId: decoded.id },   // destinatário
+          { buyerId: decoded.id },  // comprador
+        ],
+      },
+      include: {
+        item: true,
+        user: { select: { username: true, robloxUsername: true } },
+        buyer: { select: { username: true, robloxUsername: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
