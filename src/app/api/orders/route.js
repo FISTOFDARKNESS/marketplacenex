@@ -23,28 +23,16 @@ export async function GET(req) {
       return NextResponse.json({ success: true, orders });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, robloxUsername: true },
-    });
-
-    const allOrders = await prisma.order.findMany({
+    // Simple direct query by userId — same as dashboard uses
+    const orders = await prisma.order.findMany({
+      where: { userId: decoded.id },
       include: { item: true },
       orderBy: { createdAt: 'desc' },
-      take: 300,
-    });
-
-    const rName = user?.robloxUsername?.toLowerCase() || '';
-    const orders = allOrders.filter(o => {
-      if (o.userId === decoded.id) return true;
-      if (o.buyerId === decoded.id) return true;
-      if (rName && o.robloxUser && o.robloxUser.toLowerCase() === rName) return true;
-      return false;
     });
 
     return NextResponse.json({ success: true, orders });
   } catch (error) {
     console.error('Orders fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
