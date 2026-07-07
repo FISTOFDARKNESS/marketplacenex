@@ -4,6 +4,27 @@ import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
+async function fetchBioViaAPI(userId) {
+  const res = await fetch(`https://users.roblox.com/v1/users/${userId}`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.description || '';
+}
+
+async function fetchBioViaProfile(userId) {
+  try {
+    const res = await fetch(`https://www.roblox.com/users/${userId}/profile`, {
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const match = html.match(/"description":"([^"]+)"/);
+    return match ? match[1] : '';
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req) {
   try {
     const token = req.cookies.get('token')?.value;
@@ -17,21 +38,18 @@ export async function POST(req) {
     });
     if (!verification) return NextResponse.json({ error: 'No pending verification' }, { status: 400 });
 
-    const robloxRes = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(verification.robloxUsername)}&limit=1`);
-    if (!robloxRes.ok) return NextResponse.json({ error: 'Failed to lookup Roblox user' }, { status: 502 });
-
-    const searchData = await robloxRes.json();
+    const searchRes = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(verification.robloxUsername)}&limit=1`);
+    if (!searchRes.ok) return NextResponse.json({ error: 'Failed to lookup Roblox user' }, { status: 502 });
+    const searchData = await searchRes.json();
     const found = searchData.data?.[0];
     if (!found) return NextResponse.json({ error: 'Roblox user not found' }, { status: 404 });
 
-    const profileRes = await fetch(`https://users.roblox.com/v1/users/${found.id}`);
-    if (!profileRes.ok) return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 502 });
-    const profile = await profileRes.json();
+    let bio = await fetchBioViaAPI(found.id);
+    if (bio === null) bio = await fetchBioViaProfile(found.id) || '';
+    if (bio === null) return NextResponse.json({ error: 'Failed to fetch profile bio' }, { status: 502 });
 
-    const bio = (profile.description || '').toLowerCase();
     const phraseLower = verification.phrase.toLowerCase();
-
-    if (!bio.includes(phraseLower)) {
+    if (!bio.toLowerCase().includes(phraseLower)) {
       return NextResponse.json({ success: false, message: 'Phrase not found in bio. Put it in your Roblox bio and try again.' });
     }
 
