@@ -111,9 +111,8 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
     setMessage('');
     setLoading(true);
 
-    const recaptchaToken = typeof window !== 'undefined' && window.grecaptcha
-      ? window.grecaptcha.getResponse()
-      : '';
+    let recaptchaToken = '';
+    try { recaptchaToken = window.grecaptcha?.getResponse?.() ?? ''; } catch {}
     if (!recaptchaToken) {
       setError('Please complete the reCAPTCHA verification');
       setLoading(false);

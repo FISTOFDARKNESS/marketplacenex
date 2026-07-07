@@ -51,7 +51,6 @@ export async function POST(req) {
         username: username.toLowerCase(),
         email: email.toLowerCase(),
         passwordHash,
-        balance: 10000.0,
       },
     });
 
