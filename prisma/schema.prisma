@@ -52,6 +52,14 @@ model Transaction {
   createdAt DateTime @default(now())
 }
 
+model Seller {
+  id        String   @id @default(uuid())
+  displayId String   @unique
+  name      String
+  markup    Float    @default(0)
+  createdAt DateTime @default(now())
+}
+
 model Wishlist {
   id        String   @id @default(uuid())
   userId    String

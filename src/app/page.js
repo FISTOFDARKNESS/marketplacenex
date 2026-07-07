@@ -246,6 +246,7 @@ export default function Home() {
       {modalState.type === 'purchase' && (
         <PurchaseModal
           item={modalState.data}
+          user={user}
           onClose={() => setModalState({ type: null, data: null })}
         />
       )}

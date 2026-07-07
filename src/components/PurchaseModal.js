@@ -1,18 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ArrowLeft, Check, AlertTriangle, ExternalLink, Clock } from 'lucide-react';
 
 const STEPS = { DETAILS: 0, ROBLOX_USER: 1, VERIFY: 2, PAYMENT: 3, CONFIRMATION: 4 };
 
-export default function PurchaseModal({ item, onClose }) {
+export default function PurchaseModal({ item, user, onClose }) {
   const [step, setStep] = useState(STEPS.DETAILS);
+  const [sellers, setSellers] = useState([]);
+  const [selectedSeller, setSelectedSeller] = useState(null);
   const [robloxUser, setRobloxUser] = useState('');
   const [robloxData, setRobloxData] = useState(null);
   const [verifyData, setVerifyData] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/sellers')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.sellers.length > 0) {
+          setSellers(data.sellers);
+          setSelectedSeller(data.sellers[0]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const currentPrice = selectedSeller
+    ? (parseFloat(item.usdPrice) * (1 + selectedSeller.markup)).toFixed(2)
+    : item.usdPrice;
+
+  const clientId = user?.id ? user.id.split('-')[0] : '';
 
   async function handleLookupRoblox(e) {
     e.preventDefault();
@@ -74,7 +94,7 @@ export default function PurchaseModal({ item, onClose }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: parseFloat(item.usdPrice),
+          amount: parseFloat(currentPrice),
           itemName: item.name,
           itemId: item.id,
         }),
@@ -100,6 +120,11 @@ export default function PurchaseModal({ item, onClose }) {
           <img src={item.img} alt={item.name} />
         </div>
         <h3>{item.name}</h3>
+        {clientId && (
+          <p className="purchase-muted" style={{ fontSize: '11px', marginBottom: '8px' }}>
+            Client #{clientId}
+          </p>
+        )}
         <div className="purchase-detail-row">
           <span>RAP</span>
           <b>{item.rapLabel}</b>
@@ -109,8 +134,31 @@ export default function PurchaseModal({ item, onClose }) {
           <b>{item.price.toLocaleString()} Robux</b>
         </div>
         <div className="purchase-detail-row">
+          <span>Seller</span>
+          <select
+            value={selectedSeller?.id || ''}
+            onChange={(e) => {
+              const s = sellers.find(s => s.id === e.target.value);
+              setSelectedSeller(s);
+            }}
+            style={{
+              background: 'var(--bg-3)',
+              border: '1px solid var(--line)',
+              borderRadius: '6px',
+              color: 'var(--text)',
+              padding: '4px 8px',
+              fontSize: '13px',
+              fontFamily: 'JetBrains Mono, monospace',
+            }}
+          >
+            {sellers.map(s => (
+              <option key={s.id} value={s.id}>{s.displayId}</option>
+            ))}
+          </select>
+        </div>
+        <div className="purchase-detail-row">
           <span>Price (USD)</span>
-          <b className="gold-text">${item.usdPrice}</b>
+          <b className="gold-text">${currentPrice}</b>
         </div>
         <button className="purchase-btn" onClick={() => setStep(STEPS.ROBLOX_USER)}>
           Continue
@@ -181,7 +229,7 @@ export default function PurchaseModal({ item, onClose }) {
           </div>
         )}
         <p className="purchase-muted">
-          You meet the requirements. Proceed to payment of <b className="gold-text">${item.usdPrice}</b>.
+          You meet the requirements. Proceed to payment of <b className="gold-text">${currentPrice}</b>.
         </p>
         <button className="purchase-btn" onClick={handleCreatePayment} disabled={loading}>
           {loading ? 'Generating payment...' : 'Proceed to payment'}
