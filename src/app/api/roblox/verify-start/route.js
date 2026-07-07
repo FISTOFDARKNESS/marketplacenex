@@ -18,6 +18,23 @@ const PHRASES = [
   'Verified link', 'Account bound',
 ];
 
+async function lookupUserId(username) {
+  const legacy = await fetch(`https://api.roblox.com/users/get-by-username?username=${encodeURIComponent(username)}`);
+  if (legacy.ok) {
+    const data = await legacy.json();
+    if (data.Id && data.Username) return { id: data.Id, name: data.Username };
+  }
+  const search = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(username)}&limit=10`);
+  if (search.ok) {
+    const data = await search.json();
+    const found = data.data?.find(u => u.name.toLowerCase() === username.toLowerCase());
+    if (found) return { id: found.id, name: found.name };
+    const first = data.data?.[0];
+    if (first) return { id: first.id, name: first.name };
+  }
+  return null;
+}
+
 export async function POST(req) {
   try {
     const token = req.cookies.get('token')?.value;
@@ -28,18 +45,21 @@ export async function POST(req) {
     const { robloxUsername } = await req.json();
     if (!robloxUsername) return NextResponse.json({ error: 'Roblox username required' }, { status: 400 });
 
-    const searchRes = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(robloxUsername)}&limit=1`);
-    const searchData = await searchRes.json();
-    const found = searchData.data?.[0];
-    const robloxId = found?.id || null;
+    const lookup = await lookupUserId(robloxUsername.trim());
+    if (!lookup) return NextResponse.json({ error: 'Roblox user not found. Check the username and try again.' }, { status: 404 });
 
     const phrase = PHRASES[Math.floor(Math.random() * PHRASES.length)];
 
     await prisma.robloxVerification.create({
-      data: { userId: decoded.id, robloxUsername, robloxId: robloxId ? BigInt(robloxId) : null, phrase },
+      data: {
+        userId: decoded.id,
+        robloxUsername: lookup.name,
+        robloxId: BigInt(lookup.id),
+        phrase,
+      },
     });
 
-    return NextResponse.json({ success: true, phrase, robloxId, robloxUsername: found?.name || robloxUsername });
+    return NextResponse.json({ success: true, phrase, robloxId: lookup.id, robloxUsername: lookup.name });
   } catch (error) {
     console.error('Verify start error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
