@@ -1,0 +1,64 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  username     String        @unique
+  email        String        @unique
+  passwordHash String
+  balance      Float         @default(10000.0) // Mock balance
+  role         String        @default("user")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  purchases    Transaction[] @relation("BuyerTransactions")
+  sales        Transaction[] @relation("SellerTransactions")
+  wishlist     Wishlist[]
+}
+
+model Item {
+  id             String        @id @default(uuid())
+  robloxAssetId  BigInt        @unique
+  name           String
+  category       String
+  rarity         String
+  rap            Int
+  rapLabel       String
+  price          Float
+  img            String
+  size           String
+  demand         Int           @default(-1)
+  trend          Int           @default(-1)
+  createdAt      DateTime      @default(now())
+  transactions   Transaction[]
+  wishlist       Wishlist[]
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  buyerId   String
+  buyer     User     @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  sellerId  String
+  seller    User     @relation("SellerTransactions", fields: [sellerId], references: [id])
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  price     Float
+  status    String   @default("COMPLETED")
+  createdAt DateTime @default(now())
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, itemId])
+}

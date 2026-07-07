@@ -1,0 +1,289 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+import MarqueeBar from '@/components/MarqueeBar';
+import TrustBar from '@/components/TrustBar';
+import Catalog from '@/components/Catalog';
+import HowItWorks from '@/components/HowItWorks';
+import Testimonials from '@/components/Testimonials';
+import FAQ from '@/components/FAQ';
+import Footer from '@/components/Footer';
+import { AuthModal } from '@/components/Modals';
+import PurchaseModal from '@/components/PurchaseModal';
+import Toast from '@/components/Toast';
+import WishlistDrawer from '@/components/WishlistDrawer';
+
+export default function Home() {
+  const [user, setUser] = useState(null);
+  const [items, setItems] = useState([]);
+  const [loadingItems, setLoadingItems] = useState(true);
+  const [lang, setLang] = useState('en');
+
+  // Filters state
+  const [activeCatFilter, setActiveCatFilter] = useState('all');
+  const [activeRarityFilter, setActiveRarityFilter] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
+  const [sortMode, setSortMode] = useState('demand');
+
+  const [wishlist, setWishlist] = useState(new Set());       // set of itemIds
+  const [wishlistItems, setWishlistItems] = useState([]);     // full item objects
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [toasts, setToasts] = useState([]);
+  const [modalState, setModalState] = useState({ type: null, data: null }); // type: 'login' | 'register' | 'detail' | null
+
+  // Fetch current user on mount and load language
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated) {
+            setUser(data.user);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to verify user session on mount', err);
+      }
+    }
+    checkAuth();
+
+    const savedLang = localStorage.getItem('lang');
+    const validLangs = ['en', 'pt', 'it', 'es', 'fr', 'de'];
+    if (savedLang && validLangs.includes(savedLang)) {
+      setLang(savedLang);
+    }
+  }, []);
+
+  const handleSetLang = (newLang) => {
+    setLang(newLang);
+    localStorage.setItem('lang', newLang);
+  };
+
+  // Fetch items whenever filter options change (Offloading all logic to the secure backend server)
+  useEffect(() => {
+    async function fetchListings() {
+      setLoadingItems(true);
+      try {
+        const params = new URLSearchParams();
+        if (activeCatFilter !== 'all') params.append('cat', activeCatFilter);
+        if (activeRarityFilter) params.append('rarity', activeRarityFilter);
+        if (searchTerm) params.append('search', searchTerm);
+        if (minPrice !== null) params.append('minPrice', minPrice);
+        if (maxPrice !== null) params.append('maxPrice', maxPrice);
+        params.append('sort', sortMode);
+
+        const res = await fetch(`/api/items?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setItems(data.items || []);
+        }
+      } catch (err) {
+        console.error('Failed to load catalog items:', err);
+      } finally {
+        setLoadingItems(false);
+      }
+    }
+
+    // Debounce the fetch slightly for price range inputs and search
+    const delayDebounceFn = setTimeout(() => {
+      fetchListings();
+    }, 200);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [activeCatFilter, activeRarityFilter, searchTerm, minPrice, maxPrice, sortMode]);
+
+  const addToast = (icon, message) => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, icon, message }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        setUser(null);
+        addToast('check-circle', lang === 'pt' ? 'Sessão encerrada com sucesso' : 'Logged out successfully');
+      }
+    } catch (err) {
+      addToast('alert-triangle', lang === 'pt' ? 'Falha ao sair' : 'Failed to logout');
+    }
+  };
+
+  const handleBuyClick = (item) => {
+    if (!user) {
+      addToast('info', lang === 'pt' ? 'Por favor faça login para comprar' : 'Please login to buy items');
+      setModalState({ type: 'login', data: null });
+      return;
+    }
+    setModalState({ type: 'purchase', data: item });
+  };
+
+  // Load wishlist from the DB (call after login or on mount when authenticated)
+  const loadWishlist = useCallback(async () => {
+    try {
+      const res = await fetch('/api/wishlist');
+      if (res.ok) {
+        const data = await res.json();
+        setWishlistItems(data.items || []);
+        setWishlist(new Set((data.items || []).map((i) => i.id)));
+      } else {
+        // Not logged in – clear
+        setWishlistItems([]);
+        setWishlist(new Set());
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  const toggleWishlist = async (itemId) => {
+    const isIn = wishlist.has(itemId);
+    // Optimistic UI update
+    const updated = new Set(wishlist);
+    if (isIn) {
+      updated.delete(itemId);
+      setWishlist(updated);
+      setWishlistItems((prev) => prev.filter((i) => i.id !== itemId));
+      addToast('info', lang === 'pt' ? 'Removido dos favoritos' : 'Removed from favorites');
+    } else {
+      updated.add(itemId);
+      setWishlist(updated);
+      // Find the full item from current listings to show in drawer
+      const fullItem = items.find((i) => i.id === itemId);
+      if (fullItem) setWishlistItems((prev) => [fullItem, ...prev]);
+      addToast('heart', lang === 'pt' ? 'Adicionado aos favoritos!' : 'Added to favorites!');
+    }
+
+    // Sync with DB if user is logged in
+    if (user) {
+      try {
+        if (isIn) {
+          await fetch('/api/wishlist', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itemId }) });
+        } else {
+          await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itemId }) });
+        }
+      } catch { /* fallback: keep optimistic state */ }
+    }
+  };
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <>
+      <Navbar
+        user={user}
+        wishlistCount={wishlist.size}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onOpenAuth={(type) => setModalState({ type, data: null })}
+        onLogout={handleLogout}
+        onScrollTo={scrollToSection}
+        lang={lang}
+        setLang={handleSetLang}
+        onOpenWishlist={() => setWishlistOpen(true)}
+      />
+
+      <Hero
+        onBrowseClick={() => scrollToSection('catalog')}
+        onHowItWorksClick={() => scrollToSection('how')}
+        lang={lang}
+      />
+
+      <MarqueeBar lang={lang} />
+
+      <TrustBar />
+
+      <Catalog
+        items={items}
+        loadingItems={loadingItems}
+        activeCatFilter={activeCatFilter}
+        setActiveCatFilter={setActiveCatFilter}
+        activeRarityFilter={activeRarityFilter}
+        setActiveRarityFilter={setActiveRarityFilter}
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        sortMode={sortMode}
+        setSortMode={setSortMode}
+        wishlist={wishlist}
+        toggleWishlist={toggleWishlist}
+        onStartSelling={() => addToast('rocket', lang === 'pt' ? 'Redirecionando para onboarding do vendedor...' : 'Redirecting to seller onboarding...')}
+        onCardClick={handleBuyClick}
+        onBuyClick={handleBuyClick}
+        lang={lang}
+      />
+
+      <HowItWorks lang={lang} />
+
+      <Testimonials lang={lang} />
+
+      <FAQ lang={lang} />
+
+      <div className="cta-banner section-wrap">
+        <h2>{lang === 'pt' ? 'Pronto para negociar?' : 'Ready to trade?'}</h2>
+        <p>{lang === 'pt' ? 'Junte-se a milhares de compradores e vendedores verificados na NexBlox.' : 'Join thousands of verified buyers and sellers on NexBlox.'}</p>
+        <button className="hero-cta-primary" onClick={() => scrollToSection('catalog')}>
+          {lang === 'pt' ? 'Começar' : 'Get started'}
+        </button>
+      </div>
+
+      <Footer onScrollTo={scrollToSection} lang={lang} />
+
+      {/* Dynamic Overlays */}
+      {modalState.type === 'purchase' && (
+        <PurchaseModal
+          item={modalState.data}
+          onClose={() => setModalState({ type: null, data: null })}
+        />
+      )}
+
+      {(modalState.type === 'login' || modalState.type === 'register') && (
+        <AuthModal
+          type={modalState.type}
+          onClose={() => setModalState({ type: null, data: null })}
+          onSubmit={(loggedInUser) => {
+            setUser(loggedInUser);
+            addToast('check-circle', lang === 'pt' ? `Bem-vindo, ${loggedInUser.username}!` : `Welcome, ${loggedInUser.username}!`);
+            loadWishlist(); // Sync wishlist from DB after login
+          }}
+          lang={lang}
+        />
+      )}
+
+      <WishlistDrawer
+        open={wishlistOpen}
+        onClose={() => setWishlistOpen(false)}
+        wishlistItems={wishlistItems}
+        onRemove={(itemId) => toggleWishlist(itemId)}
+        onBuyClick={handleBuyClick}
+        lang={lang}
+      />
+
+      {/* Notification Toast Stack */}
+      <div className="toast-wrap">
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            id={toast.id}
+            icon={toast.icon}
+            message={toast.message}
+            onRemove={removeToast}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
