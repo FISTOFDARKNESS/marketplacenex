@@ -64,37 +64,49 @@ export default function Home() {
     localStorage.setItem('lang', newLang);
   };
 
-  // Fetch items whenever filter options change (Offloading all logic to the secure backend server)
+  // Fetch items whenever filter options change
   useEffect(() => {
-    async function fetchListings() {
+    let cancelled = false;
+    async function fetchListings(retries = 2) {
       setLoadingItems(true);
-      try {
-        const params = new URLSearchParams();
-        if (activeCatFilter !== 'all') params.append('cat', activeCatFilter);
-        if (activeRarityFilter) params.append('rarity', activeRarityFilter);
-        if (searchTerm) params.append('search', searchTerm);
-        if (minPrice !== null) params.append('minPrice', minPrice);
-        if (maxPrice !== null) params.append('maxPrice', maxPrice);
-        params.append('sort', sortMode);
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          const params = new URLSearchParams();
+          if (activeCatFilter !== 'all') params.append('cat', activeCatFilter);
+          if (activeRarityFilter) params.append('rarity', activeRarityFilter);
+          if (searchTerm) params.append('search', searchTerm);
+          if (minPrice !== null) params.append('minPrice', minPrice);
+          if (maxPrice !== null) params.append('maxPrice', maxPrice);
+          params.append('sort', sortMode);
+          params.append('_t', Date.now());
 
-        const res = await fetch(`/api/items?${params.toString()}`);
-        if (res.ok) {
-          const data = await res.json();
-          setItems(data.items || []);
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 30000);
+
+          const res = await fetch(`/api/items?${params.toString()}`, { signal: controller.signal });
+          clearTimeout(timeout);
+          if (res.ok) {
+            const data = await res.json();
+            if (!cancelled) setItems(data.items || []);
+            return;
+          }
+        } catch (err) {
+          if (attempt === retries) {
+            console.error('Failed to load catalog items:', err);
+          } else {
+            await new Promise(r => setTimeout(r, 1000));
+          }
+        } finally {
+          if (!cancelled) setLoadingItems(false);
         }
-      } catch (err) {
-        console.error('Failed to load catalog items:', err);
-      } finally {
-        setLoadingItems(false);
       }
     }
 
-    // Debounce the fetch slightly for price range inputs and search
     const delayDebounceFn = setTimeout(() => {
       fetchListings();
     }, 200);
 
-    return () => clearTimeout(delayDebounceFn);
+    return () => { clearTimeout(delayDebounceFn); cancelled = true; };
   }, [activeCatFilter, activeRarityFilter, searchTerm, minPrice, maxPrice, sortMode]);
 
   const addToast = (icon, message) => {
