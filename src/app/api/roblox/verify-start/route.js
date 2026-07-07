@@ -19,20 +19,12 @@ const PHRASES = [
 ];
 
 async function lookupUserId(username) {
-  const legacy = await fetch(`https://api.roblox.com/users/get-by-username?username=${encodeURIComponent(username)}`);
-  if (legacy.ok) {
-    const data = await legacy.json();
-    if (data.Id && data.Username) return { id: data.Id, name: data.Username };
-  }
-  const search = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(username)}&limit=10`);
-  if (search.ok) {
-    const data = await search.json();
-    const found = data.data?.find(u => u.name.toLowerCase() === username.toLowerCase());
-    if (found) return { id: found.id, name: found.name };
-    const first = data.data?.[0];
-    if (first) return { id: first.id, name: first.name };
-  }
-  return null;
+  const res = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(username)}&limit=10`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  const found = data.data?.find(u => u.name.toLowerCase() === username.toLowerCase())
+    || data.data?.[0];
+  return found ? { id: found.id, name: found.name, displayName: found.displayName } : null;
 }
 
 export async function POST(req) {
