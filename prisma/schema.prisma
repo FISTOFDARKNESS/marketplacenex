@@ -66,6 +66,7 @@ model RobloxVerification {
   userId         String
   user           User     @relation(fields: [userId], references: [id])
   robloxUsername String
+  robloxId       BigInt?
   phrase         String
   status         String   @default("PENDING")
   createdAt      DateTime @default(now())

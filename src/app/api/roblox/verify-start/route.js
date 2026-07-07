@@ -36,7 +36,7 @@ export async function POST(req) {
     const phrase = PHRASES[Math.floor(Math.random() * PHRASES.length)];
 
     await prisma.robloxVerification.create({
-      data: { userId: decoded.id, robloxUsername, phrase },
+      data: { userId: decoded.id, robloxUsername, robloxId: robloxId ? BigInt(robloxId) : null, phrase },
     });
 
     return NextResponse.json({ success: true, phrase, robloxId, robloxUsername: found?.name || robloxUsername });

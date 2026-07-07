@@ -38,14 +38,11 @@ export async function POST(req) {
     });
     if (!verification) return NextResponse.json({ error: 'No pending verification' }, { status: 400 });
 
-    const searchRes = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(verification.robloxUsername)}&limit=1`);
-    if (!searchRes.ok) return NextResponse.json({ error: 'Failed to lookup Roblox user' }, { status: 502 });
-    const searchData = await searchRes.json();
-    const found = searchData.data?.[0];
-    if (!found) return NextResponse.json({ error: 'Roblox user not found' }, { status: 404 });
+    const robloxId = Number(verification.robloxId);
+    if (!robloxId) return NextResponse.json({ error: 'Invalid Roblox ID' }, { status: 400 });
 
-    let bio = await fetchBioViaAPI(found.id);
-    if (bio === null) bio = await fetchBioViaProfile(found.id) || '';
+    let bio = await fetchBioViaAPI(robloxId);
+    if (bio === null) bio = await fetchBioViaProfile(robloxId) || '';
     if (bio === null) return NextResponse.json({ error: 'Failed to fetch profile bio' }, { status: 502 });
 
     const phraseLower = verification.phrase.toLowerCase();
@@ -58,12 +55,15 @@ export async function POST(req) {
       data: { status: 'VERIFIED' },
     });
 
+    const nameRes = await fetch(`https://users.roblox.com/v1/users/${robloxId}`);
+    const nameData = nameRes.ok ? await nameRes.json() : { name: verification.robloxUsername };
+
     await prisma.user.update({
       where: { id: decoded.id },
-      data: { robloxId: BigInt(found.id), robloxUsername: found.name },
+      data: { robloxId: BigInt(robloxId), robloxUsername: nameData.name },
     });
 
-    return NextResponse.json({ success: true, robloxId: found.id, robloxUsername: found.name });
+    return NextResponse.json({ success: true, robloxId, robloxUsername: nameData.name });
   } catch (error) {
     console.error('Verify check error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
