@@ -2,21 +2,40 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeftRight } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 export default function TransactionsPage() {
   const router = useRouter();
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(d => {
-      if (!d.authenticated) router.push('/');
-    });
+    fetch('/api/auth/me')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.authenticated) { router.push('/'); return; }
+        return fetch('/api/transactions');
+      })
+      .then(r => r ? r.json() : null)
+      .then(d => { if (d?.success) setTransactions(d.transactions); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/');
+  }
+
+  const filtered = transactions.filter(t =>
+    !search || t.id.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   return (
@@ -26,12 +45,60 @@ export default function TransactionsPage() {
         <div className="page-top">
           <div>
             <h1 className="page-title">Transactions</h1>
-            <p className="page-desc">View your payment transactions.</p>
+            <p className="page-desc">View your deposit and withdrawal transaction history.</p>
+          </div>
+          <div className="search-bar">
+            <Search size={16} />
+            <input
+              type="text"
+              placeholder="Search by transaction ID..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
         </div>
-        <div className="empty-state">
-          <ArrowLeftRight size={40} style={{ color: '#6b7280' }} />
-          <p>Transactions page coming soon.</p>
+
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6} className="table-empty">Loading...</td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={6} className="table-empty">No transactions found.</td></tr>
+              ) : (
+                filtered.map(t => (
+                  <tr key={t.id}>
+                    <td className="cell-id">#{t.id.slice(0, 8)}</td>
+                    <td>
+                      <span className={`badge-status ${t.type === 'Deposit' ? 'status-approved' : 'status-pending'}`}>
+                        {t.type}
+                      </span>
+                    </td>
+                    <td className="cell-price">
+                      {t.type === 'Deposit' ? '+' : '-'}${typeof t.amount === 'number' ? t.amount.toFixed(2) : t.amount}
+                    </td>
+                    <td className="cell-buyer" style={{ textTransform: 'capitalize' }}>{t.method}</td>
+                    <td>
+                      <span className={`badge-status status-${t.status.toLowerCase()}`}>
+                        {t.status}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '12px', color: '#6b7280' }}>{formatDate(t.date)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </main>
     </div>
