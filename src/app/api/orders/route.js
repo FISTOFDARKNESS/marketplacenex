@@ -23,25 +23,16 @@ export async function GET(req) {
       return NextResponse.json({ success: true, orders });
     }
 
-    // Return orders where the current user is the buyer OR the recipient
+    // Return orders where user is the recipient (same logic as dashboard)
     const orders = await prisma.order.findMany({
-      where: {
-        OR: [
-          { userId: decoded.id },   // destinatário
-          { buyerId: decoded.id },  // comprador
-        ],
-      },
-      include: {
-        item: true,
-        user: { select: { username: true, robloxUsername: true } },
-        buyer: { select: { username: true, robloxUsername: true } },
-      },
+      where: { userId: decoded.id },
+      include: { item: true },
       orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json({ success: true, orders });
   } catch (error) {
     console.error('Orders fetch error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 }

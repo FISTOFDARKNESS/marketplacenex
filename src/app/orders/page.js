@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
-  const [currentUserId, setCurrentUserId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -17,12 +17,15 @@ export default function OrdersPage() {
       .then(r => r.json())
       .then(d => {
         if (!d.authenticated) { router.push('/'); return null; }
-        setCurrentUserId(d.user?.id);
         return fetch('/api/orders');
       })
       .then(r => r ? r.json() : null)
-      .then(d => { if (d?.success) setOrders(d.orders); })
-      .catch(() => {})
+      .then(d => {
+        if (!d) return;
+        if (!d.success) { setError(d.error || 'Failed to load orders'); return; }
+        setOrders(d.orders || []);
+      })
+      .catch(e => setError('Network error: ' + e.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -33,8 +36,7 @@ export default function OrdersPage() {
 
   const filtered = orders.filter(o =>
     !search ||
-    o.id.toString().includes(search) ||
-    (o.buyer?.username || '').toLowerCase().includes(search.toLowerCase()) ||
+    o.item?.name?.toLowerCase().includes(search.toLowerCase()) ||
     (o.robloxUser || '').toLowerCase().includes(search.toLowerCase())
   );
 
@@ -64,25 +66,23 @@ export default function OrdersPage() {
               <tr>
                 <th>ID</th>
                 <th>Item</th>
-                <th>Buyer</th>
-                <th>Recipient (Roblox)</th>
+                <th>Roblox User</th>
                 <th>Price</th>
                 <th>Status</th>
-                <th>Role</th>
-                <th>Action</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} className="table-empty">Loading...</td></tr>
+                <tr><td colSpan={6} className="table-empty">Loading...</td></tr>
+              ) : error ? (
+                <tr><td colSpan={6} className="table-empty" style={{color:'#ef4444'}}>Error: {error}</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={8} className="table-empty">No orders found.</td></tr>
+                <tr><td colSpan={6} className="table-empty">No orders found.</td></tr>
               ) : (
                 filtered.map(o => {
                   const item = o.item || {};
                   const status = (o.status || 'PENDING').toLowerCase();
-                  const isBuyer = o.buyerId === currentUserId;
-                  const isRecipient = o.userId === currentUserId;
                   return (
                   <tr key={o.id}>
                     <td className="cell-id">#{o.id.toString().slice(-6)}</td>
@@ -92,7 +92,6 @@ export default function OrdersPage() {
                         <span>{item.name || 'Unknown item'}</span>
                       </div>
                     </td>
-                    <td className="cell-buyer">{o.buyer?.username || '—'}</td>
                     <td className="cell-buyer">{o.robloxUser || '—'}</td>
                     <td className="cell-price">${item.price ? Number(item.price).toFixed(2) : '0.00'}</td>
                     <td>
@@ -100,17 +99,7 @@ export default function OrdersPage() {
                         {o.status || 'PENDING'}
                       </span>
                     </td>
-                    <td>
-                      <span className={`badge-status ${isBuyer ? 'status-pending' : 'status-approved'}`}
-                        style={{ fontSize: '0.7rem', padding: '2px 8px' }}>
-                        {isBuyer && isRecipient ? 'Buyer & Recipient' : isBuyer ? 'Buyer' : 'Recipient'}
-                      </span>
-                    </td>
-                    <td>
-                      <button className="action-btn">
-                        <ChevronDown size={14} />
-                      </button>
-                    </td>
+                    <td>{new Date(o.createdAt).toLocaleDateString()}</td>
                   </tr>
                   );
                 })
