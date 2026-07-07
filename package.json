@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "fetch-items": "node scripts/fetchItems.js"
+    "fetch-items": "node scripts/fetchItems.js",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@babel/runtime": "^8.0.0",
-    "@next/swc-win32-x64-msvc": "^16.2.10",
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.3",
