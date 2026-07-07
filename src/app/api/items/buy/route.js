@@ -34,6 +34,8 @@ export async function POST(req) {
       if (recipient) recipientUserId = recipient.id;
     }
 
+    const adminUser = await prisma.user.findFirst({ where: { role: 'admin' } });
+
     await prisma.$transaction([
       prisma.user.update({
         where: { id: user.id },
@@ -42,7 +44,7 @@ export async function POST(req) {
       prisma.transaction.create({
         data: {
           buyerId: user.id,
-          sellerId: sellerId || user.id,
+          sellerId: adminUser?.id || user.id,
           itemId: item.id,
           price,
           status: 'PENDING',
