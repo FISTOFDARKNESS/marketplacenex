@@ -27,10 +27,10 @@ async function main() {
 
   await prisma.seller.deleteMany();
   const sellers = [
-    { displayId: 'NXS-001', name: 'Nexus Prime', markup: 0 },
-    { displayId: 'NXS-002', name: 'Crystal Vault', markup: 0.01 },
-    { displayId: 'NXS-003', name: 'Golden Trade', markup: 0.015 },
-    { displayId: 'NXS-004', name: 'Limited Hub', markup: 0.02 },
+    { displayId: 'NX-A7K9M2', name: 'Nexus Prime', markup: 0 },
+    { displayId: 'NX-4B3X8P', name: 'Crystal Vault', markup: 0.01 },
+    { displayId: 'NX-9W1P6R', name: 'Golden Trade', markup: 0.015 },
+    { displayId: 'NX-5D20R8', name: 'Limited Hub', markup: 0.02 },
   ];
   for (const s of sellers) {
     await prisma.seller.create({ data: s });
