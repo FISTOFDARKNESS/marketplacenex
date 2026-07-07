@@ -71,10 +71,13 @@ export default function FinancePanel({ user, onClose }) {
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
       if (data.deposit?.paymentUrl) window.open(data.deposit.paymentUrl, '_blank');
+      if (data.newBalance != null) setBalance(data.newBalance);
+      else {
+        const balRes = await fetch('/api/balance');
+        const balData = await balRes.json();
+        if (balData.success) setBalance(balData.balance);
+      }
       setDepositAmount('');
-      const balRes = await fetch('/api/balance');
-      const balData = await balRes.json();
-      if (balData.success) setBalance(balData.balance);
     } catch { setError('Connection failed'); }
     finally { setLoading(false); }
   }
@@ -234,8 +237,8 @@ export default function FinancePanel({ user, onClose }) {
               <div className="fm-form-header">
                 <ArrowDownLeft size={20} />
                 <div>
-                  <h3>Buy Robux Credits</h3>
-                  <p className="fm-sub">Purchase credits to use on the marketplace</p>
+                  <h3>Deposit USD</h3>
+                  <p className="fm-sub">Add funds to your balance to withdraw Robux</p>
                 </div>
               </div>
 
@@ -259,26 +262,28 @@ export default function FinancePanel({ user, onClose }) {
                 ))}
               </div>
 
-              <div className="fm-input-wrap">
-                <label className="fm-label">USD Amount</label>
-                <input
-                  type="number"
-                  placeholder="e.g. 10.00"
-                  value={depositAmount}
-                  onChange={e => setDepositAmount(e.target.value)}
-                  required min="1" step="0.01"
-                />
-              </div>
-
-              <div className="fm-conversion">
-                <span>
-                  You get ≈ {Math.floor((parseFloat(depositAmount) || 0) * 100 * { crypto: 1, paypal: 0.95, cashapp: 0.97 }[depositMethod]).toLocaleString()} Robux
-                </span>
+              <label className="fm-label">Select Amount</label>
+              <div className="fm-amount-grid">
+                {[25, 50, 100, 500, 1000, 10000].map(amt => {
+                  const robux = Math.floor(amt * 100 * { crypto: 1, paypal: 0.95, cashapp: 0.97 }[depositMethod]);
+                  const selected = parseFloat(depositAmount) === amt;
+                  return (
+                    <button
+                      key={amt}
+                      type="button"
+                      className={`fm-amount-btn ${selected ? 'active' : ''}`}
+                      onClick={() => setDepositAmount(selected ? '' : String(amt))}
+                    >
+                      <span className="fm-amt-usd">${amt.toLocaleString()}</span>
+                      <span className="fm-amt-robux">≈ {robux.toLocaleString()} Robux</span>
+                    </button>
+                  );
+                })}
               </div>
 
               <button type="submit" className="fm-btn" disabled={loading || !depositAmount}>
                 {loading ? <><Clock size={16} /> Processing...</> : (
-                  <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay with {depositMethod === 'cashapp' ? 'Cash App' : depositMethod === 'paypal' ? 'PayPal' : 'Crypto'}</>
+                  <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay ${parseFloat(depositAmount || 0).toLocaleString()} USD</>
                 )}
               </button>
             </form>
@@ -490,6 +495,31 @@ export default function FinancePanel({ user, onClose }) {
           gap: 8px;
           margin-bottom: 16px;
         }
+
+        .fm-amount-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-bottom: 16px;
+        }
+        .fm-amount-btn {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          padding: 16px 8px;
+          background: #1a1a1e;
+          border: 1px solid #2a2a2e;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-family: inherit;
+        }
+        .fm-amount-btn:hover { border-color: #3a3a3e; }
+        .fm-amount-btn.active { border-color: #f59e0b; background: rgba(245,158,11,0.08); }
+        .fm-amt-usd { font-size: 16px; font-weight: 700; color: #fff; }
+        .fm-amount-btn.active .fm-amt-usd { color: #fbbf24; }
+        .fm-amt-robux { font-size: 10px; color: #6b7280; }
         .fm-pm-card {
           display: flex;
           flex-direction: column;
