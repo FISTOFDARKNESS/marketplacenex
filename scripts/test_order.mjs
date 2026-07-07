@@ -1,24 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 const p = new PrismaClient();
 try {
-  const users = await p.user.findMany({ take: 2, select: { id: true, username: true } });
-  console.log('Users:', JSON.stringify(users));
+  const users = await p.user.findMany({ take: 1, select: { id: true, username: true } });
   const item = await p.item.findFirst({ select: { id: true, name: true, price: true } });
-  console.log('Item:', JSON.stringify(item));
+  console.log('User:', users[0]?.id, 'Item:', item?.id);
 
-  if (item && users[0]) {
-    const order = await p.order.create({
-      data: { userId: users[0].id, buyerId: users[0].id, itemId: item.id, robloxUser: 'test', status: 'PENDING' },
-    });
-    console.log('Order created:', order.id);
-    // Clean up
-    await p.order.delete({ where: { id: order.id } });
-    console.log('Order deleted OK');
-  } else {
-    console.log('Missing item or users');
-  }
+  // Test WITHOUT buyerId (simulating old code)
+  const order = await p.order.create({
+    data: { userId: users[0].id, itemId: item.id, robloxUser: 'test_old_code', status: 'PENDING' },
+  });
+  console.log('Order created without buyerId:', order.id);
+  await p.order.delete({ where: { id: order.id } });
+  console.log('OK');
 } catch (e) {
-  console.error('Error:', e);
+  console.error('Error:', e.message);
 } finally {
   await p.$disconnect();
 }

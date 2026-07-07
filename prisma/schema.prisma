@@ -87,8 +87,8 @@ model Order {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation("RecipientOrders", fields: [userId], references: [id])
-  buyerId    String
-  buyer      User     @relation("BuyerOrders", fields: [buyerId], references: [id])
+  buyerId    String?
+  buyer      User?    @relation("BuyerOrders", fields: [buyerId], references: [id])
   itemId     String
   item       Item     @relation(fields: [itemId], references: [id])
   robloxUser String
