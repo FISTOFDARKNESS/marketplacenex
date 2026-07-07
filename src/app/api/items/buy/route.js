@@ -11,62 +11,41 @@ export async function POST(req) {
     const decoded = verifyToken(token);
     if (!decoded) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-    const { itemId, sellerId, price, robloxUser } = await req.json();
+    const { itemId, price, robloxUser } = await req.json();
     if (!itemId || !price) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
 
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    if (user.balance < price) {
-      return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 });
-    }
+    if (user.balance < price) return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 });
 
     const item = await prisma.item.findUnique({ where: { id: itemId } });
     if (!item) return NextResponse.json({ error: 'Item not found' }, { status: 404 });
 
-    let recipientUserId = decoded.id;
-    let robloxUsername = robloxUser || '';
+    const robloxUsername = (robloxUser || '').trim();
 
-    if (robloxUser) {
-      const recipient = await prisma.user.findFirst({
-        where: { robloxUsername: { equals: robloxUser, mode: 'insensitive' } },
-      });
-      if (recipient) recipientUserId = recipient.id;
+    let recipientUserId = decoded.id;
+    if (robloxUsername) {
+      const allUsers = await prisma.user.findMany({ select: { id: true, robloxUsername: true } });
+      const match = allUsers.find(u => u.robloxUsername?.toLowerCase() === robloxUsername.toLowerCase());
+      if (match) recipientUserId = match.id;
     }
 
-    const adminUser = await prisma.user.findFirst({ where: { role: 'admin' } });
+    const adminUser = await prisma.user.findFirst({ where: { role: 'admin' }, select: { id: true } });
+    const sellerUserId = adminUser?.id || user.id;
 
     await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: { balance: { decrement: price } },
-      }),
+      prisma.user.update({ where: { id: user.id }, data: { balance: { decrement: price } } }),
       prisma.transaction.create({
-        data: {
-          buyerId: user.id,
-          sellerId: adminUser?.id || user.id,
-          itemId: item.id,
-          price,
-          status: 'PENDING',
-        },
+        data: { buyerId: user.id, sellerId: sellerUserId, itemId: item.id, price, status: 'PENDING' },
       }),
       prisma.order.create({
-        data: {
-          userId: recipientUserId,
-          itemId: item.id,
-          robloxUser: robloxUsername,
-          status: 'PENDING',
-        },
+        data: { userId: recipientUserId, itemId: item.id, robloxUser: robloxUsername, status: 'PENDING' },
       }),
     ]);
 
-    return NextResponse.json({
-      success: true,
-      newBalance: user.balance - price,
-      orderCreated: true,
-    });
+    return NextResponse.json({ success: true, newBalance: user.balance - price, orderCreated: true });
   } catch (error) {
     console.error('Buy item error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process purchase. Please try again.' }, { status: 500 });
   }
 }
