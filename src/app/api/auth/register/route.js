@@ -64,6 +64,7 @@ export async function POST(req) {
         email: user.email,
         role: user.role,
         balance: user.balance,
+        robloxUsername: user.robloxUsername,
       },
     });
 

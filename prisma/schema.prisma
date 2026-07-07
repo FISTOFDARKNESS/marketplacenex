@@ -8,19 +8,24 @@ generator client {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  username     String        @unique
-  email        String        @unique
-  passwordHash String
-  balance      Float         @default(0)
-  role         String        @default("user")
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  purchases    Transaction[] @relation("BuyerTransactions")
-  sales        Transaction[] @relation("SellerTransactions")
-  wishlist     Wishlist[]
-  withdrawals  Withdrawal[]
-  deposits     DepositOrder[]
+  id             String        @id @default(uuid())
+  username       String        @unique
+  email          String        @unique
+  passwordHash   String
+  balance        Float         @default(0)
+  role           String        @default("user")
+  robloxId       BigInt?
+  robloxUsername String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  purchases      Transaction[] @relation("BuyerTransactions")
+  sales          Transaction[] @relation("SellerTransactions")
+  wishlist       Wishlist[]
+  withdrawals    Withdrawal[]
+  deposits       DepositOrder[]
+  inventory      UserItem[]
+  orders         Order[]
+  verifications  RobloxVerification[]
 }
 
 model Item {
@@ -39,6 +44,8 @@ model Item {
   createdAt      DateTime      @default(now())
   transactions   Transaction[]
   wishlist       Wishlist[]
+  userItems      UserItem[]
+  orders         Order[]
 }
 
 model Transaction {
@@ -52,6 +59,38 @@ model Transaction {
   price     Float
   status    String   @default("COMPLETED")
   createdAt DateTime @default(now())
+}
+
+model RobloxVerification {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  robloxUsername String
+  phrase         String
+  status         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model UserItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  itemId     String
+  item       Item     @relation(fields: [itemId], references: [id])
+  robloxUser String
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Seller {
