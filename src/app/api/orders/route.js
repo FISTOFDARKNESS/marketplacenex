@@ -28,6 +28,7 @@ export async function GET(req) {
       select: { id: true, robloxUsername: true },
     });
 
+    // 1. Orders by userId (recipient match)
     const orders = await prisma.order.findMany({
       where: { userId: decoded.id },
       include: { item: true },
@@ -35,17 +36,20 @@ export async function GET(req) {
       take: 100,
     });
 
+    // 2. Also include orders where robloxUser matches current user's linked Roblox
     if (user?.robloxUsername) {
-      const allOrders = await prisma.order.findMany({
+      const rName = user.robloxUsername.toLowerCase();
+      const robloxOrders = await prisma.order.findMany({
+        where: { robloxUser: { equals: user.robloxUsername, mode: 'insensitive' } },
         include: { item: true },
         orderBy: { createdAt: 'desc' },
-        take: 200,
+        take: 100,
       });
       const seen = new Set(orders.map(o => o.id));
-      const rName = user.robloxUsername.toLowerCase();
-      for (const o of allOrders) {
-        if (!seen.has(o.id) && o.robloxUser.toLowerCase() === rName) {
-          orders.push(o);
+      for (const ro of robloxOrders) {
+        if (!seen.has(ro.id)) {
+          orders.push(ro);
+          seen.add(ro.id);
         }
       }
     }

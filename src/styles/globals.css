@@ -2618,6 +2618,114 @@ button {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* ---------- DASHBOARD ---------- */
+.dash-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dash-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  background: #131316;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.dash-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dash-card-body {
+  min-width: 0;
+}
+.dash-card-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+.dash-card-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+.dash-section {
+  margin-bottom: 24px;
+}
+.dash-section-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+.dash-revenue-card {
+  background: #131316;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+.dash-revenue-stats {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 20px;
+}
+.dash-revenue-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+.dash-revenue-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+.dash-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+}
+.dash-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  cursor: default;
+}
+.dash-bar {
+  width: 100%;
+  max-width: 24px;
+  background: linear-gradient(to top, #f59e0b, #fbbf24);
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+.dash-bar-label {
+  font-size: 9px;
+  color: #6b7280;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+.dash-notif-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: #131316;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: #6b7280;
+  font-size: 14px;
+}
 .nav-link-btn {
   display: flex;
   align-items: center;
