@@ -2,20 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, ArrowLeft, X } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
 
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetch('/api/auth/me')
       .then(r => r.json())
       .then(d => {
         if (!d.authenticated) { router.push('/'); return; }
-        setUser(d.user);
         return fetch('/api/orders');
       })
       .then(r => r ? r.json() : null)
@@ -24,37 +24,81 @@ export default function OrdersPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  return (
-    <div className="page-layout">
-      <div className="page-header">
-        <button className="icon-btn" onClick={() => router.push('/')}><ArrowLeft className="icon" /></button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Package size={20} style={{ color: '#f59e0b' }} />
-          <h1 style={{ margin: 0, fontSize: '20px' }}>Orders</h1>
-        </div>
-        <div />
-      </div>
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/');
+  }
 
-      <div className="page-content">
-        {loading ? (
-          <p className="page-empty">Loading...</p>
-        ) : orders.length === 0 ? (
-          <p className="page-empty">No orders yet</p>
-        ) : (
-          orders.map(o => (
-            <div key={o.id} className="page-card">
-              <img src={o.item.img} alt={o.item.name} className="page-card-img" />
-              <div className="page-card-body">
-                <div className="page-card-name">{o.item.name}</div>
-                <div className="page-card-sub">for {o.robloxUser}</div>
-              </div>
-              <span className={`page-status status-${o.status.toLowerCase()}`}>
-                {o.status}
-              </span>
-            </div>
-          ))
-        )}
-      </div>
+  const filtered = orders.filter(o =>
+    !search || o.id.toString().includes(search) || (o.user?.username || '').toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="app-layout">
+      <Sidebar onLogout={handleLogout} />
+      <main className="main-content">
+        <div className="page-top">
+          <div>
+            <h1 className="page-title">Orders</h1>
+            <p className="page-desc">Track and manage your sales orders from buyers.</p>
+          </div>
+          <div className="search-bar">
+            <Search size={16} />
+            <input
+              type="text"
+              placeholder="Search by ID or email..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Item</th>
+                <th>Buyer</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6} className="table-empty">Loading...</td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={6} className="table-empty">No orders found.</td></tr>
+              ) : (
+                filtered.map(o => (
+                  <tr key={o.id}>
+                    <td className="cell-id">#{o.id.toString().slice(-6)}</td>
+                    <td>
+                      <div className="cell-item">
+                        <img src={o.item.img} alt={o.item.name} />
+                        <span>{o.item.name}</span>
+                      </div>
+                    </td>
+                    <td className="cell-buyer">{o.robloxUser}</td>
+                    <td className="cell-price">${o.item.usdPrice}</td>
+                    <td>
+                      <span className={`badge-status status-${o.status.toLowerCase()}`}>
+                        {o.status}
+                      </span>
+                    </td>
+                    <td>
+                      <button className="action-btn">
+                        <ChevronDown size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </main>
     </div>
   );
 }
