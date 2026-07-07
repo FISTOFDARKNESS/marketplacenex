@@ -19,16 +19,8 @@ export default function OrdersPage() {
         return fetch('/api/orders');
       })
       .then(r => r ? r.json() : null)
-      .then(d => {
-        if (d?.success) {
-          setOrders(d.orders);
-          console.log('Orders API debug:', d.debug);
-          if (d.debug) alert('Orders: ' + d.orders.length + ' found. Debug: ' + JSON.stringify(d.debug));
-        } else {
-          alert('API error: ' + JSON.stringify(d));
-        }
-      })
-      .catch(err => alert('Fetch error: ' + err.message))
+      .then(d => { if (d?.success) setOrders(d.orders); })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

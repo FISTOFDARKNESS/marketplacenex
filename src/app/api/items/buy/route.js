@@ -39,7 +39,7 @@ export async function POST(req) {
         data: { buyerId: user.id, sellerId: sellerUserId, itemId: item.id, price, status: 'PENDING' },
       }),
       prisma.order.create({
-        data: { userId: recipientUserId, itemId: item.id, robloxUser: robloxUsername, status: 'PENDING' },
+        data: { userId: recipientUserId, buyerId: user.id, itemId: item.id, robloxUser: robloxUsername, status: 'PENDING' },
       }),
     ]);
 
