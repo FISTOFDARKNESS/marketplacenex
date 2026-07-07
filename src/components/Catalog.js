@@ -36,6 +36,11 @@ export default function Catalog({
   lang = 'en',
 }) {
   const t = locales[lang].catalog;
+  const allCount = items.length;
+  const legendaryCount = items.filter(i => i.rarity === 'legendary').length;
+  const rareCount = items.filter(i => i.rarity === 'rare').length;
+  const uncommonCount = items.filter(i => i.rarity === 'uncommon').length;
+  const commonCount = items.filter(i => i.rarity === 'common').length;
 
   return (
     <section className="catalog-section section-wrap" id="catalog">
@@ -56,7 +61,7 @@ export default function Catalog({
               <LayoutGrid className="icon" />
               {t.all}
             </span>
-            <span className="count">10</span>
+            <span className="count">{allCount}</span>
           </button>
 
           <h4>{t.rarity}</h4>
@@ -68,7 +73,7 @@ export default function Catalog({
               <Gem className="icon" />
               {t.legendary}
             </span>
-            <span className="count">3</span>
+            <span className="count">{legendaryCount}</span>
           </button>
           <button
             className={`filter-option ${activeRarityFilter === 'rare' ? 'active' : ''}`}
@@ -78,7 +83,7 @@ export default function Catalog({
               <Star className="icon" />
               {t.rare}
             </span>
-            <span className="count">7</span>
+            <span className="count">{rareCount}</span>
           </button>
 
           <h4>{t.priceRange}</h4>
