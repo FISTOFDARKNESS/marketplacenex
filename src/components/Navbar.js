@@ -1,6 +1,6 @@
 'use client';
 
-import { Crown, Search, Heart } from 'lucide-react';
+import { Crown, Search, Heart, Wallet } from 'lucide-react';
 import { locales } from '@/lib/locales';
 
 export default function Navbar({
@@ -14,6 +14,7 @@ export default function Navbar({
   lang = 'en',
   setLang,
   onOpenWishlist,
+  onOpenFinance,
 }) {
   const t = locales[lang].nav;
 
@@ -76,7 +77,10 @@ export default function Navbar({
         </button>
 
         {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button className="icon-btn" title="Finance" onClick={onOpenFinance}>
+              <Wallet className="icon" />
+            </button>
             <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)' }}>
               {user.username}
             </div>

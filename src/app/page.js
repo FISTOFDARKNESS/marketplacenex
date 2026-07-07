@@ -12,6 +12,7 @@ import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import { AuthModal } from '@/components/Modals';
 import PurchaseModal from '@/components/PurchaseModal';
+import FinancePanel from '@/components/finance/FinancePanel';
 import Toast from '@/components/Toast';
 import WishlistDrawer from '@/components/WishlistDrawer';
 
@@ -34,6 +35,7 @@ export default function Home() {
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [modalState, setModalState] = useState({ type: null, data: null }); // type: 'login' | 'register' | 'detail' | null
+  const [financeOpen, setFinanceOpen] = useState(false);
 
   // Fetch current user on mount and load language
   useEffect(() => {
@@ -205,6 +207,7 @@ export default function Home() {
         lang={lang}
         setLang={handleSetLang}
         onOpenWishlist={() => setWishlistOpen(true)}
+        onOpenFinance={() => setFinanceOpen(true)}
       />
 
       <Hero
@@ -273,6 +276,13 @@ export default function Home() {
             loadWishlist(); // Sync wishlist from DB after login
           }}
           lang={lang}
+        />
+      )}
+
+      {financeOpen && (
+        <FinancePanel
+          user={user}
+          onClose={() => setFinanceOpen(false)}
         />
       )}
 

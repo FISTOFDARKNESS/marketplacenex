@@ -19,6 +19,8 @@ model User {
   purchases    Transaction[] @relation("BuyerTransactions")
   sales        Transaction[] @relation("SellerTransactions")
   wishlist     Wishlist[]
+  withdrawals  Withdrawal[]
+  deposits     DepositOrder[]
 }
 
 model Item {
@@ -69,4 +71,29 @@ model Wishlist {
   createdAt DateTime @default(now())
 
   @@unique([userId, itemId])
+}
+
+model Withdrawal {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Int
+  queuePos  Int      @default(10000)
+  type      String   @default("receber")
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DepositOrder {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  usdAmount     Float
+  robuxAmount   Int
+  paymentMethod String
+  paymentUrl    String?
+  status        String   @default("PENDING")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
