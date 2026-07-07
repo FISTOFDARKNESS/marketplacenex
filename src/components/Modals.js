@@ -83,7 +83,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && (currentType === 'login' || currentType === 'register')) {
+    if (typeof window !== 'undefined') {
       const timer = setTimeout(() => {
         const gcContainer = document.getElementById('recaptcha-container');
         if (gcContainer && window.grecaptcha) {
@@ -245,9 +245,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
               </div>
             )}
 
-            {currentType !== 'forgot' && (
-              <div id="recaptcha-container" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', minHeight: '78px' }}></div>
-            )}
+            <div id="recaptcha-container" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', minHeight: '78px' }}></div>
             <button type="submit" className="modal-buy" disabled={loading} style={{ width: '100%' }}>
               {loading ? 'Processing...' : currentType === 'login' ? t.submitLogin : currentType === 'register' ? t.submitRegister : t.submitForgot}
             </button>

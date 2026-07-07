@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import { rateLimit, getIP } from '@/lib/rateLimit';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-default-key';
 
@@ -17,10 +18,15 @@ export async function POST(req) {
       );
     }
 
-    const { email } = await req.json();
+    const { email, recaptchaToken } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
+    const isValid = await verifyRecaptcha(recaptchaToken);
+    if (!isValid) {
+      return NextResponse.json({ error: 'reCAPTCHA verification failed' }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({
