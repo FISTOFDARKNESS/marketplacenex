@@ -19,8 +19,16 @@ export default function OrdersPage() {
         return fetch('/api/orders');
       })
       .then(r => r ? r.json() : null)
-      .then(d => { if (d?.success) setOrders(d.orders); })
-      .catch(() => {})
+      .then(d => {
+        if (d?.success) {
+          setOrders(d.orders);
+          console.log('Orders API debug:', d.debug);
+          if (d.debug) alert('Orders: ' + d.orders.length + ' found. Debug: ' + JSON.stringify(d.debug));
+        } else {
+          alert('API error: ' + JSON.stringify(d));
+        }
+      })
+      .catch(err => alert('Fetch error: ' + err.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -71,20 +79,23 @@ export default function OrdersPage() {
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={6} className="table-empty">No orders found.</td></tr>
               ) : (
-                filtered.map(o => (
+                filtered.map(o => {
+                  const item = o.item || {};
+                  const status = (o.status || 'PENDING').toLowerCase();
+                  return (
                   <tr key={o.id}>
                     <td className="cell-id">#{o.id.toString().slice(-6)}</td>
                     <td>
                       <div className="cell-item">
-                        <img src={o.item.img} alt={o.item.name} />
-                        <span>{o.item.name}</span>
+                        {item.img ? <img src={item.img} alt={item.name || ''} /> : <div style={{width:36,height:36,borderRadius:6,background:'#1a1a1e'}} />}
+                        <span>{item.name || 'Unknown item'}</span>
                       </div>
                     </td>
-                    <td className="cell-buyer">{o.robloxUser}</td>
-                    <td className="cell-price">${o.item.usdPrice}</td>
+                    <td className="cell-buyer">{o.robloxUser || '—'}</td>
+                    <td className="cell-price">${item.usdPrice || '0.00'}</td>
                     <td>
-                      <span className={`badge-status status-${o.status.toLowerCase()}`}>
-                        {o.status}
+                      <span className={`badge-status status-${status}`}>
+                        {o.status || 'PENDING'}
                       </span>
                     </td>
                     <td>
@@ -93,7 +104,8 @@ export default function OrdersPage() {
                       </button>
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>

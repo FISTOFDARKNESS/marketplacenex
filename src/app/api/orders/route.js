@@ -28,23 +28,31 @@ export async function GET(req) {
       select: { id: true, robloxUsername: true },
     });
 
-    // Get all orders for this user — by userId OR by robloxUser match
-    const allOrders = await prisma.order.findMany({
+    // Direct query by userId — should match what dashboard uses
+    const orders = await prisma.order.findMany({
+      where: { userId: decoded.id },
       include: { item: true },
       orderBy: { createdAt: 'desc' },
-      take: 300,
     });
 
-    const rName = user?.robloxUsername?.toLowerCase() || '';
-    const orders = allOrders.filter(o => {
-      if (o.userId === decoded.id) return true;
-      if (rName && o.robloxUser && o.robloxUser.toLowerCase() === rName) return true;
-      return false;
-    });
+    // Also fetch by robloxUser match if user has linked Roblox
+    if (user?.robloxUsername) {
+      const robloxOrders = await prisma.order.findMany({
+        include: { item: true },
+        orderBy: { createdAt: 'desc' },
+      });
+      const rName = user.robloxUsername.toLowerCase();
+      const seen = new Set(orders.map(o => o.id));
+      for (const o of robloxOrders) {
+        if (!seen.has(o.id) && o.robloxUser && o.robloxUser.toLowerCase() === rName) {
+          orders.push(o);
+        }
+      }
+    }
 
-    return NextResponse.json({ success: true, orders });
+    return NextResponse.json({ success: true, orders, debug: { userId: decoded.id, robloxUsername: user?.robloxUsername, ordersFound: orders.length } });
   } catch (error) {
     console.error('Orders fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', stack: error.message }, { status: 500 });
   }
 }
