@@ -21,12 +21,12 @@ export async function POST(req) {
     const item = await prisma.item.findUnique({ where: { id: itemId } });
     if (!item) return NextResponse.json({ error: 'Item not found' }, { status: 404 });
 
-    const robloxUsername = (robloxUser || '').trim();
+    const robloxUsername = (robloxUser || '').trim().toLowerCase();
 
     let recipientUserId = decoded.id;
     if (robloxUsername) {
       const allUsers = await prisma.user.findMany({ select: { id: true, robloxUsername: true } });
-      const match = allUsers.find(u => u.robloxUsername?.toLowerCase() === robloxUsername.toLowerCase());
+      const match = allUsers.find(u => u.robloxUsername?.toLowerCase() === robloxUsername);
       if (match) recipientUserId = match.id;
     }
 

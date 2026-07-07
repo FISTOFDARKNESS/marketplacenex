@@ -28,31 +28,19 @@ export async function GET(req) {
       select: { id: true, robloxUsername: true },
     });
 
-    // 1. Orders by userId (recipient match)
-    const orders = await prisma.order.findMany({
-      where: { userId: decoded.id },
+    // Get all orders for this user — by userId OR by robloxUser match
+    const allOrders = await prisma.order.findMany({
       include: { item: true },
       orderBy: { createdAt: 'desc' },
-      take: 100,
+      take: 300,
     });
 
-    // 2. Also include orders where robloxUser matches current user's linked Roblox
-    if (user?.robloxUsername) {
-      const rName = user.robloxUsername.toLowerCase();
-      const robloxOrders = await prisma.order.findMany({
-        where: { robloxUser: { equals: user.robloxUsername, mode: 'insensitive' } },
-        include: { item: true },
-        orderBy: { createdAt: 'desc' },
-        take: 100,
-      });
-      const seen = new Set(orders.map(o => o.id));
-      for (const ro of robloxOrders) {
-        if (!seen.has(ro.id)) {
-          orders.push(ro);
-          seen.add(ro.id);
-        }
-      }
-    }
+    const rName = user?.robloxUsername?.toLowerCase() || '';
+    const orders = allOrders.filter(o => {
+      if (o.userId === decoded.id) return true;
+      if (rName && o.robloxUser && o.robloxUser.toLowerCase() === rName) return true;
+      return false;
+    });
 
     return NextResponse.json({ success: true, orders });
   } catch (error) {
