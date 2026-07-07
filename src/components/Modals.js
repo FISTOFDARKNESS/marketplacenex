@@ -83,24 +83,28 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.google && (currentType === 'login' || currentType === 'register')) {
-      const renderBtn = () => {
-        const btnContainer = document.getElementById('google-signin-btn');
-        if (btnContainer) {
-          window.google.accounts.id.initialize({
-            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '855427189196-dummyclientid.apps.googleusercontent.com',
-            callback: handleGoogleLogin,
-          });
-          window.google.accounts.id.renderButton(btnContainer, {
-            theme: 'outline',
-            size: 'large',
-            width: btnContainer.offsetWidth || 352,
-          });
+    if (typeof window !== 'undefined' && (currentType === 'login' || currentType === 'register')) {
+      const timer = setTimeout(() => {
+        const gcContainer = document.getElementById('recaptcha-container');
+        if (gcContainer && window.grecaptcha) {
+          try { window.grecaptcha.render(gcContainer, { sitekey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }); } catch {}
         }
-      };
-      
-      // Delay slightly to ensure element is in DOM
-      const timer = setTimeout(renderBtn, 100);
+
+        if (window.google) {
+          const btnContainer = document.getElementById('google-signin-btn');
+          if (btnContainer) {
+            window.google.accounts.id.initialize({
+              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '855427189196-dummyclientid.apps.googleusercontent.com',
+              callback: handleGoogleLogin,
+            });
+            window.google.accounts.id.renderButton(btnContainer, {
+              theme: 'outline',
+              size: 'large',
+              width: btnContainer.offsetWidth || 352,
+            });
+          }
+        }
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [currentType]);
@@ -242,7 +246,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
             )}
 
             {currentType !== 'forgot' && (
-              <div className="g-recaptcha" data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY} style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}></div>
+              <div id="recaptcha-container" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', minHeight: '78px' }}></div>
             )}
             <button type="submit" className="modal-buy" disabled={loading} style={{ width: '100%' }}>
               {loading ? 'Processing...' : currentType === 'login' ? t.submitLogin : currentType === 'register' ? t.submitRegister : t.submitForgot}
