@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req) {
   try {
-    const cookieStore = cookies();
-    const session = cookieStore.get('session');
-    if (!session) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const token = req.cookies.get('token')?.value;
+    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+
+    const decoded = verifyToken(token);
+    if (!decoded) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
     const user = await prisma.user.findUnique({
-      where: { id: session.value },
+      where: { id: decoded.id },
       select: { id: true, balance: true },
     });
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });

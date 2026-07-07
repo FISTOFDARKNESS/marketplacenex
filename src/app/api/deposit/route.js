@@ -1,19 +1,25 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 const PRESET_AMOUNTS = [25, 50, 100, 500, 1000, 10000];
 const RATES = { crypto: 1, paypal: 0.95, cashapp: 0.97 };
 
+function getUserId(req) {
+  const token = req.cookies.get('token')?.value;
+  if (!token) return null;
+  const decoded = verifyToken(token);
+  return decoded?.id || null;
+}
+
 export async function POST(req) {
   try {
-    const cookieStore = cookies();
-    const session = cookieStore.get('session');
-    if (!session) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const userId = getUserId(req);
+    if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-    const user = await prisma.user.findUnique({ where: { id: session.value } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
     const { usdAmount, paymentMethod } = await req.json();

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { cookies } from 'next/headers';
+import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,17 +10,24 @@ function calcQueuePos(createdAt, updatedAt, queuePos) {
   const elapsedMinutes = (now - lastUpdate) / 60000;
   const steps = Math.floor(elapsedMinutes / 5);
   if (steps <= 0) return queuePos;
-  const decrement = Math.floor(Math.random() * 10 + 5) * steps;
-  return Math.max(0, queuePos - decrement);
+  const seed = queuePos;
+  const perStep = 5 + (seed % 10);
+  return Math.max(0, queuePos - steps * perStep);
+}
+
+function getUserId(req) {
+  const token = req.cookies.get('token')?.value;
+  if (!token) return null;
+  const decoded = verifyToken(token);
+  return decoded?.id || null;
 }
 
 export async function POST(req) {
   try {
-    const cookieStore = cookies();
-    const session = cookieStore.get('session');
-    if (!session) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const userId = getUserId(req);
+    if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-    const user = await prisma.user.findUnique({ where: { id: session.value } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
     const { amount, type } = await req.json();
@@ -49,7 +56,7 @@ export async function POST(req) {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { balance: { decrement: robuxAmount * 0.0035 } },
+      data: { balance: { decrement: usdValue } },
     });
 
     return NextResponse.json({ success: true, withdrawal });
@@ -61,15 +68,14 @@ export async function POST(req) {
 
 export async function GET(req) {
   try {
-    const cookieStore = cookies();
-    const session = cookieStore.get('session');
-    if (!session) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const userId = getUserId(req);
+    if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get('type') || 'receber';
 
     const withdrawals = await prisma.withdrawal.findMany({
-      where: { userId: session.value, type },
+      where: { userId, type },
       orderBy: { createdAt: 'desc' },
       take: 50,
     });
