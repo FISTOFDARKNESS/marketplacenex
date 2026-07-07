@@ -103,7 +103,7 @@ export function VerifyModal({ user, onClose }) {
                 }}>
                   {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy</>}
                 </button>
-                <a href={robloxId ? `https://www.roblox.com/users/${robloxId}/profile` : `https://www.roblox.com/search/users?keyword=${robloxUser}`} target="_blank" rel="noopener noreferrer" style={{
+                <a href="https://www.roblox.com/users/profile/edit" target="_blank" rel="noopener noreferrer" style={{
                   display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#1a1a1e',
                   border: '1px solid #2a2a2e', borderRadius: '8px', color: '#d1d5db', cursor: 'pointer',
                   fontSize: '13px', textDecoration: 'none',
