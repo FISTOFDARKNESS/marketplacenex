@@ -77,13 +77,8 @@ export default function Navbar({
 
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)' }}>
-                {user.username}
-              </div>
-              <div style={{ fontSize: '11px', fontFamily: 'JetBrains Mono', color: 'var(--gold)' }}>
-                ${user.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
+            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)' }}>
+              {user.username}
             </div>
             <button className="signup-btn" style={{ background: '#ef4444', color: '#fff' }} onClick={onLogout}>
               {t.logout}

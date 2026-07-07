@@ -23,7 +23,6 @@ export async function GET(req) {
         id: true,
         username: true,
         email: true,
-        balance: true,
         role: true,
       },
     });

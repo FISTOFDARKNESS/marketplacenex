@@ -14,15 +14,15 @@ async function main() {
   const buyerPassword = await bcrypt.hash('buyer123', 10);
 
   const admin = await prisma.user.create({
-    data: { username: 'admin', email: 'admin@nexblox.com', passwordHash: adminPassword, role: 'admin', balance: 1000000.0 },
+    data: { username: 'admin', email: 'admin@nexblox.com', passwordHash: adminPassword, role: 'admin' },
   });
 
   const seller = await prisma.user.create({
-    data: { username: 'nexblox_seller', email: 'seller@nexblox.com', passwordHash: sellerPassword, role: 'user', balance: 500.0 },
+    data: { username: 'nexblox_seller', email: 'seller@nexblox.com', passwordHash: sellerPassword, role: 'user' },
   });
 
   const buyer = await prisma.user.create({
-    data: { username: 'dev_buyer', email: 'buyer@nexblox.com', passwordHash: buyerPassword, role: 'user', balance: 15000.0 },
+    data: { username: 'dev_buyer', email: 'buyer@nexblox.com', passwordHash: buyerPassword, role: 'user' },
   });
 
   console.log('Created users:', { admin: admin.username, seller: seller.username, buyer: buyer.username });

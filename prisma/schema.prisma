@@ -12,7 +12,7 @@ model User {
   username     String        @unique
   email        String        @unique
   passwordHash String
-  balance      Float         @default(10000.0) // Mock balance
+  balance      Float         @default(0)
   role         String        @default("user")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

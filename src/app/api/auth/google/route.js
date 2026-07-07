@@ -68,7 +68,6 @@ export async function POST(req) {
           email,
           passwordHash,
           role: 'user',
-          balance: 10000.0, // Default mock balance
         },
       });
     }
@@ -82,7 +81,6 @@ export async function POST(req) {
         id: user.id,
         username: user.username,
         email: user.email,
-        balance: user.balance,
         role: user.role,
       },
     });
