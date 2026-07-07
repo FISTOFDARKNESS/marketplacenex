@@ -46,6 +46,6 @@ export async function POST(req) {
     return NextResponse.json({ success: true, newBalance: user.balance - price, orderCreated: true });
   } catch (error) {
     console.error('Buy item error:', error);
-    return NextResponse.json({ error: 'Failed to process purchase. Please try again.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to process purchase' }, { status: 500 });
   }
 }
