@@ -23,11 +23,32 @@ export async function GET(req) {
       return NextResponse.json({ success: true, orders });
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      select: { id: true, robloxUsername: true },
+    });
+
     const orders = await prisma.order.findMany({
       where: { userId: decoded.id },
       include: { item: true },
       orderBy: { createdAt: 'desc' },
+      take: 100,
     });
+
+    if (user?.robloxUsername) {
+      const allOrders = await prisma.order.findMany({
+        include: { item: true },
+        orderBy: { createdAt: 'desc' },
+        take: 200,
+      });
+      const seen = new Set(orders.map(o => o.id));
+      const rName = user.robloxUsername.toLowerCase();
+      for (const o of allOrders) {
+        if (!seen.has(o.id) && o.robloxUser.toLowerCase() === rName) {
+          orders.push(o);
+        }
+      }
+    }
 
     return NextResponse.json({ success: true, orders });
   } catch (error) {
