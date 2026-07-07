@@ -263,6 +263,8 @@ export default function Home() {
           item={modalState.data}
           user={user}
           onClose={() => setModalState({ type: null, data: null })}
+          onOpenFinance={() => setFinanceOpen(true)}
+          onPurchaseComplete={(newBalance) => setUser(prev => prev ? { ...prev, balance: newBalance } : prev)}
         />
       )}
 

@@ -24,6 +24,7 @@ export async function GET(req) {
         username: true,
         email: true,
         role: true,
+        balance: true,
       },
     });
 

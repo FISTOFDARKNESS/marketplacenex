@@ -1,20 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, ArrowLeft, Check, AlertTriangle, ExternalLink, Clock } from 'lucide-react';
+import { X, Check, AlertTriangle, Wallet, Clock, Bitcoin } from 'lucide-react';
 
-const STEPS = { DETAILS: 0, ROBLOX_USER: 1, VERIFY: 2, PAYMENT: 3, CONFIRMATION: 4 };
-
-export default function PurchaseModal({ item, user, onClose }) {
-  const [step, setStep] = useState(STEPS.DETAILS);
+export default function PurchaseModal({ item, user, onClose, onOpenFinance, onPurchaseComplete }) {
   const [sellers, setSellers] = useState([]);
   const [selectedSeller, setSelectedSeller] = useState(null);
-  const [robloxUser, setRobloxUser] = useState('');
-  const [robloxData, setRobloxData] = useState(null);
-  const [verifyData, setVerifyData] = useState(null);
-  const [paymentData, setPaymentData] = useState(null);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [redirectTimer, setRedirectTimer] = useState(null);
 
   useEffect(() => {
     fetch('/api/sellers')
@@ -26,279 +21,124 @@ export default function PurchaseModal({ item, user, onClose }) {
         }
       })
       .catch(() => {});
+    return () => { if (redirectTimer) clearTimeout(redirectTimer); };
   }, []);
 
   const currentPrice = selectedSeller
     ? (parseFloat(item.usdPrice) * (1 + selectedSeller.markup)).toFixed(2)
     : item.usdPrice;
 
-  const clientId = user?.id ? user.id.split('-')[0] : '';
+  const userBalance = user?.balance ?? 0;
+  const hasFunds = userBalance >= parseFloat(currentPrice);
 
-  async function handleLookupRoblox(e) {
-    e.preventDefault();
+  async function handleBuy() {
     setError('');
-    setLoading(true);
-    try {
-      const res = await fetch('/api/roblox/lookup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: robloxUser }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Failed to lookup user');
-        return;
-      }
-      setRobloxData(data);
-      setStep(STEPS.VERIFY);
-    } catch {
-      setError('Connection failed');
-    } finally {
-      setLoading(false);
+    if (!hasFunds) {
+      setError(`Insufficient balance. You have $${userBalance.toFixed(2)} but need $${currentPrice}.`);
+      const timer = setTimeout(() => {
+        onClose();
+        if (onOpenFinance) onOpenFinance();
+      }, 5000);
+      setRedirectTimer(timer);
+      return;
     }
-  }
-
-  async function handleVerify() {
-    setError('');
     setLoading(true);
     try {
-      const res = await fetch('/api/roblox/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ robloxId: robloxData.robloxId }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Verification failed');
-        return;
-      }
-      if (!data.inventoryPublic) {
-        setError('Your inventory must be public. Enable it in Roblox privacy settings.');
-        setLoading(false);
-        return;
-      }
-      setVerifyData(data);
-      setStep(STEPS.PAYMENT);
-    } catch {
-      setError('Connection failed');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleCreatePayment() {
-    setError('');
-    setLoading(true);
-    try {
-      const res = await fetch('/api/payment/create', {
+      const res = await fetch('/api/items/buy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: parseFloat(currentPrice),
-          itemName: item.name,
           itemId: item.id,
+          sellerId: selectedSeller?.id || null,
+          price: parseFloat(currentPrice),
         }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Failed to create payment');
-        return;
-      }
-      setPaymentData(data);
-      setStep(STEPS.CONFIRMATION);
-    } catch {
-      setError('Connection failed');
-    } finally {
-      setLoading(false);
-    }
+      if (!res.ok) { setError(data.error); return; }
+      if (onPurchaseComplete && data.newBalance != null) onPurchaseComplete(data.newBalance);
+      setSuccess(true);
+    } catch { setError('Connection failed'); }
+    finally { setLoading(false); }
   }
-
-  function renderDetails() {
-    return (
-      <>
-        <div className="purchase-step-icon">
-          <img src={item.img} alt={item.name} />
-        </div>
-        <h3>{item.name}</h3>
-        {clientId && (
-          <p className="purchase-muted" style={{ fontSize: '11px', marginBottom: '8px' }}>
-            Client #{clientId}
-          </p>
-        )}
-        <div className="purchase-detail-row">
-          <span>RAP</span>
-          <b>{item.rapLabel}</b>
-        </div>
-        <div className="purchase-detail-row">
-          <span>Value</span>
-          <b>{item.price.toLocaleString()} Robux</b>
-        </div>
-        <div className="purchase-detail-row">
-          <span>Seller</span>
-          <select
-            value={selectedSeller?.id || ''}
-            onChange={(e) => {
-              const s = sellers.find(s => s.id === e.target.value);
-              setSelectedSeller(s);
-            }}
-            style={{
-              background: 'var(--bg-3)',
-              border: '1px solid var(--line)',
-              borderRadius: '6px',
-              color: 'var(--text)',
-              padding: '4px 8px',
-              fontSize: '13px',
-              fontFamily: 'JetBrains Mono, monospace',
-            }}
-          >
-            {sellers.map(s => (
-              <option key={s.id} value={s.id}>{s.displayId}</option>
-            ))}
-          </select>
-        </div>
-        <div className="purchase-detail-row">
-          <span>Price (USD)</span>
-          <b className="gold-text">${currentPrice}</b>
-        </div>
-        <button className="purchase-btn" onClick={() => setStep(STEPS.ROBLOX_USER)}>
-          Continue
-        </button>
-      </>
-    );
-  }
-
-  function renderRobloxUser() {
-    return (
-      <>
-        <h3>Enter your Roblox username</h3>
-        <p className="purchase-muted">We need to verify your account before proceeding.</p>
-        <form onSubmit={handleLookupRoblox} className="purchase-form">
-          <input
-            type="text"
-            placeholder="Roblox username"
-            value={robloxUser}
-            onChange={(e) => setRobloxUser(e.target.value)}
-            required
-          />
-          <button type="submit" className="purchase-btn" disabled={loading}>
-            {loading ? 'Looking up...' : 'Look up'}
-          </button>
-        </form>
-      </>
-    );
-  }
-
-  function renderVerify() {
-    return (
-      <>
-        <div className="purchase-avatar-wrap">
-          <img src={robloxData.avatarUrl} alt={robloxData.displayName} className="purchase-avatar" />
-        </div>
-        <h3>Is this you?</h3>
-        <p className="purchase-muted">{robloxData.displayName}</p>
-        <p className="purchase-muted" style={{ fontSize: '12px' }}>
-          We will check your inventory and membership status.
-        </p>
-        <div className="purchase-btn-group">
-          <button className="purchase-btn purchase-btn-secondary" onClick={() => setStep(STEPS.ROBLOX_USER)}>
-            <ArrowLeft className="icon" /> No, go back
-          </button>
-          <button className="purchase-btn" onClick={handleVerify} disabled={loading}>
-            {loading ? 'Checking...' : 'Yes, verify me'}
-          </button>
-        </div>
-      </>
-    );
-  }
-
-  function renderPayment() {
-    return (
-      <>
-        <div className="purchase-check-icon">
-          <Check />
-        </div>
-        <h3>Verification passed</h3>
-        {verifyData && (
-          <div className="purchase-verify-badges">
-            <span className={`badge ${verifyData.inventoryPublic ? 'badge-ok' : 'badge-fail'}`}>
-              {verifyData.inventoryPublic ? 'Inventory: Public' : 'Inventory: Private'}
-            </span>
-            <span className={`badge ${verifyData.hasPremium ? 'badge-ok' : 'badge-warn'}`}>
-              {verifyData.hasPremium ? 'VIP: Active' : 'VIP: Not detected'}
-            </span>
-          </div>
-        )}
-        <p className="purchase-muted">
-          You meet the requirements. Proceed to payment of <b className="gold-text">${currentPrice}</b>.
-        </p>
-        <button className="purchase-btn" onClick={handleCreatePayment} disabled={loading}>
-          {loading ? 'Generating payment...' : 'Proceed to payment'}
-        </button>
-      </>
-    );
-  }
-
-  function renderConfirmation() {
-    return (
-      <>
-        <div className="purchase-clock-icon">
-          <Clock />
-        </div>
-        <h3>Payment initiated</h3>
-        <p className="purchase-muted">
-          Complete your payment through the Cryptomus gateway.
-        </p>
-        <a
-          href={paymentData?.paymentUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="purchase-btn purchase-btn-external"
-        >
-          Pay now <ExternalLink className="icon" />
-        </a>
-        <div className="purchase-wait-notice">
-          <AlertTriangle className="icon" />
-          <span>
-            After payment, please allow <b>7 to 10 business days</b> for the item to be delivered. Our team will manually verify and process your order.
-          </span>
-        </div>
-        <button className="purchase-btn purchase-btn-secondary" onClick={onClose}>
-          Close
-        </button>
-      </>
-    );
-  }
-
-  const stepTitles = ['Confirm item', 'Roblox user', 'Verification', 'Payment', 'Done'];
 
   return (
     <div className="modal-overlay show" onClick={(e) => e.target.classList.contains('modal-overlay') && onClose()}>
-      <div className="modal purchase-modal">
-        <button className="modal-close" onClick={onClose}>
-          <X className="icon" />
-        </button>
-
-        <div className="purchase-steps">
-          {stepTitles.map((title, i) => (
-            <div key={i} className={`purchase-step-indicator ${i === step ? 'active' : ''} ${i < step ? 'done' : ''}`}>
-              <span className="step-num">{i < step ? <Check /> : i + 1}</span>
-              <span className="step-label">{title}</span>
-            </div>
-          ))}
-        </div>
+      <div className="modal purchase-modal" style={{ maxWidth: '420px' }}>
+        <button className="modal-close" onClick={onClose}><X className="icon" /></button>
 
         <div className="purchase-body">
           {error && (
             <div className="purchase-error">
               <AlertTriangle className="icon" /> {error}
+              {!hasFunds && error.includes('Insufficient') && (
+                <span style={{ display: 'block', fontSize: '11px', marginTop: '6px', opacity: 0.7 }}>
+                  Opening finance panel in 5s...
+                </span>
+              )}
             </div>
           )}
 
-          {step === STEPS.DETAILS && renderDetails()}
-          {step === STEPS.ROBLOX_USER && renderRobloxUser()}
-          {step === STEPS.VERIFY && renderVerify()}
-          {step === STEPS.PAYMENT && renderPayment()}
-          {step === STEPS.CONFIRMATION && renderConfirmation()}
+          {success ? (
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <Check size={24} style={{ color: '#22c55e' }} />
+              </div>
+              <h3 style={{ margin: '0 0 8px' }}>Purchase initiated</h3>
+              <p className="purchase-muted">Your order is being processed. You'll receive the item within 7-10 business days.</p>
+              <button className="purchase-btn" onClick={onClose} style={{ marginTop: '16px' }}>Done</button>
+            </div>
+          ) : (
+            <>
+              <div className="purchase-step-icon">
+                <img src={item.img} alt={item.name} />
+              </div>
+              <h3>{item.name}</h3>
+
+              <div className="purchase-detail-row">
+                <span>RAP</span>
+                <b>{item.rapLabel}</b>
+              </div>
+              <div className="purchase-detail-row">
+                <span>Value</span>
+                <b>{item.price.toLocaleString()} Robux</b>
+              </div>
+              <div className="purchase-detail-row">
+                <span>Seller</span>
+                <select
+                  value={selectedSeller?.id || ''}
+                  onChange={(e) => {
+                    const s = sellers.find(s => s.id === e.target.value);
+                    setSelectedSeller(s);
+                  }}
+                  style={{
+                    background: 'var(--bg-3)',
+                    border: '1px solid var(--line)',
+                    borderRadius: '6px',
+                    color: 'var(--text)',
+                    padding: '4px 8px',
+                    fontSize: '13px',
+                    fontFamily: 'JetBrains Mono, monospace',
+                  }}
+                >
+                  {sellers.map(s => (
+                    <option key={s.id} value={s.id}>{s.displayId}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="purchase-detail-row">
+                <span>Price (USD)</span>
+                <b className="gold-text">${currentPrice}</b>
+              </div>
+              <div className="purchase-detail-row">
+                <span><Wallet size={14} /> Balance</span>
+                <b style={{ color: hasFunds ? '#22c55e' : '#ef4444' }}>${userBalance.toFixed(2)}</b>
+              </div>
+
+              <button className="purchase-btn" onClick={handleBuy} disabled={loading} style={{ marginTop: '16px' }}>
+                {loading ? <><Clock className="icon" /> Processing...</> : <><Bitcoin className="icon" /> {hasFunds ? 'Buy with balance' : 'Insufficient balance'}</>}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
