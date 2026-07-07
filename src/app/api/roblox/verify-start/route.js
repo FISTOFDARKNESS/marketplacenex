@@ -28,13 +28,18 @@ export async function POST(req) {
     const { robloxUsername } = await req.json();
     if (!robloxUsername) return NextResponse.json({ error: 'Roblox username required' }, { status: 400 });
 
+    const searchRes = await fetch(`https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(robloxUsername)}&limit=1`);
+    const searchData = await searchRes.json();
+    const found = searchData.data?.[0];
+    const robloxId = found?.id || null;
+
     const phrase = PHRASES[Math.floor(Math.random() * PHRASES.length)];
 
     await prisma.robloxVerification.create({
       data: { userId: decoded.id, robloxUsername, phrase },
     });
 
-    return NextResponse.json({ success: true, phrase });
+    return NextResponse.json({ success: true, phrase, robloxId, robloxUsername: found?.name || robloxUsername });
   } catch (error) {
     console.error('Verify start error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

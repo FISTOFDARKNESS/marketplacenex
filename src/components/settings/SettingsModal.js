@@ -6,6 +6,7 @@ import { X, Shield, Check, AlertTriangle, Copy, ExternalLink, Clock, Package, Ba
 export function VerifyModal({ user, onClose }) {
   const [step, setStep] = useState('start');
   const [robloxUser, setRobloxUser] = useState('');
+  const [robloxId, setRobloxId] = useState(null);
   const [phrase, setPhrase] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,6 +25,7 @@ export function VerifyModal({ user, onClose }) {
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
       setPhrase(data.phrase);
+      setRobloxId(data.robloxId);
       setStep('phrase');
     } catch { setError('Connection failed'); }
     finally { setLoading(false); }
@@ -101,7 +103,7 @@ export function VerifyModal({ user, onClose }) {
                 }}>
                   {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy</>}
                 </button>
-                <a href="https://www.roblox.com/my/account" target="_blank" rel="noopener noreferrer" style={{
+                <a href={robloxId ? `https://www.roblox.com/users/${robloxId}/profile` : `https://www.roblox.com/search/users?keyword=${robloxUser}`} target="_blank" rel="noopener noreferrer" style={{
                   display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#1a1a1e',
                   border: '1px solid #2a2a2e', borderRadius: '8px', color: '#d1d5db', cursor: 'pointer',
                   fontSize: '13px', textDecoration: 'none',
