@@ -98,11 +98,11 @@ export default function HelpPage() {
           <form onSubmit={handleSubmit} className="help-form">
             <div className="help-field">
               <label>Your Name</label>
-              <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="Your name" />
+              <div className="help-static">{name || '...'}</div>
             </div>
             <div className="help-field">
-              <label>Your Email (optional)</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" />
+              <label>Your Email</label>
+              <div className="help-static">{email || 'Not provided'}</div>
             </div>
             <div className="help-field">
               <label>Message</label>

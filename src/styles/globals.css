@@ -2587,6 +2587,14 @@ button {
 .help-field textarea::placeholder {
   color: #6b7280;
 }
+.help-static {
+  padding: 10px 14px;
+  background: #0f0f13;
+  border: 1px solid #2a2a2e;
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+}
 .help-submit {
   display: flex;
   align-items: center;
