@@ -28,8 +28,13 @@ export async function POST(req) {
     if (!['receber', 'enviar'].includes(type)) return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
 
     const robuxAmount = Math.floor(amount);
+    const usdValue = robuxAmount * 0.0035;
 
-    if (user.balance < robuxAmount * 0.0035) {
+    if (usdValue < 25) {
+      return NextResponse.json({ error: 'Minimum withdrawal is $25 USD (≈ 7,143 Robux)' }, { status: 400 });
+    }
+
+    if (user.balance < usdValue) {
       return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 });
     }
 

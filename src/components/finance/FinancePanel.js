@@ -215,15 +215,15 @@ export default function FinancePanel({ user, onClose }) {
                 <label className="fm-label">Amount (Robux)</label>
                 <input
                   type="number"
-                  placeholder="e.g. 1000"
+                  placeholder="e.g. 10000"
                   value={withdrawAmount}
                   onChange={e => setWithdrawAmount(e.target.value)}
-                  required min="1"
+                  required min="7143"
                 />
               </div>
 
               <div className="fm-conversion">
-                <span>≈ ${((parseFloat(withdrawAmount) || 0) * robuxRate).toFixed(2)} USD will be deducted</span>
+                <span>≈ ${((parseFloat(withdrawAmount) || 0) * robuxRate).toFixed(2)} USD · Minimum $25 (7,143 Robux)</span>
               </div>
 
               <button type="submit" className="fm-btn" disabled={loading || !withdrawAmount}>
