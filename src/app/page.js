@@ -13,7 +13,6 @@ import Footer from '@/components/Footer';
 import { AuthModal } from '@/components/Modals';
 import PurchaseModal from '@/components/PurchaseModal';
 import FinancePanel from '@/components/finance/FinancePanel';
-import { VerifyModal, OrdersModal, InventoryModal, AdminOrdersModal } from '@/components/settings/SettingsModal';
 import Toast from '@/components/Toast';
 import WishlistDrawer from '@/components/WishlistDrawer';
 
@@ -37,7 +36,6 @@ export default function Home() {
   const [toasts, setToasts] = useState([]);
   const [modalState, setModalState] = useState({ type: null, data: null }); // type: 'login' | 'register' | 'detail' | null
   const [financeOpen, setFinanceOpen] = useState(false);
-  const [settingsModal, setSettingsModal] = useState(null); // 'verify' | 'orders' | 'inventory' | 'admin-orders'
 
   // Fetch current user on mount and load language
   useEffect(() => {
@@ -210,10 +208,6 @@ export default function Home() {
         setLang={handleSetLang}
         onOpenWishlist={() => setWishlistOpen(true)}
         onOpenFinance={() => setFinanceOpen(true)}
-        onOpenVerify={() => setSettingsModal('verify')}
-        onOpenOrders={() => setSettingsModal('orders')}
-        onOpenInventory={() => setSettingsModal('inventory')}
-        onOpenAdminOrders={() => setSettingsModal('admin-orders')}
       />
 
       <Hero
@@ -293,11 +287,6 @@ export default function Home() {
           onClose={() => setFinanceOpen(false)}
         />
       )}
-
-      {settingsModal === 'verify' && <VerifyModal user={user} onClose={() => setSettingsModal(null)} />}
-      {settingsModal === 'orders' && <OrdersModal user={user} onClose={() => setSettingsModal(null)} />}
-      {settingsModal === 'inventory' && <InventoryModal user={user} onClose={() => setSettingsModal(null)} />}
-      {settingsModal === 'admin-orders' && <AdminOrdersModal user={user} onClose={() => setSettingsModal(null)} />}
 
       <WishlistDrawer
         open={wishlistOpen}

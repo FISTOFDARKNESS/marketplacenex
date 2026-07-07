@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Crown, Search, Heart, Wallet, Settings, Shield, Package, Backpack, UserCheck } from 'lucide-react';
+import { Crown, Search, Heart, Wallet, Package, Backpack, UserCheck, Shield } from 'lucide-react';
+import Link from 'next/link';
 import { locales } from '@/lib/locales';
 
 export default function Navbar({
@@ -16,12 +17,7 @@ export default function Navbar({
   setLang,
   onOpenWishlist,
   onOpenFinance,
-  onOpenVerify,
-  onOpenOrders,
-  onOpenInventory,
-  onOpenAdminOrders,
 }) {
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const t = locales[lang].nav;
 
   return (
@@ -83,62 +79,25 @@ export default function Navbar({
         </button>
 
         {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <button className="icon-btn" title="Finance" onClick={onOpenFinance}>
               <Wallet className="icon" />
             </button>
 
-            <div style={{ position: 'relative' }}>
-              <button className="icon-btn" title="Settings" onClick={() => setSettingsOpen(!settingsOpen)}>
-                <Settings className="icon" />
-              </button>
-              {settingsOpen && (
-                <div style={{
-                  position: 'absolute', top: '100%', right: 0, marginTop: '6px',
-                  background: '#1a1a1e', border: '1px solid #2a2a2e', borderRadius: '10px',
-                  padding: '4px', minWidth: '180px', zIndex: 100, boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
-                }}>
-                  <button onClick={() => { setSettingsOpen(false); onOpenVerify(); }} style={{
-                    display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 12px',
-                    border: 'none', background: 'transparent', color: '#d1d5db', borderRadius: '8px',
-                    cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit', transition: 'background 0.15s',
-                  }}
-                  onMouseOver={e => e.currentTarget.style.background = '#2a2a2e'}
-                  onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                    <UserCheck size={14} /> Verify Account
-                  </button>
-                  <button onClick={() => { setSettingsOpen(false); onOpenOrders(); }} style={{
-                    display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 12px',
-                    border: 'none', background: 'transparent', color: '#d1d5db', borderRadius: '8px',
-                    cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit', transition: 'background 0.15s',
-                  }}
-                  onMouseOver={e => e.currentTarget.style.background = '#2a2a2e'}
-                  onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                    <Package size={14} /> Orders
-                  </button>
-                  <button onClick={() => { setSettingsOpen(false); onOpenInventory(); }} style={{
-                    display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 12px',
-                    border: 'none', background: 'transparent', color: '#d1d5db', borderRadius: '8px',
-                    cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit', transition: 'background 0.15s',
-                  }}
-                  onMouseOver={e => e.currentTarget.style.background = '#2a2a2e'}
-                  onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                    <Backpack size={14} /> Inventory
-                  </button>
-                  {user.role === 'admin' && (
-                    <button onClick={() => { setSettingsOpen(false); onOpenAdminOrders(); }} style={{
-                      display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 12px',
-                      border: 'none', background: 'transparent', color: '#ef4444', borderRadius: '8px',
-                      cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit', transition: 'background 0.15s',
-                    }}
-                    onMouseOver={e => e.currentTarget.style.background = '#2a2a2e'}
-                    onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                      <Shield size={14} /> Admin — Orders
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
+            <Link href="/verify" className="nav-link-btn" title="Verify Account">
+              <UserCheck size={16} />
+            </Link>
+            <Link href="/orders" className="nav-link-btn" title="Orders">
+              <Package size={16} />
+            </Link>
+            <Link href="/inventory" className="nav-link-btn" title="Inventory">
+              <Backpack size={16} />
+            </Link>
+            {user.role === 'admin' && (
+              <Link href="/admin/orders" className="nav-link-btn" title="Admin Orders" style={{ color: '#ef4444' }}>
+                <Shield size={16} />
+              </Link>
+            )}
 
             <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text)' }}>
               {user.username}
