@@ -13,7 +13,7 @@ export async function GET(req) {
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     const sort = searchParams.get('sort');
-    const limit = parseInt(searchParams.get('limit') || '100');
+    const limitParam = searchParams.get('limit');
 
     const where = {};
 
@@ -50,12 +50,9 @@ export async function GET(req) {
       orderBy = { demand: 'desc' };
     }
 
-    const effectiveLimit = search ? 1000 : limit;
-
     const items = await prisma.item.findMany({
       where,
       orderBy,
-      take: effectiveLimit,
     });
 
     return NextResponse.json({ success: true, items: serializeItems(items) });
