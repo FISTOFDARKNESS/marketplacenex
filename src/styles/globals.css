@@ -2509,6 +2509,107 @@ button {
 .verify-btn-secondary:hover {
   background: #1a1a1e;
 }
+/* ---------- HELP / CONTACT FORM ---------- */
+.help-card {
+  max-width: 520px;
+  background: #131316;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+}
+.help-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 20px;
+}
+.help-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34,197,94,0.1);
+  color: #22c55e;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.help-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.help-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.help-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.help-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.help-field input,
+.help-field textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0f0f13;
+  border: 1px solid #2a2a2e;
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.help-field input:focus,
+.help-field textarea:focus {
+  border-color: #f59e0b;
+}
+.help-field input::placeholder,
+.help-field textarea::placeholder {
+  color: #6b7280;
+}
+.help-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #f59e0b;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.help-submit:hover:not(:disabled) {
+  background: #d97706;
+}
+.help-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .nav-link-btn {
   display: flex;
   align-items: center;
