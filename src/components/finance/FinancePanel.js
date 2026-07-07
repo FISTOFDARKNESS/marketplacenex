@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Wallet, ArrowUpRight, ArrowDownLeft, Clock, Check, AlertTriangle, Bitcoin, DollarSign, CreditCard } from 'lucide-react';
+import {
+  X, Wallet, ArrowUpRight, ArrowDownLeft, Clock, Check,
+  AlertTriangle, Bitcoin, DollarSign, CreditCard, TrendingUp,
+  History, ExternalLink, Gauge, Zap, Layers
+} from 'lucide-react';
 
 export default function FinancePanel({ user, onClose }) {
   const [tab, setTab] = useState('balance');
@@ -42,10 +46,12 @@ export default function FinancePanel({ user, onClose }) {
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
       setWithdrawAmount('');
-      const balRes = await fetch('/api/balance');
+      const [balRes, qRes] = await Promise.all([
+        fetch('/api/balance'),
+        fetch(`/api/withdraw?type=${withdrawType}`),
+      ]);
       const balData = await balRes.json();
       if (balData.success) setBalance(balData.balance);
-      const qRes = await fetch(`/api/withdraw?type=${withdrawType}`);
       const qData = await qRes.json();
       if (qData.success) setWithdrawals(prev => ({ ...prev, [withdrawType]: qData.withdrawals }));
     } catch { setError('Connection failed'); }
@@ -64,9 +70,7 @@ export default function FinancePanel({ user, onClose }) {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
-      if (data.deposit?.paymentUrl) {
-        window.open(data.deposit.paymentUrl, '_blank');
-      }
+      if (data.deposit?.paymentUrl) window.open(data.deposit.paymentUrl, '_blank');
       setDepositAmount('');
       const balRes = await fetch('/api/balance');
       const balData = await balRes.json();
@@ -76,123 +80,500 @@ export default function FinancePanel({ user, onClose }) {
   }
 
   function queueStatus(w) {
-    if (w.status === 'COMPLETED') return 'Transferred';
+    if (w.status === 'COMPLETED') return { label: 'Completed', done: true };
     const elapsed = Math.floor((Date.now() - new Date(w.updatedAt || w.createdAt).getTime()) / 60000);
     const steps = Math.floor(elapsed / 5);
-    return `#${Math.max(0, w.queuePos - steps * (Math.floor(Math.random() * 10 + 5)))}`;
+    const seed = w.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    const perStep = 5 + (seed % 10);
+    const pos = Math.max(0, w.queuePos - steps * perStep);
+    const progress = Math.min(100, ((10000 - pos) / 10000) * 100);
+    return { label: `#${pos.toLocaleString()}`, done: false, progress };
   }
 
   if (!user) return null;
 
+  const robuxRate = 0.0035;
+
   return (
     <div className="modal-overlay show" onClick={(e) => e.target.classList.contains('modal-overlay') && onClose()}>
-      <div className="modal finance-modal">
-        <button className="modal-close" onClick={onClose}><X className="icon" /></button>
+      <div className="finance-modal">
+        <button className="modal-close" onClick={onClose}><X size={20} /></button>
 
-        <div className="finance-tabs">
-          <button className={`finance-tab ${tab === 'balance' ? 'active' : ''}`} onClick={() => setTab('balance')}>
-            <Wallet className="icon" /> Balance
-          </button>
-          <button className={`finance-tab ${tab === 'withdraw' ? 'active' : ''}`} onClick={() => setTab('withdraw')}>
-            <ArrowUpRight className="icon" /> Withdraw
-          </button>
-          <button className={`finance-tab ${tab === 'deposit' ? 'active' : ''}`} onClick={() => setTab('deposit')}>
-            <ArrowDownLeft className="icon" /> Deposit
-          </button>
+        <div className="fm-header">
+          <Wallet size={22} className="fm-header-icon" />
+          <span>Finance</span>
         </div>
 
-        <div className="finance-body">
-          {error && <div className="purchase-error"><AlertTriangle className="icon" /> {error}</div>}
+        <div className="fm-tabs">
+          {[
+            { key: 'balance', icon: <Wallet size={16} />, label: 'Balance' },
+            { key: 'withdraw', icon: <ArrowUpRight size={16} />, label: 'Withdraw' },
+            { key: 'deposit', icon: <ArrowDownLeft size={16} />, label: 'Deposit' },
+          ].map(t => (
+            <button
+              key={t.key}
+              className={`fm-tab ${tab === t.key ? 'active' : ''}`}
+              onClick={() => setTab(t.key)}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="fm-body">
+          {error && (
+            <div className="fm-error">
+              <AlertTriangle size={14} /> {error}
+            </div>
+          )}
 
           {tab === 'balance' && (
-            <div className="finance-balance">
-              <h3>Your Balance</h3>
-              <div className="balance-amount">${balance.toFixed(2)} USD</div>
-              <p className="purchase-muted">≈ {Math.floor(balance / 0.0035).toLocaleString()} Robux</p>
-              <div className="finance-queues">
-                <h4>Withdrawal Queues</h4>
-                {['receber', 'enviar'].map(t => (
-                  <div key={t} className="queue-section">
-                    <h5>{t === 'receber' ? 'Receber' : 'Enviar'}</h5>
-                    {withdrawals[t].length === 0 ? (
-                      <p className="purchase-muted">No active {t} withdrawals</p>
-                    ) : (
-                      withdrawals[t].slice(0, 5).map(w => (
-                        <div key={w.id} className="queue-item">
-                          <span>{w.amount.toLocaleString()} Robux</span>
-                          <span className={`queue-pos ${w.status === 'COMPLETED' ? 'done' : ''}`}>
-                            {w.status === 'COMPLETED' ? <><Check className="icon" /> Done</> : <><Clock className="icon" /> {queueStatus(w)}</>}
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                ))}
+            <div className="fm-balance">
+              <div className="fm-balance-card">
+                <div className="fm-balance-top">
+                  <span className="fm-balance-label">Available Balance</span>
+                  <TrendingUp size={16} className="fm-balance-icon" />
+                </div>
+                <div className="fm-balance-amount">${balance.toFixed(2)}</div>
+                <div className="fm-balance-convert">
+                  ≈ {Math.floor(balance / robuxRate).toLocaleString()} Robux
+                </div>
               </div>
+
+              {withdrawals.receber.length > 0 || withdrawals.enviar.length > 0 ? (
+                <div className="fm-queues">
+                  <div className="fm-queues-header">
+                    <Layers size={16} />
+                    <span>Active Queues</span>
+                  </div>
+                  {['receber', 'enviar'].map(t => {
+                    const items = withdrawals[t].filter(w => w.status !== 'COMPLETED').slice(0, 4);
+                    if (items.length === 0) return null;
+                    const isRed = t === 'enviar';
+                    return (
+                      <div key={t} className="fm-queue-group">
+                        <div className={`fm-queue-group-label ${isRed ? 'red' : ''}`}>
+                          <Zap size={12} />
+                          {t === 'receber' ? 'Receiving' : 'Sending'}
+                        </div>
+                        {items.map(w => {
+                          const st = queueStatus(w);
+                          return (
+                            <div key={w.id} className={`fm-queue-item ${st.done ? 'done' : ''}`}>
+                              <div className="fm-qi-left">
+                                <div className="fm-qi-amount">{w.amount.toLocaleString()} Robux</div>
+                                <div className="fm-qi-progress-bar">
+                                  <div className="fm-qi-progress-fill" style={{ width: `${st.progress || 0}%` }} />
+                                </div>
+                              </div>
+                              <div className={`fm-qi-right ${st.done ? 'done' : ''}`}>
+                                {st.done ? (
+                                  <><Check size={12} /> Done</>
+                                ) : (
+                                  <><Gauge size={12} /> {st.label}</>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="fm-empty">
+                  <History size={32} />
+                  <p>No withdrawal activity yet</p>
+                </div>
+              )}
             </div>
           )}
 
           {tab === 'withdraw' && (
-            <form onSubmit={handleWithdraw} className="finance-form">
-              <h3>Withdraw Robux</h3>
-              <p className="purchase-muted">Convert your balance to Robux. Enters a processing queue.</p>
-              <div className="queue-type-select">
-                <button type="button" className={`qt-btn ${withdrawType === 'receber' ? 'active' : ''}`} onClick={() => setWithdrawType('receber')}>Receber</button>
-                <button type="button" className={`qt-btn ${withdrawType === 'enviar' ? 'active' : ''}`} onClick={() => setWithdrawType('enviar')}>Enviar</button>
+            <form onSubmit={handleWithdraw} className="fm-form">
+              <div className="fm-form-header">
+                <ArrowUpRight size={20} />
+                <div>
+                  <h3>Withdraw Robux</h3>
+                  <p className="fm-sub">Convert balance to Robux via processing queue</p>
+                </div>
               </div>
-              <input type="number" placeholder="Amount in Robux" value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)} required min="1" />
-              <p className="purchase-muted" style={{ fontSize: '11px' }}>≈ ${((parseFloat(withdrawAmount) || 0) * 0.0035).toFixed(2)} USD will be deducted</p>
-              <button type="submit" className="purchase-btn" disabled={loading}>{loading ? 'Processing...' : 'Withdraw'}</button>
+
+              <div className="fm-toggle">
+                <button type="button" className={`fm-toggle-btn ${withdrawType === 'receber' ? 'active' : ''}`} onClick={() => setWithdrawType('receber')}>
+                  <Zap size={14} /> Receber
+                </button>
+                <button type="button" className={`fm-toggle-btn ${withdrawType === 'enviar' ? 'active' : ''}`} onClick={() => setWithdrawType('enviar')}>
+                  <ArrowUpRight size={14} /> Enviar
+                </button>
+              </div>
+
+              <div className="fm-input-wrap">
+                <label className="fm-label">Amount (Robux)</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 1000"
+                  value={withdrawAmount}
+                  onChange={e => setWithdrawAmount(e.target.value)}
+                  required min="1"
+                />
+              </div>
+
+              <div className="fm-conversion">
+                <span>≈ ${((parseFloat(withdrawAmount) || 0) * robuxRate).toFixed(2)} USD will be deducted</span>
+              </div>
+
+              <button type="submit" className="fm-btn" disabled={loading || !withdrawAmount}>
+                {loading ? <><Clock size={16} /> Processing...</> : 'Submit Withdrawal'}
+              </button>
             </form>
           )}
 
           {tab === 'deposit' && (
-            <form onSubmit={handleDeposit} className="finance-form">
-              <h3>Buy Robux Credits</h3>
-              <p className="purchase-muted">Purchase site credits to use on the marketplace.</p>
-              <div className="payment-methods">
+            <form onSubmit={handleDeposit} className="fm-form">
+              <div className="fm-form-header">
+                <ArrowDownLeft size={20} />
+                <div>
+                  <h3>Buy Robux Credits</h3>
+                  <p className="fm-sub">Purchase credits to use on the marketplace</p>
+                </div>
+              </div>
+
+              <label className="fm-label">Payment Method</label>
+              <div className="fm-pm-grid">
                 {[
-                  { id: 'crypto', label: 'Crypto', icon: <Bitcoin className="icon" /> },
-                  { id: 'paypal', label: 'PayPal', icon: <DollarSign className="icon" /> },
-                  { id: 'cashapp', label: 'Cash App', icon: <CreditCard className="icon" /> },
+                  { id: 'crypto', icon: <Bitcoin size={18} />, label: 'Crypto', bonus: '1.0x' },
+                  { id: 'paypal', icon: <DollarSign size={18} />, label: 'PayPal', bonus: '0.95x' },
+                  { id: 'cashapp', icon: <CreditCard size={18} />, label: 'Cash App', bonus: '0.97x' },
                 ].map(m => (
-                  <button key={m.id} type="button" className={`pm-btn ${depositMethod === m.id ? 'active' : ''}`} onClick={() => setDepositMethod(m.id)}>
-                    {m.icon} {m.label}
+                  <button
+                    key={m.id}
+                    type="button"
+                    className={`fm-pm-card ${depositMethod === m.id ? 'active' : ''}`}
+                    onClick={() => setDepositMethod(m.id)}
+                  >
+                    {m.icon}
+                    <span className="fm-pm-label">{m.label}</span>
+                    <span className="fm-pm-bonus">{m.bonus}</span>
                   </button>
                 ))}
               </div>
-              <input type="number" placeholder="USD amount" value={depositAmount} onChange={e => setDepositAmount(e.target.value)} required min="1" step="0.01" />
-              <p className="purchase-muted" style={{ fontSize: '11px' }}>
-                You get ≈ {Math.floor((parseFloat(depositAmount) || 0) * 100 * { crypto: 1, paypal: 0.95, cashapp: 0.97 }[depositMethod]).toLocaleString()} Robux
-              </p>
-              <button type="submit" className="purchase-btn" disabled={loading}>{loading ? 'Processing...' : 'Buy now'}</button>
+
+              <div className="fm-input-wrap">
+                <label className="fm-label">USD Amount</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 10.00"
+                  value={depositAmount}
+                  onChange={e => setDepositAmount(e.target.value)}
+                  required min="1" step="0.01"
+                />
+              </div>
+
+              <div className="fm-conversion">
+                <span>
+                  You get ≈ {Math.floor((parseFloat(depositAmount) || 0) * 100 * { crypto: 1, paypal: 0.95, cashapp: 0.97 }[depositMethod]).toLocaleString()} Robux
+                </span>
+              </div>
+
+              <button type="submit" className="fm-btn" disabled={loading || !depositAmount}>
+                {loading ? <><Clock size={16} /> Processing...</> : (
+                  <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay with {depositMethod === 'cashapp' ? 'Cash App' : depositMethod === 'paypal' ? 'PayPal' : 'Crypto'}</>
+                )}
+              </button>
             </form>
           )}
+        </div>
+
+        <div className="fm-footer">
+          <span>NexBlox Finance</span>
         </div>
       </div>
 
       <style>{`
-        .finance-modal { max-width: 500px; }
-        .finance-tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--bg-3); border-radius: 8px; padding: 4px; }
-        .finance-tab { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 13px; font-family: inherit; transition: all 0.15s; }
-        .finance-tab.active { background: var(--accent); color: #000; }
-        .finance-body { min-height: 200px; }
-        .finance-balance h3 { margin: 0 0 8px; font-size: 14px; color: var(--text-muted); }
-        .balance-amount { font-size: 32px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
-        .finance-queues { margin-top: 24px; }
-        .finance-queues h4 { font-size: 13px; color: var(--text-muted); margin: 0 0 12px; }
-        .queue-section { margin-bottom: 16px; }
-        .queue-section h5 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 0 0 8px; }
-        .queue-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--bg-3); border-radius: 6px; margin-bottom: 4px; font-size: 13px; }
-        .queue-pos { display: flex; align-items: center; gap: 4px; color: var(--accent); }
-        .queue-pos.done { color: #22c55e; }
-        .queue-pos .icon { width: 14px; height: 14px; }
-        .finance-form h3 { margin: 0 0 8px; }
-        .finance-form input { width: 100%; padding: 10px 14px; background: var(--bg-3); border: 1px solid var(--line); border-radius: 6px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; margin-bottom: 8px; box-sizing: border-box; }
-        .finance-form input:focus { border-color: var(--accent); }
-        .queue-type-select, .payment-methods { display: flex; gap: 4px; margin-bottom: 12px; background: var(--bg-3); border-radius: 6px; padding: 4px; }
-        .qt-btn, .pm-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 13px; font-family: inherit; transition: all 0.15s; }
-        .qt-btn.active, .pm-btn.active { background: var(--accent); color: #000; }
+        .finance-modal {
+          background: #111113;
+          border: 1px solid #2a2a2e;
+          border-radius: 16px;
+          max-width: 480px;
+          width: 100%;
+          position: relative;
+          animation: modalIn 0.25s ease-out;
+          box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 20px 60px rgba(0,0,0,0.5);
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+        .finance-modal::-webkit-scrollbar { width: 4px; }
+        .finance-modal::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
+
+        .fm-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 20px 24px 0;
+          font-size: 18px;
+          font-weight: 700;
+          color: #fff;
+        }
+        .fm-header-icon { color: #f59e0b; }
+
+        .fm-tabs {
+          display: flex;
+          gap: 6px;
+          margin: 16px 24px 0;
+          padding: 4px;
+          background: #1a1a1e;
+          border-radius: 10px;
+        }
+        .fm-tab {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 10px 12px;
+          border: none;
+          background: transparent;
+          color: #6b7280;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 13px;
+          font-family: inherit;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+        .fm-tab:hover { color: #d1d5db; }
+        .fm-tab.active {
+          background: #f59e0b;
+          color: #000;
+          font-weight: 600;
+        }
+
+        .fm-body { padding: 20px 24px; min-height: 220px; }
+
+        .fm-error {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 14px;
+          background: rgba(239,68,68,0.12);
+          border: 1px solid rgba(239,68,68,0.25);
+          border-radius: 8px;
+          color: #fca5a5;
+          font-size: 13px;
+          margin-bottom: 16px;
+        }
+
+        .fm-balance-card {
+          background: linear-gradient(135deg, #1e1e24, #151518);
+          border: 1px solid #2a2a2e;
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 20px;
+        }
+        .fm-balance-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
+        .fm-balance-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+        .fm-balance-icon { color: #f59e0b; }
+        .fm-balance-amount { font-size: 36px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .fm-balance-convert { font-size: 13px; color: #6b7280; }
+
+        .fm-queues-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #d1d5db;
+          margin-bottom: 12px;
+        }
+        .fm-queues-header svg { color: #f59e0b; }
+
+        .fm-queue-group { margin-bottom: 14px; }
+        .fm-queue-group-label {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #22c55e;
+          margin-bottom: 6px;
+        }
+        .fm-queue-group-label.red { color: #ef4444; }
+
+        .fm-queue-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 10px 14px;
+          background: #1a1a1e;
+          border-radius: 8px;
+          margin-bottom: 4px;
+          transition: background 0.15s;
+        }
+        .fm-queue-item:hover { background: #202024; }
+        .fm-queue-item.done { opacity: 0.6; }
+        .fm-qi-left { flex: 1; min-width: 0; }
+        .fm-qi-amount { font-size: 13px; font-weight: 600; color: #e5e7eb; margin-bottom: 6px; }
+        .fm-qi-progress-bar { height: 3px; background: #2a2a2e; border-radius: 2px; overflow: hidden; }
+        .fm-qi-progress-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); border-radius: 2px; transition: width 0.5s; }
+        .fm-qi-right {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #f59e0b;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+        .fm-qi-right.done { color: #22c55e; }
+
+        .fm-empty {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          padding: 40px 0;
+          color: #4b5563;
+        }
+        .fm-empty p { font-size: 14px; margin: 0; }
+
+        .fm-form { }
+        .fm-form-header {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        .fm-form-header svg { color: #f59e0b; margin-top: 2px; flex-shrink: 0; }
+        .fm-form-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: #fff; }
+        .fm-sub { margin: 4px 0 0; font-size: 13px; color: #6b7280; }
+
+        .fm-toggle {
+          display: flex;
+          gap: 6px;
+          margin-bottom: 16px;
+          padding: 4px;
+          background: #1a1a1e;
+          border-radius: 8px;
+        }
+        .fm-toggle-btn {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 10px;
+          border: none;
+          background: transparent;
+          color: #6b7280;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 13px;
+          font-family: inherit;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+        .fm-toggle-btn.active { background: #f59e0b; color: #000; font-weight: 600; }
+        .fm-toggle-btn:not(.active):hover { color: #d1d5db; }
+
+        .fm-pm-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+          margin-bottom: 16px;
+        }
+        .fm-pm-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          padding: 14px 8px;
+          background: #1a1a1e;
+          border: 1px solid #2a2a2e;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-family: inherit;
+          color: #6b7280;
+        }
+        .fm-pm-card:hover { border-color: #3a3a3e; color: #d1d5db; }
+        .fm-pm-card.active { border-color: #f59e0b; background: rgba(245,158,11,0.08); color: #fff; }
+        .fm-pm-card svg { color: currentColor; }
+        .fm-pm-label { font-size: 12px; font-weight: 600; }
+        .fm-pm-bonus { font-size: 10px; color: #22c55e; font-weight: 500; background: rgba(34,197,94,0.12); padding: 2px 8px; border-radius: 4px; }
+
+        .fm-input-wrap { margin-bottom: 12px; }
+        .fm-label {
+          display: block;
+          font-size: 12px;
+          font-weight: 500;
+          color: #9ca3af;
+          margin-bottom: 6px;
+        }
+        .fm-input-wrap input {
+          width: 100%;
+          padding: 12px 14px;
+          background: #1a1a1e;
+          border: 1px solid #2a2a2e;
+          border-radius: 10px;
+          color: #fff;
+          font-size: 15px;
+          font-family: inherit;
+          outline: none;
+          transition: border-color 0.2s;
+          box-sizing: border-box;
+        }
+        .fm-input-wrap input:focus { border-color: #f59e0b; }
+        .fm-input-wrap input::placeholder { color: #4b5563; }
+
+        .fm-conversion {
+          padding: 10px 14px;
+          background: rgba(245,158,11,0.06);
+          border: 1px solid rgba(245,158,11,0.12);
+          border-radius: 8px;
+          margin-bottom: 16px;
+        }
+        .fm-conversion span { font-size: 12px; color: #9ca3af; }
+
+        .fm-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          padding: 12px;
+          background: #f59e0b;
+          border: none;
+          border-radius: 10px;
+          color: #000;
+          font-size: 14px;
+          font-weight: 700;
+          font-family: inherit;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .fm-btn:hover:not(:disabled) { background: #fbbf24; transform: translateY(-1px); }
+        .fm-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .fm-footer {
+          text-align: center;
+          padding: 0 24px 20px;
+          font-size: 11px;
+          color: #4b5563;
+        }
+
+        @keyframes modalIn {
+          from { opacity: 0; transform: translateY(10px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
       `}</style>
     </div>
   );
