@@ -8,7 +8,6 @@ import Sidebar from '@/components/Sidebar';
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
-  const [currentUserId, setCurrentUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
@@ -18,7 +17,6 @@ export default function OrdersPage() {
       .then(r => r.json())
       .then(d => {
         if (!d.authenticated) { router.push('/'); return null; }
-        setCurrentUserId(d.user?.id);
         return fetch('/api/orders');
       })
       .then(r => r ? r.json() : null)
@@ -71,16 +69,15 @@ export default function OrdersPage() {
                 <th>Price</th>
                 <th>Status</th>
                 <th className="hide-mobile">Date</th>
-                <th>Role</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} className="table-empty"><div className="loading-spinner" /><span>Loading...</span></td></tr>
+                <tr><td colSpan={5} className="table-empty"><div className="loading-spinner" /><span>Loading...</span></td></tr>
               ) : error ? (
-                <tr><td colSpan={6} className="table-empty" style={{color:'#ef4444'}}>{error}</td></tr>
+                <tr><td colSpan={5} className="table-empty" style={{color:'#ef4444'}}>{error}</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={6} className="table-empty">
+                <tr><td colSpan={5} className="table-empty">
                   <Package size={32} style={{opacity:0.3}} />
                   <span>No orders found.</span>
                 </td></tr>
@@ -88,9 +85,6 @@ export default function OrdersPage() {
                 filtered.map(o => {
                   const item = o.item || {};
                   const status = (o.status || 'PENDING').toLowerCase();
-                  const isBuyer = o.buyerId === currentUserId;
-                  const isRecipient = o.userId === currentUserId;
-                  const role = isBuyer && isRecipient ? 'Both' : isBuyer ? 'Buyer' : 'Recipient';
                   return (
                   <tr key={o.id}>
                     <td>
@@ -110,11 +104,6 @@ export default function OrdersPage() {
                       </span>
                     </td>
                     <td className="hide-mobile">{new Date(o.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <span className={`badge-role ${isBuyer ? 'role-buyer' : 'role-recipient'}`}>
-                        {role}
-                      </span>
-                    </td>
                   </tr>
                   );
                 })
