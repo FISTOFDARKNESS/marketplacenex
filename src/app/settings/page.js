@@ -184,11 +184,11 @@ export default function SettingsPage() {
                         type="text" placeholder="Roblox username" value={robloxUser}
                         onChange={e => setRobloxUser(e.target.value)} required
                         style={{
-                          flex: 1, padding: '10px 14px', background: '#0f0f13', border: '1px solid #2a2a2e',
+                          flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e',
                           borderRadius: '8px', color: '#e5e7eb', fontSize: '14px', outline: 'none', fontFamily: 'inherit',
                         }}
                       />
-                      <button type="submit" className="purchase-btn" disabled={loading} style={{ padding: '10px 20px', whiteSpace: 'nowrap' }}>
+                      <button type="submit" className="purchase-btn" disabled={loading} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
                         {loading ? '...' : 'Verify'}
                       </button>
                     </form>
@@ -201,29 +201,28 @@ export default function SettingsPage() {
                       Paste your <b>.ROBLOSECURITY</b> cookie to verify your Roblox account. Your cookie is only used once and never stored.
                     </p>
                     <form onSubmit={handleCookieVerify}>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                        <div style={{ flex: 1, position: 'relative' }}>
-                          <input
-                            type={showCookie ? 'text' : 'password'} placeholder=".ROBLOSECURITY cookie" value={cookie}
-                            onChange={e => setCookie(e.target.value)} required
-                            style={{
-                              width: '100%', padding: '10px 14px', paddingRight: '40px', background: '#0f0f13',
-                              border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '14px',
-                              outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
-                            }}
-                          />
-                          <button type="button" onClick={() => setShowCookie(!showCookie)}
-                            style={{
-                              position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                              background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', padding: '4px',
-                            }}>
-                            {showCookie ? <EyeOff size={16} /> : <Eye size={16} />}
-                          </button>
-                        </div>
-                        <button type="submit" className="purchase-btn" disabled={loading} style={{ padding: '10px 20px', whiteSpace: 'nowrap' }}>
-                          {loading ? '...' : 'Verify'}
+                      <div style={{ position: 'relative', marginBottom: '8px' }}>
+                        <input
+                          type={showCookie ? 'text' : 'password'} placeholder=".ROBLOSECURITY cookie" value={cookie}
+                          onChange={e => setCookie(e.target.value)} required
+                          style={{
+                            width: '100%', padding: '14px', paddingRight: '44px', background: '#0f0f13',
+                            border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '13px',
+                            outline: 'none', fontFamily: 'monospace', boxSizing: 'border-box',
+                            letterSpacing: showCookie ? 'normal' : '0.15em',
+                          }}
+                        />
+                        <button type="button" onClick={() => setShowCookie(!showCookie)}
+                          style={{
+                            position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                            background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', padding: '4px',
+                          }}>
+                          {showCookie ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </div>
+                      <button type="submit" className="purchase-btn" disabled={loading} style={{ width: '100%', padding: '12px 0' }}>
+                        {loading ? 'Verifying...' : 'Verify Cookie'}
+                      </button>
                     </form>
                     <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: 1.5 }}>
                       <b style={{ color: '#f59e0b' }}>How to get your cookie:</b>
