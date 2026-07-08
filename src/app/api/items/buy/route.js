@@ -38,11 +38,13 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Recipient Roblox username is required' }, { status: 400 });
     }
 
-    // Find recipient by Roblox username
-    let recipientUserId = decoded.id;
+    // Find recipient by Roblox username - only allow buying for verified users
     const allUsers = await prisma.user.findMany({ select: { id: true, robloxUsername: true } });
     const match = allUsers.find(u => u.robloxUsername?.toLowerCase() === robloxUsername);
-    if (match) recipientUserId = match.id;
+    if (!match) {
+      return NextResponse.json({ error: `"${robloxUser}" is not a verified NexBlox user. Only registered users with a linked Roblox account can receive items.` }, { status: 400 });
+    }
+    const recipientUserId = match.id;
 
     // Find seller
     const adminUser = await prisma.user.findFirst({ where: { role: 'admin' }, select: { id: true } });

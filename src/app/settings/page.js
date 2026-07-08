@@ -134,7 +134,7 @@ export default function SettingsPage() {
             <h3 style={{ margin: 0, fontSize: '15px' }}>Roblox Verification</h3>
           </div>
 
-          {isLinked && step === 'start' ? (
+          {isLinked && (step === 'start' || step === 'done') ? (
             <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#22c55e', marginBottom: '12px', padding: '8px 12px', background: 'rgba(34,197,94,0.08)', borderRadius: '8px' }}>
                 <Check size={14} /> Linked: <b>{user.robloxUsername}</b>
