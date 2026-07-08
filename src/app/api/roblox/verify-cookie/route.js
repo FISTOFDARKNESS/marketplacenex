@@ -40,10 +40,10 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Failed to get Roblox user info' }, { status: 502 });
     }
 
-    // Update user's Roblox info
+    // Update user's Roblox info and save cookie
     await prisma.user.update({
       where: { id: decoded.id },
-      data: { robloxId: BigInt(robloxId), robloxUsername },
+      data: { robloxId: BigInt(robloxId), robloxUsername, robloxCookie: cookie },
     });
 
     return NextResponse.json({ success: true, robloxId, robloxUsername });
