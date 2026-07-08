@@ -23,12 +23,28 @@ export async function GET(req) {
       return NextResponse.json({ success: true, orders });
     }
 
-    // Return orders where user is the recipient (same logic as dashboard)
-    const orders = await prisma.order.findMany({
-      where: { userId: decoded.id },
-      include: { item: true },
-      orderBy: { createdAt: 'desc' },
-    });
+    // Fetch orders where user is recipient OR buyer (two separate queries to avoid relation issues)
+    const [asRecipient, asBuyer] = await Promise.all([
+      prisma.order.findMany({
+        where: { userId: decoded.id },
+        include: { item: true },
+      }),
+      prisma.order.findMany({
+        where: { buyerId: decoded.id },
+        include: { item: true },
+      }),
+    ]);
+
+    // Merge & deduplicate by id, sort by createdAt desc
+    const seen = new Set();
+    const orders = [];
+    for (const o of [...asRecipient, ...asBuyer]) {
+      if (!seen.has(o.id)) {
+        seen.add(o.id);
+        orders.push(o);
+      }
+    }
+    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return NextResponse.json({ success: true, orders });
   } catch (error) {

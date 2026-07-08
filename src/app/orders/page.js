@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { Search, Package } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
@@ -17,6 +18,7 @@ export default function OrdersPage() {
       .then(r => r.json())
       .then(d => {
         if (!d.authenticated) { router.push('/'); return null; }
+        setCurrentUserId(d.user?.id);
         return fetch('/api/orders');
       })
       .then(r => r ? r.json() : null)
@@ -53,7 +55,7 @@ export default function OrdersPage() {
             <Search size={16} />
             <input
               type="text"
-              placeholder="Search by ID, buyer or recipient..."
+              placeholder="Search items or Roblox user..."
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -61,45 +63,58 @@ export default function OrdersPage() {
         </div>
 
         <div className="table-wrap">
-          <table className="data-table">
+          <table className="data-table orders-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Item</th>
-                <th>Roblox User</th>
+                <th className="hide-mobile">Roblox User</th>
                 <th>Price</th>
                 <th>Status</th>
-                <th>Date</th>
+                <th className="hide-mobile">Date</th>
+                <th>Role</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} className="table-empty">Loading...</td></tr>
+                <tr><td colSpan={6} className="table-empty"><div className="loading-spinner" /><span>Loading...</span></td></tr>
               ) : error ? (
-                <tr><td colSpan={6} className="table-empty" style={{color:'#ef4444'}}>Error: {error}</td></tr>
+                <tr><td colSpan={6} className="table-empty" style={{color:'#ef4444'}}>{error}</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={6} className="table-empty">No orders found.</td></tr>
+                <tr><td colSpan={6} className="table-empty">
+                  <Package size={32} style={{opacity:0.3}} />
+                  <span>No orders found.</span>
+                </td></tr>
               ) : (
                 filtered.map(o => {
                   const item = o.item || {};
                   const status = (o.status || 'PENDING').toLowerCase();
+                  const isBuyer = o.buyerId === currentUserId;
+                  const isRecipient = o.userId === currentUserId;
+                  const role = isBuyer && isRecipient ? 'Both' : isBuyer ? 'Buyer' : 'Recipient';
                   return (
                   <tr key={o.id}>
-                    <td className="cell-id">#{o.id.toString().slice(-6)}</td>
                     <td>
                       <div className="cell-item">
-                        {item.img ? <img src={item.img} alt={item.name || ''} /> : <div style={{width:36,height:36,borderRadius:6,background:'#1a1a1e'}} />}
-                        <span>{item.name || 'Unknown item'}</span>
+                        {item.img ? <img src={item.img} alt={item.name || ''} /> : <div className="cell-item-placeholder" />}
+                        <div>
+                          <div className="cell-item-name">{item.name || 'Unknown item'}</div>
+                          <div className="cell-item-id">#{o.id.toString().slice(-6)}</div>
+                        </div>
                       </div>
                     </td>
-                    <td className="cell-buyer">{o.robloxUser || '—'}</td>
+                    <td className="hide-mobile">{o.robloxUser || '—'}</td>
                     <td className="cell-price">${item.price ? Number(item.price).toFixed(2) : '0.00'}</td>
                     <td>
                       <span className={`badge-status status-${status}`}>
                         {o.status || 'PENDING'}
                       </span>
                     </td>
-                    <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+                    <td className="hide-mobile">{new Date(o.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <span className={`badge-role ${isBuyer ? 'role-buyer' : 'role-recipient'}`}>
+                        {role}
+                      </span>
+                    </td>
                   </tr>
                   );
                 })
