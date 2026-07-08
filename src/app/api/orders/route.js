@@ -28,9 +28,9 @@ export async function GET(req) {
       return NextResponse.json({ success: true, orders: orders.map(serialize) });
     }
 
-    // Only show orders where the current user is the BUYER (their Gmail-linked account)
+    // Show orders where the current user is the RECIPIENT
     const orders = await prisma.order.findMany({
-      where: { buyerId: decoded.id },
+      where: { userId: decoded.id },
       include: { item: true },
       orderBy: { createdAt: 'desc' },
     });
