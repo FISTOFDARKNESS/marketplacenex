@@ -674,6 +674,12 @@ button {
   pointer-events: none;
 }
 
+.sidebar-cta button {
+  width: 100%;
+  padding: 11px 0;
+  font-size: 13px;
+}
+
 .sidebar-cta p {
   font-size: 12px;
   color: rgba(255,255,255,0.5);
@@ -681,26 +687,7 @@ button {
   line-height: 1.6;
 }
 
-.sidebar-cta button {
-  width: 100%;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #1A1000;
-  border: none;
-  padding: 11px 0;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 13px;
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-  letter-spacing: 0.3px;
-  box-shadow: 0 4px 16px rgba(255,165,0,0.25);
-  cursor: pointer;
-}
 
-.sidebar-cta button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255,165,0,0.35);
-  background: linear-gradient(135deg, #FFE033, #FFB300);
-}
 
 .main-content {
   min-width: 0;
@@ -2204,8 +2191,9 @@ button {
   background: transparent;
 }
 .sidebar-link:hover {
-  background: #1e1e22;
-  color: #e5e7eb;
+  background: rgba(255,215,0,0.06);
+  color: #fbbf24;
+  transform: translateX(2px);
 }
 .sidebar-link.active {
   background: #1e1e22;
@@ -2362,8 +2350,9 @@ button {
   transition: background 0.15s, color 0.15s;
 }
 .action-btn:hover {
-  background: #2a2a2e;
-  color: #e5e7eb;
+  border-color: rgba(255,215,0,0.25);
+  color: #fbbf24;
+  background: rgba(255,215,0,0.06);
 }
 .table-empty {
   text-align: center;
@@ -2585,7 +2574,9 @@ button {
   text-decoration: none;
 }
 .verify-btn-secondary:hover {
-  background: #1a1a1e;
+  border-color: rgba(255,215,0,0.25);
+  color: #fbbf24;
+  background: rgba(255,215,0,0.06);
 }
 /* ---------- HELP / CONTACT FORM ---------- */
 .help-card {
@@ -2818,6 +2809,48 @@ button {
 .nav-link-btn:hover {
   background: #2a2a2e;
   color: #e5e7eb;
+}
+
+/* ── Gold Button (Start Selling style) ── */
+.btn-gold,
+.sidebar-cta button, .bento-buy, .modal-buy,
+.purchase-btn:not(.purchase-btn-secondary),
+.help-submit, .signup-btn, .hero-cta-primary,
+.approve-btn, .purchase-btn-external {
+  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+  color: #1A1000 !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px !important;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1) !important;
+  box-shadow: 0 4px 16px rgba(255,165,0,0.25) !important;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-gold:hover, .btn-gold:focus-visible,
+.sidebar-cta button:hover, .bento-buy:hover, .modal-buy:hover,
+.purchase-btn:hover:not(:disabled):not(.purchase-btn-secondary),
+.help-submit:hover:not(:disabled), .signup-btn:hover, .hero-cta-primary:hover,
+.approve-btn:hover, .purchase-btn-external:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(255,165,0,0.35) !important;
+  background: linear-gradient(135deg, #FFE033, #FFB300) !important;
+}
+
+/* ── Gold Glow Active (filter-option.style) ── */
+.active-glow, .sidebar-link.active,
+.nav-links a.active, .filter-option.active {
+  background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,180,0,0.08)) !important;
+  color: #FFD700 !important;
+  font-weight: 600 !important;
+  border-color: rgba(255,215,0,0.25) !important;
+  box-shadow: 0 0 12px rgba(255,215,0,0.08), inset 0 1px 0 rgba(255,215,0,0.1) !important;
+}
+.active-glow .icon, .sidebar-link.active .icon,
+.nav-links a.active .icon {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 4px rgba(255,215,0,0.4)) !important;
 }
 
 /* ── Mobile Sidebar ── */
