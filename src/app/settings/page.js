@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 export default function SettingsPage() {
@@ -17,11 +17,20 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [cookieStatus, setCookieStatus] = useState(null);
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => {
       if (!d.authenticated) { router.push('/'); return; }
       setUser(d.user);
+      // Check saved cookie validity
+      fetch('/api/roblox/check-cookie').then(r => r.json()).then(s => {
+        setCookieStatus(s);
+        if (s.hasCookie && !s.valid) {
+          setError('Your saved Roblox cookie has expired. Please enter a new one.');
+          setMethod('cookie');
+        }
+      }).catch(() => {});
     });
   }, []);
 
@@ -67,6 +76,7 @@ export default function SettingsPage() {
       if (!res.ok) { setError(data.error); return; }
       setStep('done');
       setUser(prev => ({ ...prev, robloxUsername: data.robloxUsername }));
+      setCookieStatus({ valid: true, hasCookie: true, robloxUsername: data.robloxUsername });
     } catch { setError('Connection failed'); }
     finally { setLoading(false); }
   }
@@ -78,6 +88,7 @@ export default function SettingsPage() {
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
       setUser(prev => ({ ...prev, robloxId: null, robloxUsername: null }));
+      setCookieStatus(null);
       setStep('start');
       setMethod('bio');
     } catch { setError('Connection failed'); }
@@ -134,7 +145,13 @@ export default function SettingsPage() {
             <h3 style={{ margin: 0, fontSize: '15px' }}>Roblox Verification</h3>
           </div>
 
-          {isLinked && (step === 'start' || step === 'done') ? (
+          {cookieStatus?.hasCookie && !cookieStatus?.valid && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b', fontSize: '13px', padding: '10px 14px', background: 'rgba(245,158,11,0.1)', borderRadius: '8px', marginBottom: '12px', border: '1px solid rgba(245,158,11,0.2)' }}>
+              <RefreshCw size={14} /> Saved cookie expired. Enter a new one below to continue using Roblox features.
+            </div>
+          )}
+
+          {isLinked && (step === 'start' || step === 'done') && cookieStatus?.valid !== false ? (
             <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#22c55e', marginBottom: '12px', padding: '8px 12px', background: 'rgba(34,197,94,0.08)', borderRadius: '8px' }}>
                 <Check size={14} /> Linked: <b>{user.robloxUsername}</b>
@@ -198,31 +215,33 @@ export default function SettingsPage() {
                 {step === 'start' && method === 'cookie' && (
                   <div>
                     <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 12px' }}>
-                      Paste your <b>.ROBLOSECURITY</b> cookie to verify your Roblox account. Your cookie is only used once and never stored.
+                      Paste your <b>.ROBLOSECURITY</b> cookie to verify your Roblox account.
                     </p>
                     <form onSubmit={handleCookieVerify}>
-                      <div style={{ position: 'relative', marginBottom: '8px' }}>
-                        <input
-                          type={showCookie ? 'text' : 'password'} placeholder=".ROBLOSECURITY cookie" value={cookie}
-                          onChange={e => setCookie(e.target.value)} required
-                          style={{
-                            width: '100%', padding: '14px', paddingRight: '44px', background: '#0f0f13',
-                            border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '13px',
-                            outline: 'none', fontFamily: 'monospace', boxSizing: 'border-box',
-                            letterSpacing: showCookie ? 'normal' : '0.15em',
-                          }}
-                        />
-                        <button type="button" onClick={() => setShowCookie(!showCookie)}
-                          style={{
-                            position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
-                            background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', padding: '4px',
-                          }}>
-                          {showCookie ? <EyeOff size={18} /> : <Eye size={18} />}
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                        <div style={{ flex: 1, position: 'relative' }}>
+                          <input
+                            type={showCookie ? 'text' : 'password'} placeholder=".ROBLOSECURITY cookie" value={cookie}
+                            onChange={e => setCookie(e.target.value)} required
+                            style={{
+                              width: '100%', padding: '12px 14px', paddingRight: '40px', background: '#0f0f13',
+                              border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '13px',
+                              outline: 'none', fontFamily: 'monospace', boxSizing: 'border-box',
+                            }}
+                          />
+                          <button type="button" onClick={() => setShowCookie(!showCookie)}
+                            style={{
+                              position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
+                              background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', padding: '4px',
+                            }}>
+                            {showCookie ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </div>
+                        <button type="submit" className="purchase-btn" disabled={loading}
+                          style={{ padding: '12px 14px', fontSize: '13px', whiteSpace: 'nowrap' }}>
+                          {loading ? '...' : 'Verify'}
                         </button>
                       </div>
-                      <button type="submit" className="purchase-btn" disabled={loading} style={{ width: '100%', padding: '12px 0' }}>
-                        {loading ? 'Verifying...' : 'Verify Cookie'}
-                      </button>
                     </form>
                     <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: 1.5 }}>
                       <b style={{ color: '#f59e0b' }}>How to get your cookie:</b>
