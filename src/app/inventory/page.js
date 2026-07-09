@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Backpack, Layers, DollarSign, Sparkles, Trash2, Eye, X, Package } from 'lucide-react';
+import { Search, Backpack, Layers, DollarSign, Sparkles, Trash2, Eye, X, Package, ChevronDown, Minus, Plus } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 export default function InventoryPage() {
@@ -13,6 +13,9 @@ export default function InventoryPage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [rarity, setRarity] = useState('all');
+  const [sort, setSort] = useState('recent');
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
   const [detail, setDetail] = useState(null);
   const [removeId, setRemoveId] = useState(null);
 
@@ -66,13 +69,36 @@ export default function InventoryPage() {
     [inventory]
   );
 
-  const filtered = inventory.filter(i => {
-    const it = i.item || {};
-    if (category !== 'all' && it.category !== category) return false;
-    if (rarity !== 'all' && it.rarity !== rarity) return false;
-    if (search && !(it.name || '').toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  const filtered = useMemo(() => {
+    const list = inventory.filter(i => {
+      const it = i.item || {};
+      const usd = parseFloat(it.usdPrice) || 0;
+      if (category !== 'all' && it.category !== category) return false;
+      if (rarity !== 'all' && it.rarity !== rarity) return false;
+      if (search && !(it.name || '').toLowerCase().includes(search.toLowerCase())) return false;
+      if (usd < minPrice) return false;
+      if (maxPrice > 0 && usd > maxPrice) return false;
+      return true;
+    });
+
+    const sorted = [...list];
+    switch (sort) {
+      case 'price-desc':
+        sorted.sort((a, b) => (parseFloat(b.item?.usdPrice) || 0) - (parseFloat(a.item?.usdPrice) || 0));
+        break;
+      case 'price-asc':
+        sorted.sort((a, b) => (parseFloat(a.item?.usdPrice) || 0) - (parseFloat(b.item?.usdPrice) || 0));
+        break;
+      case 'name':
+        sorted.sort((a, b) => (a.item?.name || '').localeCompare(b.item?.name || ''));
+        break;
+      case 'recent':
+      default:
+        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+    }
+    return sorted;
+  }, [inventory, category, rarity, search, minPrice, maxPrice, sort]);
 
   const stats = useMemo(() => {
     const total = inventory.length;
@@ -153,6 +179,42 @@ export default function InventoryPage() {
                 <option key={r} value={r}>{r === 'all' ? 'All rarities' : r}</option>
               ))}
             </select>
+            <div className="inv-select inv-sort">
+              <select value={sort} onChange={e => setSort(e.target.value)} className="inv-sort-select">
+                <option value="recent">Sort: Recent</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="name">Name (A-Z)</option>
+              </select>
+              <ChevronDown size={14} className="inv-sort-icon" />
+            </div>
+            <div className="inv-range">
+              <span className="inv-range-label">Price</span>
+              <div className="inv-range-field">
+                <button type="button" className="inv-step" onClick={() => setMinPrice(m => Math.max(0, m - 1))}><Minus size={13} /></button>
+                <input
+                  type="number"
+                  min="0"
+                  value={minPrice}
+                  onChange={e => setMinPrice(Math.max(0, Number(e.target.value) || 0))}
+                  className="inv-range-input"
+                />
+                <button type="button" className="inv-step" onClick={() => setMinPrice(m => m + 1)}><Plus size={13} /></button>
+              </div>
+              <span className="inv-range-sep">–</span>
+              <div className="inv-range-field">
+                <button type="button" className="inv-step" onClick={() => setMaxPrice(m => Math.max(0, m - 1))}><Minus size={13} /></button>
+                <input
+                  type="number"
+                  min="0"
+                  value={maxPrice}
+                  placeholder="Any"
+                  onChange={e => setMaxPrice(Math.max(0, Number(e.target.value) || 0))}
+                  className="inv-range-input"
+                />
+                <button type="button" className="inv-step" onClick={() => setMaxPrice(m => m + 1)}><Plus size={13} /></button>
+              </div>
+            </div>
           </div>
         )}
 
