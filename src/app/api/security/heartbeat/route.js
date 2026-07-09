@@ -8,10 +8,11 @@ export async function POST(req) {
   try {
     const token = req.cookies.get('token')?.value;
     const decoded = token && verifyToken(token);
-    if (!decoded?.sid) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!decoded?.id) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
+    const where = decoded.sid ? { jti: decoded.sid } : { userId: decoded.id };
     await prisma.session.updateMany({
-      where: { jti: decoded.sid },
+      where,
       data: { lastSeen: new Date() },
     });
 
