@@ -70,12 +70,17 @@ export default function InventoryPage() {
   );
 
   const filtered = useMemo(() => {
+    const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+    const terms = norm(search).split(/\s+/).filter(Boolean);
     const list = inventory.filter(i => {
       const it = i.item || {};
       const usd = parseFloat(it.usdPrice) || 0;
       if (category !== 'all' && it.category !== category) return false;
       if (rarity !== 'all' && it.rarity !== rarity) return false;
-      if (search && !(it.name || '').toLowerCase().includes(search.toLowerCase())) return false;
+      if (terms.length) {
+        const name = norm(it.name);
+        if (!terms.every(t => name.includes(t))) return false;
+      }
       if (usd < minPrice) return false;
       if (maxPrice > 0 && usd > maxPrice) return false;
       return true;
