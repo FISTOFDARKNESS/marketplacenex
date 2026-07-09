@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Crown, Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { locales } from '@/lib/locales';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -15,33 +16,26 @@ function ResetPasswordForm() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [lang, setLang] = useState('en');
 
-  useEffect(() => {
-    const savedLang = localStorage.getItem('lang');
-    if (savedLang === 'en' || savedLang === 'pt') {
-      setLang(savedLang);
-    }
-  }, []);
-
-  const t = locales[lang].auth;
+  const { lang } = useLang();
+  const t = appLocales[lang].reset;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!token) {
-      setError(lang === 'pt' ? 'Token de redefinição inválido ou ausente.' : 'Missing or invalid reset token.');
+      setError(t.invalidToken);
       return;
     }
 
     if (password.length < 6) {
-      setError(lang === 'pt' ? 'A senha deve conter no mínimo 6 caracteres.' : 'Password must be at least 6 characters.');
+      setError(t.minPassword);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError(lang === 'pt' ? 'As senhas não coincidem.' : 'Passwords do not match.');
+      setError(t.passwordMismatch);
       return;
     }
 
@@ -65,7 +59,7 @@ function ResetPasswordForm() {
         }, 3000);
       }
     } catch (err) {
-      setError('Connection failed. Please try again.');
+      setError(t.connectionFailed);
     } finally {
       setLoading(false);
     }
@@ -123,7 +117,7 @@ function ResetPasswordForm() {
             {t.reset}
           </h2>
           <p style={{ color: 'var(--muted)', fontSize: '14px', marginTop: '8px' }}>
-            {lang === 'pt' ? 'Insira sua nova senha abaixo' : 'Enter your new password below'}
+            {t.enterNewPassword}
           </p>
         </div>
 
@@ -136,7 +130,7 @@ function ResetPasswordForm() {
               {t.updateSuccess}
             </h3>
             <p style={{ color: 'var(--muted)', fontSize: '14px' }}>
-              {lang === 'pt' ? 'Redirecionando para a página inicial...' : 'Redirecting to homepage...'}
+              {t.redirecting}
             </p>
           </div>
         ) : (
@@ -181,7 +175,7 @@ function ResetPasswordForm() {
 
             <div className="auth-input-group" style={{ marginBottom: '32px' }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--muted)', marginBottom: '8px' }}>
-                {lang === 'pt' ? 'Confirmar Senha' : 'Confirm Password'}
+                {t.confirmPassword}
               </label>
               <input
                 type="password"
@@ -226,7 +220,7 @@ function ResetPasswordForm() {
               onMouseOut={(e) => e.currentTarget.style.boxShadow = 'none'}
             >
               <Lock style={{ width: '16px', height: '16px' }} />
-              {loading ? 'Processing...' : t.submitReset}
+              {loading ? appLocales[lang].common.loading : t.updatePassword}
             </button>
           </form>
         )}
@@ -250,7 +244,7 @@ function ResetPasswordForm() {
             onMouseOut={(e) => e.currentTarget.style.color = 'var(--muted)'}
           >
             <ArrowLeft style={{ width: '14px', height: '14px' }} />
-            {lang === 'pt' ? 'Voltar ao início' : 'Back to home'}
+            {t.backHome}
           </button>
         </div>
       </div>

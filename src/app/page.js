@@ -15,12 +15,13 @@ import PurchaseModal from '@/components/PurchaseModal';
 import FinancePanel from '@/components/finance/FinancePanel';
 import Toast from '@/components/Toast';
 import WishlistDrawer from '@/components/WishlistDrawer';
+import { useLang } from '@/lib/LanguageProvider';
 
 export default function Home() {
+  const { lang } = useLang();
   const [user, setUser] = useState(null);
   const [items, setItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
-  const [lang, setLang] = useState('en');
 
   // Filters state
   const [activeCatFilter, setActiveCatFilter] = useState('all');
@@ -37,7 +38,7 @@ export default function Home() {
   const [modalState, setModalState] = useState({ type: null, data: null }); // type: 'login' | 'register' | 'detail' | null
   const [financeOpen, setFinanceOpen] = useState(false);
 
-  // Fetch current user on mount and load language
+  // Fetch current user on mount
   useEffect(() => {
     async function checkAuth() {
       try {
@@ -53,18 +54,7 @@ export default function Home() {
       }
     }
     checkAuth();
-
-    const savedLang = localStorage.getItem('lang');
-    const validLangs = ['en', 'pt', 'it', 'es', 'fr', 'de'];
-    if (savedLang && validLangs.includes(savedLang)) {
-      setLang(savedLang);
-    }
   }, []);
-
-  const handleSetLang = (newLang) => {
-    setLang(newLang);
-    localStorage.setItem('lang', newLang);
-  };
 
   // Fetch items whenever filter options change
   useEffect(() => {
@@ -204,8 +194,6 @@ export default function Home() {
         onOpenAuth={(type) => setModalState({ type, data: null })}
         onLogout={handleLogout}
         onScrollTo={scrollToSection}
-        lang={lang}
-        setLang={handleSetLang}
         onOpenWishlist={() => setWishlistOpen(true)}
         onOpenFinance={() => setFinanceOpen(true)}
       />

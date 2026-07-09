@@ -4,12 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { HelpCircle, Send, Clock, Check, AlertTriangle } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 const COOLDOWN_KEY = 'nexblox_help_cooldown';
 const COOLDOWN_MS = 60000;
 
 export default function HelpPage() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = appLocales[lang].help;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -73,48 +77,48 @@ export default function HelpPage() {
       <main className="main-content">
         <div className="page-top">
           <div>
-            <h1 className="page-title">Help</h1>
-            <p className="page-desc">Get in touch with our support team.</p>
+            <h1 className="page-title">{t.title}</h1>
+            <p className="page-desc">{t.desc}</p>
           </div>
         </div>
 
         <div className="help-card">
           <div className="help-card-header">
             <HelpCircle size={18} style={{ color: '#f59e0b' }} />
-            <span>Contact Support</span>
+            <span>{t.contactSupport}</span>
           </div>
 
           {status === 'sent' && (
             <div className="help-success">
-              <Check size={16} /> Message sent successfully! We'll get back to you soon.
+              <Check size={16} /> {t.success}
             </div>
           )}
           {status === 'error' && (
             <div className="help-error">
-              <AlertTriangle size={16} /> Failed to send. Try again later.
+              <AlertTriangle size={16} /> {t.error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="help-form">
             <div className="help-field">
-              <label>Your Name</label>
+              <label>{t.yourName}</label>
               <div className="help-static">{name || '...'}</div>
             </div>
             <div className="help-field">
-              <label>Your Email</label>
+              <label>{t.yourEmail}</label>
               <div className="help-static">{email || 'Not provided'}</div>
             </div>
             <div className="help-field">
-              <label>Message</label>
+              <label>{t.message}</label>
               <textarea value={message} onChange={e => setMessage(e.target.value)} required placeholder="Describe your issue or question..." rows={5} />
             </div>
             <button type="submit" className="help-submit" disabled={sending || cooldown > 0}>
               {sending ? (
-                'Sending...'
+                t.sending
               ) : cooldown > 0 ? (
-                <><Clock size={14} /> Wait {cooldown}s</>
+                <><Clock size={14} /> {t.wait.replace('{n}', cooldown)}</>
               ) : (
-                <><Send size={14} /> Send Message</>
+                <><Send size={14} /> {t.sendMessage}</>
               )}
             </button>
           </form>

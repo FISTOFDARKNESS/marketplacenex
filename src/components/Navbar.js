@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Crown, Search, Heart, Wallet, Package, Backpack, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { locales } from '@/lib/locales';
+import { useLang } from '@/lib/LanguageProvider';
 
 export default function Navbar({
   user,
@@ -13,11 +14,10 @@ export default function Navbar({
   onOpenAuth,
   onLogout,
   onScrollTo,
-  lang = 'en',
-  setLang,
   onOpenWishlist,
   onOpenFinance,
 }) {
+  const { lang, setLang } = useLang();
   const t = locales[lang].nav;
 
   return (

@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import { LanguageProvider } from '@/lib/LanguageProvider';
 
 export const metadata = {
   title: 'NexBlox - Buy & Sell Roblox Limiteds',
@@ -19,7 +20,7 @@ export default function RootLayout({ children }) {
         }} />
         <script src="https://accounts.google.com/gsi/client" async defer></script>
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

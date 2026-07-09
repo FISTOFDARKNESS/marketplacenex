@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { X, Shield, Check, AlertTriangle, Copy, ExternalLink, Clock, Package, Backpack, UserCheck, Search } from 'lucide-react';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 export function VerifyModal({ user, onClose }) {
+  const { lang } = useLang();
+  const t = appLocales[lang].modals;
   const [step, setStep] = useState('start');
   const [robloxUser, setRobloxUser] = useState('');
   const [robloxId, setRobloxId] = useState(null);
@@ -65,8 +69,8 @@ export function VerifyModal({ user, onClose }) {
               <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(245,158,11,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
                 <Shield size={24} style={{ color: '#f59e0b' }} />
               </div>
-              <h3 style={{ margin: '0 0 6px' }}>Verify Roblox Account</h3>
-              <p style={{ color: '#6b7280', fontSize: '13px', margin: '0 0 16px' }}>Link your Roblox account to receive items directly</p>
+              <h3 style={{ margin: '0 0 6px' }}>{t.verifyRoblox}</h3>
+              <p style={{ color: '#6b7280', fontSize: '13px', margin: '0 0 16px' }}>{t.linkRoblox}</p>
               <input
                 type="text" placeholder="Roblox username" value={robloxUser}
                 onChange={e => setRobloxUser(e.target.value)} required
@@ -77,14 +81,14 @@ export function VerifyModal({ user, onClose }) {
                 }}
               />
               <button type="submit" className="purchase-btn" disabled={loading}>
-                {loading ? 'Generating...' : 'Start verification'}
+                {loading ? t.generating : t.startVerification}
               </button>
             </form>
           )}
 
           {step === 'phrase' && (
             <div style={{ textAlign: 'center', padding: '12px 0' }}>
-              <h3 style={{ margin: '0 0 6px' }}>Set your Roblox bio</h3>
+              <h3 style={{ margin: '0 0 6px' }}>{t.setBio}</h3>
               <p style={{ color: '#6b7280', fontSize: '13px', margin: '0 0 16px' }}>
                 Copy this phrase and paste it in your Roblox bio for <b>{robloxUser}</b>
               </p>
@@ -108,11 +112,11 @@ export function VerifyModal({ user, onClose }) {
                   border: '1px solid #2a2a2e', borderRadius: '8px', color: '#d1d5db', cursor: 'pointer',
                   fontSize: '13px', textDecoration: 'none',
                 }}>
-                  <ExternalLink size={14} /> Open Roblox
+                  <ExternalLink size={14} /> {appLocales[lang].settings.openRoblox}
                 </a>
               </div>
               <button className="purchase-btn" onClick={handleCheck} disabled={loading}>
-                {loading ? 'Checking...' : 'I\'ve set my bio'}
+                {loading ? appLocales[lang].common.loading : appLocales[lang].settings.iveSetBio}
               </button>
             </div>
           )}
@@ -122,11 +126,11 @@ export function VerifyModal({ user, onClose }) {
               <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
                 <Check size={24} style={{ color: '#22c55e' }} />
               </div>
-              <h3 style={{ margin: '0 0 6px' }}>Account verified!</h3>
+              <h3 style={{ margin: '0 0 6px' }}>{t.accountVerified}</h3>
               <p style={{ color: '#6b7280', fontSize: '13px', margin: '0 0 16px' }}>
-                Your Roblox account <b>{robloxUser}</b> is now linked
+                Your Roblox account <b>{robloxUser}</b> {t.nowLinked}
               </p>
-              <button className="purchase-btn" onClick={onClose}>Done</button>
+              <button className="purchase-btn" onClick={onClose}>{t.done}</button>
             </div>
           )}
         </div>
@@ -136,6 +140,8 @@ export function VerifyModal({ user, onClose }) {
 }
 
 export function OrdersModal({ user, onClose }) {
+  const { lang } = useLang();
+  const t = appLocales[lang].modals;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -154,13 +160,13 @@ export function OrdersModal({ user, onClose }) {
         <div className="purchase-body">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <Package size={20} style={{ color: '#f59e0b' }} />
-            <h3 style={{ margin: 0 }}>Orders</h3>
+            <h3 style={{ margin: 0 }}>{t.ordersTitle}</h3>
           </div>
 
           {loading ? (
-            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>Loading...</p>
+            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>{appLocales[lang].common.loading}</p>
           ) : orders.length === 0 ? (
-            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>No orders yet</p>
+            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>{t.noOrdersYet}</p>
           ) : (
             orders.map(o => (
               <div key={o.id} style={{
@@ -189,6 +195,8 @@ export function OrdersModal({ user, onClose }) {
 }
 
 export function InventoryModal({ user, onClose }) {
+  const { lang } = useLang();
+  const t = appLocales[lang].modals;
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -207,13 +215,13 @@ export function InventoryModal({ user, onClose }) {
         <div className="purchase-body">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <Backpack size={20} style={{ color: '#22c55e' }} />
-            <h3 style={{ margin: 0 }}>Inventory ({inventory.length})</h3>
+            <h3 style={{ margin: 0 }}>{t.inventoryTitle} ({inventory.length})</h3>
           </div>
 
           {loading ? (
-            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>Loading...</p>
+            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>{appLocales[lang].common.loading}</p>
           ) : inventory.length === 0 ? (
-            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>No items yet</p>
+            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>{t.noItemsYet}</p>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
               {inventory.map(inv => (
@@ -234,6 +242,8 @@ export function InventoryModal({ user, onClose }) {
 }
 
 export function AdminOrdersModal({ user, onClose }) {
+  const { lang } = useLang();
+  const t = appLocales[lang].modals;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -272,7 +282,7 @@ export function AdminOrdersModal({ user, onClose }) {
           </div>
 
           {loading ? (
-            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>Loading...</p>
+            <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>{appLocales[lang].common.loading}</p>
           ) : pendingOrders.length === 0 ? (
             <p style={{ color: '#6b7280', textAlign: 'center', padding: '24px' }}>No pending orders</p>
           ) : (

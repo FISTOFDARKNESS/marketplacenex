@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShoppingBag, DollarSign, TrendingUp, Bell, CheckCircle } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = appLocales[lang].dashboard;
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -36,8 +40,8 @@ export default function DashboardPage() {
       <main className="main-content">
         <div className="page-top" style={{ marginBottom: '24px' }}>
           <div>
-            <h1 className="page-title" style={{ textTransform: 'capitalize' }}>Welcome back, {username}</h1>
-            <p className="page-desc">Here's what's happening with your marketplace today.</p>
+            <h1 className="page-title" style={{ textTransform: 'capitalize' }}>{t.welcome} {username}</h1>
+            <p className="page-desc">{t.desc}</p>
           </div>
         </div>
 
@@ -47,7 +51,7 @@ export default function DashboardPage() {
               <ShoppingBag size={20} />
             </div>
             <div className="dash-card-body">
-              <div className="dash-card-label">Orders Today</div>
+              <div className="dash-card-label">{t.ordersToday}</div>
               <div className="dash-card-value">{s?.ordersToday ?? 0}</div>
             </div>
           </div>
@@ -56,7 +60,7 @@ export default function DashboardPage() {
               <DollarSign size={20} />
             </div>
             <div className="dash-card-body">
-              <div className="dash-card-label">Today's Revenue</div>
+              <div className="dash-card-label">{t.todayRevenue}</div>
               <div className="dash-card-value">${(s?.todayRevenue ?? 0).toFixed(2)}</div>
             </div>
           </div>
@@ -65,22 +69,22 @@ export default function DashboardPage() {
               <TrendingUp size={20} />
             </div>
             <div className="dash-card-body">
-              <div className="dash-card-label">Total Profit</div>
+              <div className="dash-card-label">{t.totalProfit}</div>
               <div className="dash-card-value">${(s?.totalProfit ?? 0).toFixed(2)}</div>
             </div>
           </div>
         </div>
 
         <div className="dash-section">
-          <h3 className="dash-section-title">Revenue Overview</h3>
+          <h3 className="dash-section-title">{t.revenueOverview}</h3>
           <div className="dash-revenue-card">
             <div className="dash-revenue-stats">
               <div>
-                <div className="dash-revenue-label">Average</div>
+                <div className="dash-revenue-label">{t.average}</div>
                 <div className="dash-revenue-value">${(r?.avgRevenue ?? 0).toFixed(2)}</div>
               </div>
               <div>
-                <div className="dash-revenue-label">Peak</div>
+                <div className="dash-revenue-label">{t.peak}</div>
                 <div className="dash-revenue-value">${(r?.peakRevenue ?? 0).toFixed(2)}</div>
               </div>
             </div>
@@ -100,10 +104,10 @@ export default function DashboardPage() {
         </div>
 
         <div className="dash-section">
-          <h3 className="dash-section-title">Notifications</h3>
+          <h3 className="dash-section-title">{t.notifications}</h3>
           <div className="dash-notif-card">
             <Bell size={18} style={{ color: '#6b7280' }} />
-            <span>You're all caught up!</span>
+            <span>{t.caughtUp}</span>
           </div>
         </div>
       </main>

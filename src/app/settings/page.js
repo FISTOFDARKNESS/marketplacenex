@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw, Smartphone, Monitor, ShieldCheck, Send, LogOut, X } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = appLocales[lang].settings;
   const [user, setUser] = useState(null);
   const [method, setMethod] = useState('bio');
   const [step, setStep] = useState('start');
@@ -187,9 +191,9 @@ export default function SettingsPage() {
         body: JSON.stringify({ sessionId: otpSession }),
       });
       const data = await res.json();
-      if (!res.ok) { setOtpMsg({ text: data.error, ok: false }); return; }
-      setOtpMsg({ text: 'Código enviado para o seu e-mail.', ok: true });
-    } catch { setOtpMsg({ text: 'Falha ao enviar código', ok: false }); }
+      if (!res.ok) {       setOtpMsg({ text: data.error, ok: false }); return; }
+      setOtpMsg({ text: t.codeSentEmail, ok: true });
+    } catch { setOtpMsg({ text: t.failedSendCode, ok: false }); }
     finally { setOtpBusy(false); }
   }
 
@@ -204,7 +208,7 @@ export default function SettingsPage() {
       if (!res.ok) { setOtpMsg({ text: data.error, ok: false }); return; }
       setSessions(prev => prev.filter(s => s.id !== otpSession));
       setOtpSession(null); setOtpCode('');
-    } catch { setOtpMsg({ text: 'Falha ao encerrar sessão', ok: false }); }
+    } catch { setOtpMsg({ text: t.failedEndSession, ok: false }); }
     finally { setOtpBusy(false); }
   }
 
@@ -214,18 +218,18 @@ export default function SettingsPage() {
       <main className="main-content">
         <div className="page-top">
           <div>
-            <h1 className="page-title">Settings</h1>
-            <p className="page-desc">Manage your account settings and linked Roblox account.</p>
+            <h1 className="page-title">{t.pageTitle}</h1>
+            <p className="page-desc">{t.pageDesc}</p>
           </div>
         </div>
 
         <div className="settings-section">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <User size={18} style={{ color: '#9ca3af' }} />
-            <h3 style={{ margin: 0, fontSize: '15px' }}>Account</h3>
+            <h3 style={{ margin: 0, fontSize: '15px' }}>{t.account}</h3>
           </div>
           <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
-            <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Username</div>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{t.username}</div>
             <div style={{ fontSize: '14px', color: '#e5e7eb', fontWeight: 600 }}>{user?.username || '...'}</div>
           </div>
         </div>
@@ -233,23 +237,23 @@ export default function SettingsPage() {
         <div className="settings-section">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <Shield size={18} style={{ color: '#f59e0b' }} />
-            <h3 style={{ margin: 0, fontSize: '15px' }}>Roblox Verification</h3>
+            <h3 style={{ margin: 0, fontSize: '15px' }}>{t.robloxVerification}</h3>
           </div>
 
           {cookieStatus?.hasCookie && !cookieStatus?.valid && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b', fontSize: '13px', padding: '10px 14px', background: 'rgba(245,158,11,0.1)', borderRadius: '8px', marginBottom: '12px', border: '1px solid rgba(245,158,11,0.2)' }}>
-              <RefreshCw size={14} /> Saved cookie expired. Enter a new one below to continue using Roblox features.
+              <RefreshCw size={14} /> {t.cookieExpired}
             </div>
           )}
 
           {isLinked && (step === 'start' || step === 'done') && cookieStatus?.valid !== false ? (
             <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#22c55e', marginBottom: '12px', padding: '8px 12px', background: 'rgba(34,197,94,0.08)', borderRadius: '8px' }}>
-                <Check size={14} /> Linked: <b>{user.robloxUsername}</b>
+                <Check size={14} /> {t.alreadyLinked} <b>{user.robloxUsername}</b>
               </div>
               <button onClick={handleUnlink} disabled={loading} className="purchase-btn purchase-btn-secondary"
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                <Trash2 size={14} /> {loading ? 'Unlinking...' : 'Unlink Roblox Account'}
+                <Trash2 size={14} /> {loading ? appLocales[lang].common.loading : t.unlink}
               </button>
             </div>
           ) : (
@@ -262,7 +266,7 @@ export default function SettingsPage() {
                     color: method === 'bio' ? '#FFD700' : '#9ca3af', fontWeight: method === 'bio' ? 600 : 400,
                     fontSize: '13px', fontFamily: 'inherit', transition: 'all 0.2s',
                   }}>
-                  Bio Verification
+                  {t.bioVerification}
                 </button>
                 <button onClick={() => switchMethod('cookie')}
                   style={{
@@ -271,7 +275,7 @@ export default function SettingsPage() {
                     color: method === 'cookie' ? '#FFD700' : '#9ca3af', fontWeight: method === 'cookie' ? 600 : 400,
                     fontSize: '13px', fontFamily: 'inherit', transition: 'all 0.2s',
                   }}>
-                  Cookie Verification
+                  {t.cookieVerification}
                 </button>
               </div>
 
@@ -285,11 +289,11 @@ export default function SettingsPage() {
                 {step === 'start' && method === 'bio' && (
                   <div>
                     <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 12px' }}>
-                      Enter your Roblox username. We&apos;ll give you a phrase to paste in your bio.
+                      {t.bioDesc}
                     </p>
                     <form onSubmit={handleBioStart} style={{ display: 'flex', gap: '8px' }}>
                       <input
-                        type="text" placeholder="Roblox username" value={robloxUser}
+                        type="text" placeholder={t.verify} value={robloxUser}
                         onChange={e => setRobloxUser(e.target.value)} required
                         style={{
                           flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e',
@@ -297,7 +301,7 @@ export default function SettingsPage() {
                         }}
                       />
                       <button type="submit" className="purchase-btn" disabled={loading} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
-                        {loading ? '...' : 'Verify'}
+                          {loading ? '...' : t.verify}
                       </button>
                     </form>
                   </div>
@@ -306,7 +310,7 @@ export default function SettingsPage() {
                 {step === 'start' && method === 'cookie' && (
                   <div>
                     <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 12px' }}>
-                      Paste your <b>.ROBLOSECURITY</b> cookie to verify your Roblox account.
+                      {t.cookieDesc}
                     </p>
                     <form onSubmit={handleCookieVerify}>
                       <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
@@ -330,12 +334,12 @@ export default function SettingsPage() {
                         </div>
                         <button type="submit" className="purchase-btn" disabled={loading}
                           style={{ padding: '12px 14px', fontSize: '13px', whiteSpace: 'nowrap' }}>
-                          {loading ? '...' : 'Verify'}
+                        {loading ? '...' : t.verify}
                         </button>
                       </div>
                     </form>
                     <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: 1.5 }}>
-                      <b style={{ color: '#f59e0b' }}>How to get your cookie:</b>
+                      <b style={{ color: '#f59e0b' }}>{t.howToGetCookie}</b>
                       <ol style={{ margin: '4px 0 0', paddingLeft: '16px' }}>
                         <li>Go to <a href="https://www.roblox.com" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa' }}>Roblox.com</a> and log in</li>
                         <li>Open DevTools (F12) → Application → Cookies → <b>.ROBLOSECURITY</b></li>
@@ -348,7 +352,7 @@ export default function SettingsPage() {
                 {step === 'phrase' && (
                   <div>
                     <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 12px' }}>
-                      Copy this phrase and paste it in your Roblox bio for <b>{robloxUser}</b>
+                      {t.phraseDesc} <b>{robloxUser}</b>
                     </p>
                     <div style={{ background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '10px', padding: '16px', fontSize: '18px', fontWeight: 700, color: '#fbbf24', textAlign: 'center', marginBottom: '12px', letterSpacing: '0.5px' }}>
                       {phrase}
@@ -358,11 +362,11 @@ export default function SettingsPage() {
                         {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy</>}
                       </button>
                       <a href="https://www.roblox.com/users/profile/edit" target="_blank" rel="noopener noreferrer" className="verify-btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '8px', color: '#d1d5db', textDecoration: 'none', fontSize: '13px' }}>
-                        <ExternalLink size={14} /> Open Roblox
+                        <ExternalLink size={14} /> {t.openRoblox}
                       </a>
                     </div>
                     <button className="purchase-btn" onClick={handleBioCheck} disabled={loading} style={{ width: '100%' }}>
-                      {loading ? 'Checking...' : "I've set my bio"}
+                      {loading ? appLocales[lang].common.loading : t.iveSetBio}
                     </button>
                   </div>
                 )}
@@ -370,9 +374,9 @@ export default function SettingsPage() {
                 {step === 'done' && (
                   <div style={{ textAlign: 'center', padding: '12px 0' }}>
                     <Check size={32} style={{ color: '#22c55e', marginBottom: '8px' }} />
-                    <p style={{ color: '#22c55e', fontSize: '14px', fontWeight: 600, margin: 0 }}>Account verified!</p>
+                    <p style={{ color: '#22c55e', fontSize: '14px', fontWeight: 600, margin: 0 }}>{t.verifiedTitle}</p>
                     <p style={{ color: '#6b7280', fontSize: '13px', marginTop: '4px' }}>
-                      <b>{user?.robloxUsername || 'Roblox account'}</b> is now linked
+                      <b>{user?.robloxUsername || 'Roblox account'}</b> {t.verifiedText}
                     </p>
                   </div>
                 )}
@@ -384,18 +388,18 @@ export default function SettingsPage() {
         <div className="settings-section">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <ShieldCheck size={18} style={{ color: '#22c55e' }} />
-            <h3 style={{ margin: 0, fontSize: '15px' }}>Security</h3>
+            <h3 style={{ margin: 0, fontSize: '15px' }}>{t.security}</h3>
           </div>
 
           <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>
-              <Smartphone size={14} /> Gmail
+              <Smartphone size={14} /> {t.gmail}
             </div>
             {user?.gmailVerified ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                 <span style={{ fontSize: '14px', color: '#e5e7eb' }}>{user.gmail}</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#22c55e', fontSize: '12px' }}>
-                  <ShieldCheck size={13} /> Verified
+                  <ShieldCheck size={13} /> {t.verified}
                 </span>
               </div>
             ) : gmailSent ? (
@@ -407,17 +411,17 @@ export default function SettingsPage() {
                 )}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
-                    type="text" inputMode="numeric" placeholder="8-digit code" value={gmailCode}
+                    type="text" inputMode="numeric" placeholder={t.codePlaceholder} value={gmailCode}
                     onChange={e => setGmailCode(e.target.value)} required
                     style={{ flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '14px', outline: 'none', fontFamily: 'inherit', letterSpacing: '2px' }}
                   />
                   <button type="button" className="purchase-btn" onClick={handleGmailVerify} disabled={gmailBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
-                    {gmailBusy ? '...' : 'Verify'}
+                    {gmailBusy ? '...' : t.verifyCode}
                   </button>
                 </div>
-                <button type="button" onClick={() => { setGmailSent(false); setGmailMsg(null); }} style={{ background: 'none', border: 'none', color: '#6b7280', fontSize: '12px', cursor: 'pointer', marginTop: '8px', fontFamily: 'inherit' }}>
-                  Cancel
-                </button>
+                  <button type="button" onClick={() => { setGmailSent(false); setGmailMsg(null); }} style={{ background: 'none', border: 'none', color: '#6b7280', fontSize: '12px', cursor: 'pointer', marginTop: '8px', fontFamily: 'inherit' }}>
+                    {appLocales[lang].common.cancel}
+                  </button>
               </div>
             ) : (
               <div>
@@ -428,12 +432,12 @@ export default function SettingsPage() {
                 )}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
-                    type="text" placeholder="name@gmail.com" value={gmailInput}
+                    type="text" placeholder={t.gmailPlaceholder} value={gmailInput}
                     onChange={e => setGmailInput(e.target.value)} required
                     style={{ flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '14px', outline: 'none', fontFamily: 'inherit' }}
                   />
                   <button type="button" className="purchase-btn" onClick={handleGmailSend} disabled={gmailBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
-                    {gmailBusy ? '...' : 'Send code'}
+                    {gmailBusy ? '...' : t.sendCode}
                   </button>
                 </div>
               </div>
@@ -441,11 +445,11 @@ export default function SettingsPage() {
           </div>
 
           <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
-            <div style={{ fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>Active devices</div>
+            <div style={{ fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>{t.activeDevices}</div>
             {sessionsLoading ? (
-              <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>Loading...</p>
+              <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>{appLocales[lang].common.loading}</p>
             ) : sessions.length === 0 ? (
-              <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>No active sessions.</p>
+              <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>{t.noSessions}</p>
             ) : (
               <div className="sec-devices">
                 {sessions.map(s => (
@@ -455,15 +459,15 @@ export default function SettingsPage() {
                     </div>
                     <div className="sec-device-body">
                       <div className="sec-device-name">
-                        {s.device}{s.isCurrent && <span className="sec-badge-current">This device</span>}
+                        {s.device}{s.isCurrent && <span className="sec-badge-current">{t.thisDevice}</span>}
                       </div>
                       <div className="sec-device-meta">{s.ip} · {new Date(s.lastSeen).toLocaleString()}</div>
                     </div>
                     <div className="sec-device-right">
-                      <span className={`sec-status ${s.online ? 'on' : 'off'}`}>{s.online ? 'Online' : 'Offline'}</span>
+                      <span className={`sec-status ${s.online ? 'on' : 'off'}`}>{s.online ? t.online : t.offline}</span>
                       {!s.isCurrent && (
                         <button className="sec-revoke" onClick={() => openOtp(s.id)}>
-                          <LogOut size={13} /> Log out
+                          <LogOut size={13} /> {t.logoutDevice}
                         </button>
                       )}
                     </div>
@@ -479,9 +483,9 @@ export default function SettingsPage() {
         <div className="inv-modal-backdrop" onClick={() => setOtpSession(null)}>
           <div className="inv-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 380 }}>
             <button className="inv-modal-close" onClick={() => setOtpSession(null)}><X size={18} /></button>
-            <h3 className="inv-modal-title">Confirm device logout</h3>
+            <h3 className="inv-modal-title">{t.confirmLogout}</h3>
             <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 14px', textAlign: 'center' }}>
-              We sent an 8-digit code to your e-mail. Enter it to end this session.
+              {t.confirmLogoutText}
             </p>
             {otpMsg && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: otpMsg.ok ? '#22c55e' : '#ef4444', background: otpMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
@@ -498,10 +502,10 @@ export default function SettingsPage() {
               inputMode="numeric"
             />
             <button className="purchase-btn" style={{ width: '100%', marginBottom: '8px' }} onClick={handleRevoke} disabled={otpBusy}>
-              {otpBusy ? 'Ending...' : 'End session'}
+              {otpBusy ? appLocales[lang].common.loading : t.endSession}
             </button>
             <button className="verify-btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={handleSendOtp} disabled={otpBusy}>
-              <Send size={14} /> Resend code
+              <Send size={14} /> {t.resendCode}
             </button>
           </div>
         </div>

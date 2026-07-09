@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Package } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 export default function OrdersPage() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = appLocales[lang].orders;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,14 +50,14 @@ export default function OrdersPage() {
       <main className="main-content">
         <div className="page-top">
           <div>
-            <h1 className="page-title">Orders</h1>
-            <p className="page-desc">Track and manage your purchases and received items.</p>
+            <h1 className="page-title">{t.title}</h1>
+            <p className="page-desc">{t.desc}</p>
           </div>
           <div className="search-bar">
             <Search size={16} />
             <input
               type="text"
-              placeholder="Search items or Roblox user..."
+              placeholder={t.search}
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -64,22 +68,22 @@ export default function OrdersPage() {
           <table className="data-table orders-table">
             <thead>
               <tr>
-                <th>Item</th>
-                <th className="hide-mobile">Roblox User</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th className="hide-mobile">Date</th>
+                <th>{t.item}</th>
+                <th className="hide-mobile">{t.robloxUser}</th>
+                <th>{t.price}</th>
+                <th>{t.status}</th>
+                <th className="hide-mobile">{t.date}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={5} className="table-empty"><div className="loading-spinner" /><span>Loading...</span></td></tr>
+                <tr><td colSpan={5} className="table-empty"><div className="loading-spinner" /><span>{appLocales[lang].common.loading}</span></td></tr>
               ) : error ? (
                 <tr><td colSpan={5} className="table-empty" style={{color:'#ef4444'}}>{error}</td></tr>
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={5} className="table-empty">
                   <Package size={32} style={{opacity:0.3}} />
-                  <span>No orders found.</span>
+                  <span>{t.noOrders}</span>
                 </td></tr>
               ) : (
                 filtered.map(o => {

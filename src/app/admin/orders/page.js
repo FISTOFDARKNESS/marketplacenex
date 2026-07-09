@@ -3,9 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Shield, ArrowLeft } from 'lucide-react';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 export default function AdminOrdersPage() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = appLocales[lang].admin;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,26 +48,26 @@ export default function AdminOrdersPage() {
         <button className="icon-btn" onClick={() => router.push('/')}><ArrowLeft className="icon" /></button>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Shield size={20} style={{ color: '#ef4444' }} />
-          <h1 style={{ margin: 0, fontSize: '20px' }}>Admin — Pending Orders ({pendingOrders.length})</h1>
+          <h1 style={{ margin: 0, fontSize: '20px' }}>{t.title} ({pendingOrders.length})</h1>
         </div>
         <div />
       </div>
 
       <div className="page-content">
         {loading ? (
-          <p className="page-empty">Loading...</p>
+          <p className="page-empty">{t.loading}</p>
         ) : pendingOrders.length === 0 ? (
-          <p className="page-empty">No pending orders</p>
+          <p className="page-empty">{t.noPending}</p>
         ) : (
           pendingOrders.map(o => (
             <div key={o.id} className="page-card">
               <img src={o.item?.img} alt={o.item?.name} className="page-card-img" />
               <div className="page-card-body">
                 <div className="page-card-name">{o.item?.name}</div>
-                <div className="page-card-sub">User: {o.user?.username || o.userId} → {o.robloxUser}</div>
+                <div className="page-card-sub">{t.user}: {o.user?.username || o.userId} → {o.robloxUser}</div>
               </div>
               <button onClick={() => handleApprove(o.id)} className="approve-btn">
-                Approve
+                {t.approve}
               </button>
             </div>
           ))

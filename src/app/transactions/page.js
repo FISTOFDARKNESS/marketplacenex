@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, ChevronDown } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 export default function TransactionsPage() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = appLocales[lang].transactions;
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -44,14 +48,14 @@ export default function TransactionsPage() {
       <main className="main-content">
         <div className="page-top">
           <div>
-            <h1 className="page-title">Transactions</h1>
-            <p className="page-desc">View your deposit and withdrawal transaction history.</p>
+            <h1 className="page-title">{t.title}</h1>
+            <p className="page-desc">{t.desc}</p>
           </div>
           <div className="search-bar">
             <Search size={16} />
             <input
               type="text"
-              placeholder="Search by transaction ID..."
+              placeholder={t.search}
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -62,19 +66,19 @@ export default function TransactionsPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Method</th>
-                <th>Status</th>
-                <th>Date</th>
+                <th>{t.id}</th>
+                <th>{t.type}</th>
+                <th>{t.amount}</th>
+                <th>{t.method}</th>
+                <th>{t.status}</th>
+                <th>{t.date}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} className="table-empty">Loading...</td></tr>
+                <tr><td colSpan={6} className="table-empty">{appLocales[lang].common.loading}</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={6} className="table-empty">No transactions found.</td></tr>
+                <tr><td colSpan={6} className="table-empty">{t.noTransactions}</td></tr>
               ) : (
                 filtered.map(t => (
                   <tr key={t.id}>

@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, ChevronDown } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import { useLang } from '@/lib/LanguageProvider';
+import { appLocales } from '@/lib/appLocales';
 
 export default function HistoryPage() {
   const router = useRouter();
+  const { lang } = useLang();
+  const t = appLocales[lang].history;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -39,14 +43,14 @@ export default function HistoryPage() {
       <main className="main-content">
         <div className="page-top">
           <div>
-            <h1 className="page-title">Purchase History</h1>
-            <p className="page-desc">View all items you have purchased from other sellers.</p>
+            <h1 className="page-title">{t.title}</h1>
+            <p className="page-desc">{t.desc}</p>
           </div>
           <div className="search-bar">
             <Search size={16} />
             <input
               type="text"
-              placeholder="Search by item name..."
+              placeholder={t.search}
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -57,18 +61,18 @@ export default function HistoryPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Item</th>
-                <th>Seller</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th>{t.item}</th>
+                <th>{t.seller}</th>
+                <th>{t.price}</th>
+                <th>{t.status}</th>
+                <th>{t.action}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={5} className="table-empty">Loading...</td></tr>
+                <tr><td colSpan={5} className="table-empty">{appLocales[lang].common.loading}</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={5} className="table-empty">No purchases found.</td></tr>
+                <tr><td colSpan={5} className="table-empty">{t.noPurchases}</td></tr>
               ) : (
                 filtered.map(o => (
                   <tr key={o.id}>
