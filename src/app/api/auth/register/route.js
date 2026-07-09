@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { hashPassword, signToken, createSession } from '@/lib/auth';
+import { hashPassword, signToken, createSession, sendNewLoginAlert } from '@/lib/auth';
 import { rateLimit, getIP } from '@/lib/rateLimit';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 
@@ -55,6 +55,7 @@ export async function POST(req) {
     });
 
     const sid = await createSession(user.id, req);
+    sendNewLoginAlert(user.id, sid, req);
     const token = signToken({ id: user.id, username: user.username, role: user.role, sid });
 
     const response = NextResponse.json({

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { prisma } from './db';
+import { sendLoginAlertEmail } from './email';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-default-key';
 
@@ -42,6 +43,26 @@ export async function createSession(userId, req) {
   return session.jti;
 }
 
+export async function sendNewLoginAlert(userId, sessionJti, req) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { gmail: true, gmailVerified: true },
+    });
+    if (!user?.gmailVerified || !user?.gmail) return;
+
+    const ua = req?.headers?.get?.('user-agent') || '';
+    const ip = req?.headers?.get?.('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    const { browser, os } = parseUserAgent(ua);
+    const device = `${browser} on ${os}`;
+    const token = generateEndSessionToken(sessionJti, userId);
+
+    await sendLoginAlertEmail(user.gmail, token, { browser, os, device, ip });
+  } catch (e) {
+    console.error('Failed to send login alert:', e);
+  }
+}
+
 export async function destroySession(jti) {
   if (!jti) return;
   try {
@@ -53,6 +74,14 @@ export async function destroySession(jti) {
 
 export function signToken(payload) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+}
+
+export function generateEndSessionToken(sessionId, userId) {
+  return jwt.sign(
+    { sessionId, userId, purpose: 'end-session' },
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  );
 }
 
 export function verifyToken(token) {
