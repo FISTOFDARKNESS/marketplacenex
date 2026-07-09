@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import { rateLimit, getIP } from '@/lib/rateLimit';
 import { verifyRecaptcha } from '@/lib/recaptcha';
+import { getBaseUrl } from '@/lib/url';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-default-key';
 
@@ -44,7 +45,7 @@ export async function POST(req) {
       { expiresIn: '15m' }
     );
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getBaseUrl(req);
     const resetLink = `${appUrl}/reset-password?token=${token}`;
 
     if (process.env.SMTP_USER) {

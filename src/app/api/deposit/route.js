@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
+import { getBaseUrl } from '@/lib/url';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,9 +62,9 @@ export async function POST(req) {
           amount: String(usdAmount),
           currency: 'USD',
           order_id: deposit.id,
-          url_callback: `${process.env.NEXT_PUBLIC_APP_URL}/api/deposit/callback`,
-          url_return: `${process.env.NEXT_PUBLIC_APP_URL}/?deposit=success`,
-          url_success: `${process.env.NEXT_PUBLIC_APP_URL}/?deposit=success`,
+          url_callback: `${getBaseUrl(req)}/api/deposit/callback`,
+          url_return: `${getBaseUrl(req)}/?deposit=success`,
+          url_success: `${getBaseUrl(req)}/?deposit=success`,
           is_payment_multiple: false,
           lifetime: 3600,
         }),

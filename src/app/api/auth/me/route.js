@@ -35,6 +35,13 @@ export async function GET(req) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
+    if (decoded.sid) {
+      const session = await prisma.session.findUnique({ where: { jti: decoded.sid } });
+      if (!session) {
+        return NextResponse.json({ authenticated: false }, { status: 401 });
+      }
+    }
+
     return NextResponse.json({ authenticated: true, user });
   } catch (error) {
     console.error('Auth check error:', error);
