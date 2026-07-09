@@ -14,26 +14,26 @@ export async function POST(req) {
     const { code } = await req.json();
     if (!code) return NextResponse.json({ error: 'Code required' }, { status: 400 });
 
-    const result = await verifyOtpChallenge({ userId: decoded.id, type: 'phone-verify', code });
+    const result = await verifyOtpChallenge({ userId: decoded.id, type: 'gmail-verify', code });
     if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
 
     const challenge = await prisma.otpChallenge.findFirst({
-      where: { userId: decoded.id, type: 'phone-verify', consumedAt: { not: null } },
+      where: { userId: decoded.id, type: 'gmail-verify', consumedAt: { not: null } },
       orderBy: { createdAt: 'desc' },
     });
-    const phone = challenge?.target;
-    if (!phone) return NextResponse.json({ error: 'Telefone não encontrado.' }, { status: 400 });
+    const gmail = challenge?.target;
+    if (!gmail) return NextResponse.json({ error: 'Gmail not found.' }, { status: 400 });
 
     await prisma.user.update({
       where: { id: decoded.id },
-      data: { phone, phoneVerified: true },
+      data: { gmail, gmailVerified: true },
     });
 
-    return NextResponse.json({ success: true, phone });
+    return NextResponse.json({ success: true, gmail });
   } catch (error) {
-    console.error('Phone verify error:', error);
+    console.error('Gmail verify error:', error);
     if (error.code === 'P2002') {
-      return NextResponse.json({ error: 'Este número já está vinculado a outra conta.' }, { status: 400 });
+      return NextResponse.json({ error: 'This Gmail is already linked to another account.' }, { status: 400 });
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

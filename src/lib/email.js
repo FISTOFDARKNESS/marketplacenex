@@ -62,26 +62,26 @@ function otpTemplate(code, title, message) {
   </html>`;
 }
 
-export async function sendOtpEmail(email, code, purpose = 'phone-verify') {
+export async function sendOtpEmail(email, code, purpose = 'gmail-verify') {
   const config = {
-    'phone-verify': {
-      title: 'Confirme seu número de celular',
-      message: 'Use o código abaixo para vincular seu número de celular à sua conta NexBlox.',
+    'gmail-verify': {
+      title: 'Verify your Gmail address',
+      message: 'Use the code below to link your Gmail address to your NexBlox account.',
     },
     'session-revoke': {
-      title: 'Confirme o encerramento do dispositivo',
-      message: 'Use o código abaixo para confirmar o encerramento de uma sessão na sua conta NexBlox.',
+      title: 'Confirm device sign out',
+      message: 'Use the code below to confirm signing out a session from your NexBlox account.',
     },
   };
-  const c = config[purpose] || config['phone-verify'];
+  const c = config[purpose] || config['gmail-verify'];
   const subjectMap = {
-    'phone-verify': 'Seu código de verificação — NexBlox',
-    'session-revoke': 'Confirmar encerramento de sessão — NexBlox',
+    'gmail-verify': 'Your verification code — NexBlox',
+    'session-revoke': 'Confirm sign out — NexBlox',
   };
   await getTransporter().sendMail({
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
-    subject: subjectMap[purpose] || subjectMap['phone-verify'],
+    subject: subjectMap[purpose] || subjectMap['gmail-verify'],
     html: otpTemplate(code, c.title, c.message),
   });
 }

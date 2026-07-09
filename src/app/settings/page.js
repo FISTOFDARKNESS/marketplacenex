@@ -21,11 +21,11 @@ export default function SettingsPage() {
 
   const [sessions, setSessions] = useState([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
-  const [phoneInput, setPhoneInput] = useState('');
-  const [phoneSent, setPhoneSent] = useState(false);
-  const [phoneCode, setPhoneCode] = useState('');
-  const [phoneBusy, setPhoneBusy] = useState(false);
-  const [phoneMsg, setPhoneMsg] = useState(null);
+  const [gmailInput, setGmailInput] = useState('');
+  const [gmailSent, setGmailSent] = useState(false);
+  const [gmailCode, setGmailCode] = useState('');
+  const [gmailBusy, setGmailBusy] = useState(false);
+  const [gmailMsg, setGmailMsg] = useState(null);
   const [otpSession, setOtpSession] = useState(null);
   const [otpCode, setOtpCode] = useState('');
   const [otpBusy, setOtpBusy] = useState(false);
@@ -143,36 +143,36 @@ export default function SettingsPage() {
     return () => clearInterval(beat);
   }, [user]);
 
-  function setPhoneError(msg, ok = false) { setPhoneMsg({ text: msg, ok }); }
+  function setGmailError(msg, ok = false) { setGmailMsg({ text: msg, ok }); }
 
-  async function handlePhoneSend() {
-    setPhoneMsg(null); setPhoneBusy(true);
+  async function handleGmailSend() {
+    setGmailMsg(null); setGmailBusy(true);
     try {
-      const res = await fetch('/api/security/phone/send', {
+      const res = await fetch('/api/security/gmail/send', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneInput.trim() }),
+        body: JSON.stringify({ gmail: gmailInput.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) { setPhoneError(data.error); return; }
-      setPhoneSent(true); setPhoneError('Código enviado para o seu e-mail.', true);
-    } catch { setPhoneError('Falha ao enviar código'); }
-    finally { setPhoneBusy(false); }
+      if (!res.ok) { setGmailError(data.error); return; }
+      setGmailSent(true); setGmailError('Code sent to your Gmail.', true);
+    } catch { setGmailError('Failed to send code'); }
+    finally { setGmailBusy(false); }
   }
 
-  async function handlePhoneVerify() {
-    setPhoneMsg(null); setPhoneBusy(true);
+  async function handleGmailVerify() {
+    setGmailMsg(null); setGmailBusy(true);
     try {
-      const res = await fetch('/api/security/phone/verify', {
+      const res = await fetch('/api/security/gmail/verify', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: phoneCode.trim() }),
+        body: JSON.stringify({ code: gmailCode.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) { setPhoneError(data.error); return; }
-      setUser(prev => ({ ...prev, phone: data.phone, phoneVerified: true }));
-      setPhoneSent(false); setPhoneInput(''); setPhoneCode('');
-      setPhoneError('Número verificado com sucesso!', true);
-    } catch { setPhoneError('Falha ao verificar código'); }
-    finally { setPhoneBusy(false); }
+      if (!res.ok) { setGmailError(data.error); return; }
+      setUser(prev => ({ ...prev, gmail: data.gmail, gmailVerified: true }));
+      setGmailSent(false); setGmailInput(''); setGmailCode('');
+      setGmailError('Gmail verified successfully!', true);
+    } catch { setGmailError('Failed to verify code'); }
+    finally { setGmailBusy(false); }
   }
 
   function openOtp(sessionId) {
@@ -389,51 +389,51 @@ export default function SettingsPage() {
 
           <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>
-              <Smartphone size={14} /> Phone number
+              <Smartphone size={14} /> Gmail
             </div>
-            {user?.phoneVerified ? (
+            {user?.gmailVerified ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                <span style={{ fontSize: '14px', color: '#e5e7eb' }}>{user.phone}</span>
+                <span style={{ fontSize: '14px', color: '#e5e7eb' }}>{user.gmail}</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#22c55e', fontSize: '12px' }}>
                   <ShieldCheck size={13} /> Verified
                 </span>
               </div>
-            ) : phoneSent ? (
+            ) : gmailSent ? (
               <div>
-                {phoneMsg && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: phoneMsg.ok ? '#22c55e' : '#ef4444', background: phoneMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
-                    {phoneMsg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {phoneMsg.text}
+                {gmailMsg && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: gmailMsg.ok ? '#22c55e' : '#ef4444', background: gmailMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
+                    {gmailMsg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {gmailMsg.text}
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
-                    type="text" inputMode="numeric" placeholder="8-digit code" value={phoneCode}
-                    onChange={e => setPhoneCode(e.target.value)} required
+                    type="text" inputMode="numeric" placeholder="8-digit code" value={gmailCode}
+                    onChange={e => setGmailCode(e.target.value)} required
                     style={{ flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '14px', outline: 'none', fontFamily: 'inherit', letterSpacing: '2px' }}
                   />
-                  <button type="button" className="purchase-btn" onClick={handlePhoneVerify} disabled={phoneBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
-                    {phoneBusy ? '...' : 'Verify'}
+                  <button type="button" className="purchase-btn" onClick={handleGmailVerify} disabled={gmailBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
+                    {gmailBusy ? '...' : 'Verify'}
                   </button>
                 </div>
-                <button type="button" onClick={() => { setPhoneSent(false); setPhoneMsg(null); }} style={{ background: 'none', border: 'none', color: '#6b7280', fontSize: '12px', cursor: 'pointer', marginTop: '8px', fontFamily: 'inherit' }}>
+                <button type="button" onClick={() => { setGmailSent(false); setGmailMsg(null); }} style={{ background: 'none', border: 'none', color: '#6b7280', fontSize: '12px', cursor: 'pointer', marginTop: '8px', fontFamily: 'inherit' }}>
                   Cancel
                 </button>
               </div>
             ) : (
               <div>
-                {phoneMsg && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: phoneMsg.ok ? '#22c55e' : '#ef4444', background: phoneMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
-                    {phoneMsg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {phoneMsg.text}
+                {gmailMsg && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: gmailMsg.ok ? '#22c55e' : '#ef4444', background: gmailMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
+                    {gmailMsg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {gmailMsg.text}
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input
-                    type="text" placeholder="Phone number" value={phoneInput}
-                    onChange={e => setPhoneInput(e.target.value)} required
+                    type="text" placeholder="name@gmail.com" value={gmailInput}
+                    onChange={e => setGmailInput(e.target.value)} required
                     style={{ flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '14px', outline: 'none', fontFamily: 'inherit' }}
                   />
-                  <button type="button" className="purchase-btn" onClick={handlePhoneSend} disabled={phoneBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
-                    {phoneBusy ? '...' : 'Send code'}
+                  <button type="button" className="purchase-btn" onClick={handleGmailSend} disabled={gmailBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
+                    {gmailBusy ? '...' : 'Send code'}
                   </button>
                 </div>
               </div>

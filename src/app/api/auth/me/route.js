@@ -26,8 +26,8 @@ export async function GET(req) {
         role: true,
         balance: true,
         robloxUsername: true,
-        phone: true,
-        phoneVerified: true,
+        gmail: true,
+        gmailVerified: true,
       },
     });
 
