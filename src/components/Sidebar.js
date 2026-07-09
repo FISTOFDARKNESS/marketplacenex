@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard, Tag, Package, Clock, ArrowLeftRight, HelpCircle, Settings,
+  LayoutDashboard, Tag, Package, Backpack, Clock, ArrowLeftRight, HelpCircle, Settings,
   Crown, LogOut, ArrowLeft, Menu, X
 } from 'lucide-react';
 
@@ -12,6 +12,7 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/sell', label: 'Sell', icon: Tag },
   { href: '/orders', label: 'Orders', icon: Package },
+  { href: '/inventory', label: 'Inventory', icon: Backpack },
   { href: '/history', label: 'History', icon: Clock },
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { href: '/help', label: 'Help', icon: HelpCircle },

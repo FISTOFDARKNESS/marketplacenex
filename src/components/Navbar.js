@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Crown, Search, Heart, Wallet, Package, Backpack, UserCheck, Shield } from 'lucide-react';
+import { Crown, Search, Heart, Wallet, Package, Backpack, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { locales } from '@/lib/locales';
 
@@ -84,9 +84,6 @@ export default function Navbar({
               <Wallet className="icon" />
             </button>
 
-            <Link href="/verify" className="nav-link-btn" title="Verify Account">
-              <UserCheck size={16} />
-            </Link>
             <Link href="/orders" className="nav-link-btn" title="Orders">
               <Package size={16} />
             </Link>
