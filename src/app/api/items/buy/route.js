@@ -7,68 +7,77 @@ export const dynamic = 'force-dynamic';
 export async function POST(req) {
   try {
     const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!token) return NextResponse.json({ error: 'not authenticated' }, { status: 401 });
     const decoded = verifyToken(token);
-    if (!decoded) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!decoded) return NextResponse.json({ error: 'not authenticated' }, { status: 401 });
 
     const body = await req.json();
-    const { itemId, price, robloxUser } = body;
+    const { itemId, sellerId, robloxUser } = body;
 
-    if (!itemId || price == null) {
-      return NextResponse.json({ error: 'Missing required fields: ' + JSON.stringify({ itemId, price }) }, { status: 400 });
-    }
-
-    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-
-    const priceNum = Number(price);
-    if (isNaN(priceNum) || priceNum <= 0) {
-      return NextResponse.json({ error: 'Invalid price: ' + price }, { status: 400 });
-    }
-
-    if (user.balance < priceNum) {
-      return NextResponse.json({ error: 'Insufficient balance. Have: ' + user.balance + ', Need: ' + priceNum }, { status: 400 });
+    if (!itemId) {
+      return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
     }
 
     const item = await prisma.item.findUnique({ where: { id: itemId } });
-    if (!item) return NextResponse.json({ error: 'Item not found: ' + itemId }, { status: 404 });
+    if (!item) return NextResponse.json({ error: 'item not found' }, { status: 404 });
+
+    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    if (!user) return NextResponse.json({ error: 'user not found' }, { status: 404 });
+
+    let markup = 0;
+    if (sellerId) {
+      const seller = await prisma.seller.findUnique({ where: { id: sellerId } });
+      if (seller) {
+        markup = seller.markup;
+      }
+    }
+
+    const baseUsdPrice = Number((item.rap * 0.0035).toFixed(2));
+    const priceNum = Number((baseUsdPrice * (1 + markup)).toFixed(2));
+
+    if (user.balance < priceNum) {
+      return NextResponse.json({ error: 'insufficient balance' }, { status: 400 });
+    }
 
     const robloxUsername = (robloxUser || '').trim().toLowerCase();
     if (!robloxUsername) {
-      return NextResponse.json({ error: 'Recipient Roblox username is required' }, { status: 400 });
+      return NextResponse.json({ error: 'recipient roblox username is required' }, { status: 400 });
     }
 
-    // Find recipient by Roblox username - only allow buying for verified users
     const allUsers = await prisma.user.findMany({ select: { id: true, robloxUsername: true } });
     const match = allUsers.find(u => u.robloxUsername?.toLowerCase() === robloxUsername);
     if (!match) {
-      return NextResponse.json({ error: `"${robloxUser}" is not a verified NexBlox user. Only registered users with a linked Roblox account can receive items.` }, { status: 400 });
+      return NextResponse.json({ error: 'recipient is not a verified nexblox user' }, { status: 400 });
     }
     const recipientUserId = match.id;
 
-    // Find seller
     const adminUser = await prisma.user.findFirst({ where: { role: 'admin' }, select: { id: true } });
     const sellerUserId = adminUser?.id || user.id;
 
-    // Step 1: Deduct balance
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: { balance: { decrement: priceNum } },
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedUser = await tx.user.update({
+        where: { id: user.id },
+        data: { balance: { decrement: priceNum } },
+      });
+
+      if (updatedUser.balance < 0) {
+        throw new Error('insufficient balance transaction check failed');
+      }
+
+      await tx.transaction.create({
+        data: { buyerId: user.id, sellerId: sellerUserId, itemId: item.id, price: priceNum, status: 'PENDING' },
+      });
+
+      const order = await tx.order.create({
+        data: { userId: recipientUserId, buyerId: user.id, itemId: item.id, robloxUser: robloxUsername, status: 'PENDING' },
+      });
+
+      return { newBalance: updatedUser.balance, orderId: order.id };
     });
 
-    // Step 2: Create transaction
-    const txn = await prisma.transaction.create({
-      data: { buyerId: user.id, sellerId: sellerUserId, itemId: item.id, price: priceNum, status: 'PENDING' },
-    });
-
-    // Step 3: Create order
-    const order = await prisma.order.create({
-      data: { userId: recipientUserId, buyerId: user.id, itemId: item.id, robloxUser: robloxUsername, status: 'PENDING' },
-    });
-
-    return NextResponse.json({ success: true, newBalance: updatedUser.balance, orderCreated: true, orderId: order.id });
+    return NextResponse.json({ success: true, newBalance: result.newBalance, orderCreated: true, orderId: result.orderId });
   } catch (error) {
-    console.error('Buy item error:', error);
-    return NextResponse.json({ error: error.message, stack: error.stack, name: error.name }, { status: 500 });
+    console.error('buy item error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
