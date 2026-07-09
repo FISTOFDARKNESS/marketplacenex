@@ -101,13 +101,14 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--s2) var(--s5);
-  border-bottom: 1px solid var(--line);
+  padding: 18px var(--s5);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
   position: sticky;
   top: 0;
-  background: rgba(10, 10, 10, 0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(20px);
   z-index: 50;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .navbar-left {
@@ -117,19 +118,22 @@ button {
 }
 
 .logo-box {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--gold);
-  border-radius: 9px;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid #fbbf24;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--gold);
-  transition: box-shadow 0.2s;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.1);
 }
 
 .logo-box:hover {
-  box-shadow: 0 0 0 4px var(--gold-soft);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  transform: rotate(5deg) scale(1.05);
 }
 
 .search-box {
@@ -260,20 +264,21 @@ button {
 
 .hero-glow {
   position: absolute;
-  top: -220px;
+  top: -280px;
   left: 50%;
   transform: translateX(-50%);
-  width: 900px;
-  height: 420px;
-  background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
-  opacity: 0.3;
+  width: 1000px;
+  height: 500px;
+  background: radial-gradient(circle at 50% 30%, rgba(251, 191, 36, 0.2) 0%, rgba(234, 179, 8, 0.08) 40%, transparent 70%);
+  opacity: 0.4;
   pointer-events: none;
-  animation: glowPulse 6s ease-in-out infinite;
+  animation: glowPulse 10s ease-in-out infinite;
+  filter: blur(40px);
 }
 
 @keyframes glowPulse {
-  0%, 100% { opacity: 0.25; transform: translateX(-50%) scale(1); }
-  50% { opacity: 0.4; transform: translateX(-50%) scale(1.08); }
+  0%, 100% { opacity: 0.35; transform: translateX(-50%) scale(1) translateY(0); }
+  50% { opacity: 0.55; transform: translateX(-50%) scale(1.15) translateY(15px); }
 }
 
 .hero-eyebrow {
