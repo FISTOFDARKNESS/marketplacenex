@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { hashPassword, signToken } from '@/lib/auth';
+import { hashPassword, signToken, createSession } from '@/lib/auth';
 import { rateLimit, getIP } from '@/lib/rateLimit';
 
 export async function POST(req) {
@@ -73,7 +73,8 @@ export async function POST(req) {
     }
 
     // Sign session token
-    const token = signToken({ id: user.id, username: user.username, role: user.role });
+    const sid = await createSession(user.id, req);
+    const token = signToken({ id: user.id, username: user.username, role: user.role, sid });
 
     const response = NextResponse.json({
       success: true,

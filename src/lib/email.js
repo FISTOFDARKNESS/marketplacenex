@@ -1,0 +1,87 @@
+import nodemailer from 'nodemailer';
+
+function getTransporter() {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+}
+
+function otpTemplate(code, title, message) {
+  const digits = code.split('').map(d => `<span class="d">${d}</span>`).join('');
+  return `
+  <!DOCTYPE html>
+  <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body style="margin:0;padding:0;background:#0b0b0f;font-family:'Segoe UI',Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0b0f;padding:32px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;width:100%;background:#131316;border:1px solid #26262c;border-radius:16px;overflow:hidden;">
+            <tr>
+              <td style="padding:28px 32px 8px;text-align:center;">
+                <div style="display:inline-block;background:linear-gradient(135deg,#f59e0b,#fbbf24);width:48px;height:48px;border-radius:12px;line-height:48px;font-size:24px;font-weight:800;color:#1a1a1e;">N</div>
+                <h1 style="color:#f5f5f5;font-size:20px;margin:16px 0 4px;">NexBlox</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 32px 0;text-align:center;">
+                <h2 style="color:#ffffff;font-size:18px;margin:0 0 8px;">${title}</h2>
+                <p style="color:#9ca3af;font-size:14px;line-height:1.6;margin:0 0 20px;">${message}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 32px 8px;">
+                <div style="background:#0f0f13;border:1px solid #26262c;border-radius:12px;padding:20px;text-align:center;letter-spacing:8px;">
+                  ${digits}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:12px 32px 28px;text-align:center;">
+                <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:0;">Este código expira em 10 minutos. Se você não solicitou, ignore este e-mail.</p>
+              </td>
+            </tr>
+          </table>
+          <p style="color:#4b5563;font-size:12px;margin-top:16px;">© NexBlox Marketplace</p>
+        </td>
+      </tr>
+    </table>
+    <style>
+      .d { display:inline-block; min-width:34px; padding:8px 4px; margin:0 3px; background:#1a1a1e; border:1px solid #2a2a30; border-radius:8px; color:#fbbf24; font-size:24px; font-weight:800; font-family:'Courier New',monospace; }
+    </style>
+  </body>
+  </html>`;
+}
+
+export async function sendOtpEmail(email, code, purpose = 'phone-verify') {
+  const config = {
+    'phone-verify': {
+      title: 'Confirme seu número de celular',
+      message: 'Use o código abaixo para vincular seu número de celular à sua conta NexBlox.',
+    },
+    'session-revoke': {
+      title: 'Confirme o encerramento do dispositivo',
+      message: 'Use o código abaixo para confirmar o encerramento de uma sessão na sua conta NexBlox.',
+    },
+  };
+  const c = config[purpose] || config['phone-verify'];
+  const subjectMap = {
+    'phone-verify': 'Seu código de verificação — NexBlox',
+    'session-revoke': 'Confirmar encerramento de sessão — NexBlox',
+  };
+  await getTransporter().sendMail({
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to: email,
+    subject: subjectMap[purpose] || subjectMap['phone-verify'],
+    html: otpTemplate(code, c.title, c.message),
+  });
+}

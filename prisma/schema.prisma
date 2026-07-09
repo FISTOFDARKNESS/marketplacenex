@@ -17,6 +17,8 @@ model User {
   robloxId       BigInt?
   robloxUsername String?
   robloxCookie   String?
+  phone          String?       @unique
+  phoneVerified  Boolean       @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   purchases      Transaction[] @relation("BuyerTransactions")
@@ -28,6 +30,38 @@ model User {
   recipientOrders Order[] @relation("RecipientOrders")
   buyerOrders     Order[] @relation("BuyerOrders")
   verifications   RobloxVerification[]
+  sessions        Session[]
+  otpChallenges   OtpChallenge[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jti       String   @unique
+  device    String
+  browser   String
+  os        String
+  ip        String
+  lastSeen  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model OtpChallenge {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String
+  channel    String
+  target     String
+  codeHash   String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
 }
 
 model Item {

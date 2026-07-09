@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { comparePassword, signToken } from '@/lib/auth';
+import { comparePassword, signToken, createSession } from '@/lib/auth';
 import { rateLimit, getIP } from '@/lib/rateLimit';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 
@@ -39,7 +39,8 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
     }
 
-    const token = signToken({ id: user.id, username: user.username, role: user.role });
+    const sid = await createSession(user.id, req);
+    const token = signToken({ id: user.id, username: user.username, role: user.role, sid });
 
     const response = NextResponse.json({
       success: true,

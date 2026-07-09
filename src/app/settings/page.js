@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw } from 'lucide-react';
+import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw, Smartphone, Monitor, ShieldCheck, Send, LogOut, X } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 export default function SettingsPage() {
@@ -18,6 +18,18 @@ export default function SettingsPage() {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const [cookieStatus, setCookieStatus] = useState(null);
+
+  const [sessions, setSessions] = useState([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [phoneInput, setPhoneInput] = useState('');
+  const [phoneSent, setPhoneSent] = useState(false);
+  const [phoneCode, setPhoneCode] = useState('');
+  const [phoneBusy, setPhoneBusy] = useState(false);
+  const [phoneMsg, setPhoneMsg] = useState(null);
+  const [otpSession, setOtpSession] = useState(null);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpBusy, setOtpBusy] = useState(false);
+  const [otpMsg, setOtpMsg] = useState(null);
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => {
@@ -116,6 +128,85 @@ export default function SettingsPage() {
   }
 
   const isLinked = user?.robloxUsername;
+
+  useEffect(() => {
+    if (!user) return;
+    setSessionsLoading(true);
+    fetch('/api/security/sessions')
+      .then(r => r.json())
+      .then(d => { if (d.success) setSessions(d.sessions); })
+      .catch(() => {})
+      .finally(() => setSessionsLoading(false));
+    const beat = setInterval(() => {
+      fetch('/api/security/heartbeat', { method: 'POST' }).catch(() => {});
+    }, 30000);
+    return () => clearInterval(beat);
+  }, [user]);
+
+  function setPhoneError(msg, ok = false) { setPhoneMsg({ text: msg, ok }); }
+
+  async function handlePhoneSend() {
+    setPhoneMsg(null); setPhoneBusy(true);
+    try {
+      const res = await fetch('/api/security/phone/send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneInput.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setPhoneError(data.error); return; }
+      setPhoneSent(true); setPhoneError('Código enviado para o seu e-mail.', true);
+    } catch { setPhoneError('Falha ao enviar código'); }
+    finally { setPhoneBusy(false); }
+  }
+
+  async function handlePhoneVerify() {
+    setPhoneMsg(null); setPhoneBusy(true);
+    try {
+      const res = await fetch('/api/security/phone/verify', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: phoneCode.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setPhoneError(data.error); return; }
+      setUser(prev => ({ ...prev, phone: data.phone, phoneVerified: true }));
+      setPhoneSent(false); setPhoneInput(''); setPhoneCode('');
+      setPhoneError('Número verificado com sucesso!', true);
+    } catch { setPhoneError('Falha ao verificar código'); }
+    finally { setPhoneBusy(false); }
+  }
+
+  function openOtp(sessionId) {
+    setOtpSession(sessionId); setOtpCode(''); setOtpMsg(null);
+  }
+
+  async function handleSendOtp() {
+    setOtpMsg(null); setOtpBusy(true);
+    try {
+      const res = await fetch('/api/security/session/send-otp', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: otpSession }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setOtpMsg({ text: data.error, ok: false }); return; }
+      setOtpMsg({ text: 'Código enviado para o seu e-mail.', ok: true });
+    } catch { setOtpMsg({ text: 'Falha ao enviar código', ok: false }); }
+    finally { setOtpBusy(false); }
+  }
+
+  async function handleRevoke() {
+    setOtpMsg(null); setOtpBusy(true);
+    try {
+      const res = await fetch('/api/security/session/revoke', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: otpSession, code: otpCode.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setOtpMsg({ text: data.error, ok: false }); return; }
+      setSessions(prev => prev.filter(s => s.id !== otpSession));
+      setOtpSession(null); setOtpCode('');
+    } catch { setOtpMsg({ text: 'Falha ao encerrar sessão', ok: false }); }
+    finally { setOtpBusy(false); }
+  }
 
   return (
     <div className="app-layout">
@@ -289,7 +380,132 @@ export default function SettingsPage() {
             </>
           )}
         </div>
+
+        <div className="settings-section">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <ShieldCheck size={18} style={{ color: '#22c55e' }} />
+            <h3 style={{ margin: 0, fontSize: '15px' }}>Security</h3>
+          </div>
+
+          <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>
+              <Smartphone size={14} /> Phone number
+            </div>
+            {user?.phoneVerified ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <span style={{ fontSize: '14px', color: '#e5e7eb' }}>{user.phone}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#22c55e', fontSize: '12px' }}>
+                  <ShieldCheck size={13} /> Verified
+                </span>
+              </div>
+            ) : phoneSent ? (
+              <div>
+                {phoneMsg && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: phoneMsg.ok ? '#22c55e' : '#ef4444', background: phoneMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
+                    {phoneMsg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {phoneMsg.text}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text" inputMode="numeric" placeholder="8-digit code" value={phoneCode}
+                    onChange={e => setPhoneCode(e.target.value)} required
+                    style={{ flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '14px', outline: 'none', fontFamily: 'inherit', letterSpacing: '2px' }}
+                  />
+                  <button type="button" className="purchase-btn" onClick={handlePhoneVerify} disabled={phoneBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
+                    {phoneBusy ? '...' : 'Verify'}
+                  </button>
+                </div>
+                <button type="button" onClick={() => { setPhoneSent(false); setPhoneMsg(null); }} style={{ background: 'none', border: 'none', color: '#6b7280', fontSize: '12px', cursor: 'pointer', marginTop: '8px', fontFamily: 'inherit' }}>
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div>
+                {phoneMsg && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: phoneMsg.ok ? '#22c55e' : '#ef4444', background: phoneMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
+                    {phoneMsg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {phoneMsg.text}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text" placeholder="Phone number" value={phoneInput}
+                    onChange={e => setPhoneInput(e.target.value)} required
+                    style={{ flex: 1, padding: '12px 14px', background: '#0f0f13', border: '1px solid #2a2a2e', borderRadius: '8px', color: '#e5e7eb', fontSize: '14px', outline: 'none', fontFamily: 'inherit' }}
+                  />
+                  <button type="button" className="purchase-btn" onClick={handlePhoneSend} disabled={phoneBusy} style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: '13px' }}>
+                    {phoneBusy ? '...' : 'Send code'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
+            <div style={{ fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>Active devices</div>
+            {sessionsLoading ? (
+              <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>Loading...</p>
+            ) : sessions.length === 0 ? (
+              <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>No active sessions.</p>
+            ) : (
+              <div className="sec-devices">
+                {sessions.map(s => (
+                  <div key={s.id} className="sec-device">
+                    <div className="sec-device-icon">
+                      {s.os === 'iOS' || s.os === 'Android' ? <Smartphone size={16} /> : <Monitor size={16} />}
+                    </div>
+                    <div className="sec-device-body">
+                      <div className="sec-device-name">
+                        {s.device}{s.isCurrent && <span className="sec-badge-current">This device</span>}
+                      </div>
+                      <div className="sec-device-meta">{s.ip} · {new Date(s.lastSeen).toLocaleString()}</div>
+                    </div>
+                    <div className="sec-device-right">
+                      <span className={`sec-status ${s.online ? 'on' : 'off'}`}>{s.online ? 'Online' : 'Offline'}</span>
+                      {!s.isCurrent && (
+                        <button className="sec-revoke" onClick={() => openOtp(s.id)}>
+                          <LogOut size={13} /> Log out
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </main>
+
+      {otpSession && (
+        <div className="inv-modal-backdrop" onClick={() => setOtpSession(null)}>
+          <div className="inv-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 380 }}>
+            <button className="inv-modal-close" onClick={() => setOtpSession(null)}><X size={18} /></button>
+            <h3 className="inv-modal-title">Confirm device logout</h3>
+            <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 14px', textAlign: 'center' }}>
+              We sent an 8-digit code to your e-mail. Enter it to end this session.
+            </p>
+            {otpMsg && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginBottom: '12px', color: otpMsg.ok ? '#22c55e' : '#ef4444', background: otpMsg.ok ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
+                {otpMsg.ok ? <Check size={14} /> : <AlertTriangle size={14} />} {otpMsg.text}
+              </div>
+            )}
+            <input
+              className="inv-range-input"
+              style={{ width: '100%', textAlign: 'center', letterSpacing: '4px', fontSize: '18px', marginBottom: '12px' }}
+              value={otpCode}
+              onChange={e => setOtpCode(e.target.value)}
+              placeholder="00000000"
+              maxLength={8}
+              inputMode="numeric"
+            />
+            <button className="purchase-btn" style={{ width: '100%', marginBottom: '8px' }} onClick={handleRevoke} disabled={otpBusy}>
+              {otpBusy ? 'Ending...' : 'End session'}
+            </button>
+            <button className="verify-btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={handleSendOtp} disabled={otpBusy}>
+              <Send size={14} /> Resend code
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
