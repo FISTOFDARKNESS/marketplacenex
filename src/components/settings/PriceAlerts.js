@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, BellOff, Search, Plus, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
+import { Bell, BellOff, Search, Plus, Check, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
 import { notificationsSupported, subscribeToPush, unsubscribeFromPush, getExistingSubscription } from '@/lib/notifications';
 import { ALERTS_LOCALES } from '@/lib/alertsLocales';
 
@@ -15,6 +15,7 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [searching, setSearching] = useState(false);
   const [supported, setSupported] = useState(null);
   const [error, setError] = useState('');
+  const [lastAdded, setLastAdded] = useState(null);
 
   useEffect(() => {
     setSupported(notificationsSupported());
@@ -81,7 +82,6 @@ export default function PriceAlerts({ lang = 'en' }) {
 
   async function addAlert(item) {
     setError('');
-    // no limit
     try {
       const res = await fetch('/api/settings/alerts', {
         method: 'POST',
@@ -93,8 +93,9 @@ export default function PriceAlerts({ lang = 'en' }) {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || t.addError); return; }
-      setSearch('');
-      setResults([]);
+      setResults((prev) => prev.filter((r) => r.id !== item.id));
+      setLastAdded(item.id);
+      setTimeout(() => setLastAdded((cur) => (cur === item.id ? null : cur)), 2000);
       await loadAlerts();
     } catch { setError(t.addError); }
   }
@@ -158,12 +159,15 @@ export default function PriceAlerts({ lang = 'en' }) {
             {searching && <div className="pa-search-hint">{t.searching}</div>}
             {results.length > 0 && (
               <div className="pa-results">
-                {results.map((it) => (
-                  <button key={it.id} className="pa-result" onClick={() => addAlert(it)}>
-                    <span className="pa-result-name">{it.name}</span>
-                    <Plus size={14} />
-                  </button>
-                ))}
+                {results.map((it) => {
+                  const added = lastAdded === it.id;
+                  return (
+                    <button key={it.id} className={`pa-result ${added ? 'added' : ''}`} onClick={() => !added && addAlert(it)}>
+                      <span className="pa-result-name">{it.name}</span>
+                      {added ? <Check size={14} /> : <Plus size={14} />}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>

@@ -231,18 +231,17 @@ export default function SettingsPage() {
             <User size={18} style={{ color: '#9ca3af' }} />
             <h3 style={{ margin: 0, fontSize: '15px' }}>{t.account}</h3>
           </div>
-          <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
+          <div className="settings-card">
             <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{t.username}</div>
             <div style={{ fontSize: '14px', color: '#e5e7eb', fontWeight: 600 }}>{user?.username || '...'}</div>
           </div>
-        </div>
 
         <div className="settings-section">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <Bell size={18} style={{ color: '#FFD700' }} />
             <h3 style={{ margin: 0, fontSize: '15px' }}>{t.priceAlerts}</h3>
           </div>
-          <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
+          <div className="settings-card">
             <PriceAlerts lang={lang} />
           </div>
         </div>
@@ -260,7 +259,7 @@ export default function SettingsPage() {
           )}
 
           {isLinked && (step === 'start' || step === 'done') && cookieStatus?.valid !== false ? (
-            <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
+            <div className="settings-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#22c55e', marginBottom: '12px', padding: '8px 12px', background: 'rgba(34,197,94,0.08)', borderRadius: '8px' }}>
                 <Check size={14} /> {t.alreadyLinked} <b>{user.robloxUsername}</b>
               </div>
@@ -271,7 +270,7 @@ export default function SettingsPage() {
             </div>
           ) : (
             <>
-              <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '4px', marginBottom: '12px', display: 'flex' }}>
+              <div style={{ background: 'rgba(26,26,30,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderRadius: '10px', padding: '4px', marginBottom: '12px', display: 'flex', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <button onClick={() => switchMethod('bio')}
                   style={{
                     flex: 1, padding: '10px', border: 'none', borderRadius: '8px', cursor: 'pointer',
@@ -292,7 +291,7 @@ export default function SettingsPage() {
                 </button>
               </div>
 
-              <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
+              <div className="settings-card">
                 {error && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ef4444', fontSize: '13px', padding: '8px 12px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px', marginBottom: '12px' }}>
                     <AlertTriangle size={14} /> {error}
@@ -404,7 +403,7 @@ export default function SettingsPage() {
             <h3 style={{ margin: 0, fontSize: '15px' }}>{t.security}</h3>
           </div>
 
-          <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
+          <div className="settings-card" style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>
               <Smartphone size={14} /> {t.gmail}
             </div>
@@ -457,7 +456,7 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
+          <div className="settings-card">
             <div style={{ fontSize: '13px', color: '#d1d5db', marginBottom: '12px' }}>{t.activeDevices}</div>
             {sessionsLoading ? (
               <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>{appLocales[lang].common.loading}</p>
