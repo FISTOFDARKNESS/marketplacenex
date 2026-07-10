@@ -1910,6 +1910,59 @@ input:focus-visible {
   color: var(--gold);
 }
 
+/* ---------- STATUS SCHEMA GRAPH ---------- */
+.status-graph {
+  margin: 16px 0;
+  padding: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,215,0,0.08);
+  border-radius: 10px;
+}
+
+.status-graph-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.status-graph-svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.status-graph-values {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.status-graph-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.sgv-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.5px;
+}
+
+.sgv-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--gold);
+}
+
 .purchase-btn-external {
   background: var(--gold);
   color: #1A1600;

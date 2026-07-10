@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Check, AlertTriangle, Wallet, Clock, Bitcoin } from 'lucide-react';
 import { formatNumber } from '@/lib/format';
+import StatusSchemaGraph from '@/components/StatusSchemaGraph';
 
 export default function PurchaseModal({ item, user, onClose, onOpenFinance, onPurchaseComplete }) {
   const [sellers, setSellers] = useState([]);
@@ -110,6 +111,14 @@ export default function PurchaseModal({ item, user, onClose, onOpenFinance, onPu
                 <span>Value</span>
                 <b>{formatNumber(item.price)} Robux</b>
               </div>
+              <StatusSchemaGraph
+                demand={item.demand}
+                trend={item.trend}
+                projected={item.projected}
+                hyped={item.hyped}
+                rare={item.rare}
+              />
+
               <div className="purchase-detail-row">
                 <span>Seller</span>
                 <select

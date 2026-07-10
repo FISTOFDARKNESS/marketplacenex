@@ -78,6 +78,9 @@ model Item {
   size           String
   demand         Int           @default(-1)
   trend          Int           @default(-1)
+  projected      Int           @default(-1)
+  hyped          Int           @default(-1)
+  rare           Int           @default(-1)
   createdAt      DateTime      @default(now())
   transactions   Transaction[]
   wishlist       Wishlist[]

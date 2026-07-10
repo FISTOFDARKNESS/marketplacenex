@@ -75,6 +75,9 @@ async function main() {
     price: item[3] > 0 ? item[3] : (item[2] || 0),
     demand: item[5] ?? -1,
     trend: item[6] ?? -1,
+    projected: item[7] ?? -1,
+    hyped: item[8] ?? -1,
+    rare: item[9] ?? -1,
     rarity: rarityFromDemand(item[5] ?? -1),
   }));
 
@@ -94,6 +97,9 @@ async function main() {
         price: item.price,
         demand: item.demand,
         trend: item.trend,
+        projected: item.projected,
+        hyped: item.hyped,
+        rare: item.rare,
         rarity: item.rarity,
         img: thumbMap.get(item.assetId) || '',
       },
@@ -109,6 +115,9 @@ async function main() {
         size: '',
         demand: item.demand,
         trend: item.trend,
+        projected: item.projected,
+        hyped: item.hyped,
+        rare: item.rare,
       },
     });
   }
