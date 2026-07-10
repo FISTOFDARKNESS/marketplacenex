@@ -1631,8 +1631,9 @@ input:focus-visible {
 
 /* ---------- PURCHASE MODAL ---------- */
 .purchase-modal {
-  max-width: 520px;
+  max-width: 360px;
   grid-template-columns: 1fr;
+  padding: var(--s3);
 }
 
 .purchase-steps {
@@ -1737,9 +1738,9 @@ input:focus-visible {
 }
 
 .purchase-step-icon {
-  width: 180px;
-  height: 180px;
-  margin: 0 auto var(--s3);
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--s2);
   background: transparent;
   border-radius: var(--radius-md);
   display: flex;
@@ -1756,7 +1757,7 @@ input:focus-visible {
 .purchase-detail-row {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 7px 0;
   border-bottom: 1px solid var(--line);
   font-size: 14px;
 }
