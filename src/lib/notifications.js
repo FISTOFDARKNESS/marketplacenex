@@ -25,6 +25,7 @@ export async function getExistingSubscription() {
 export async function subscribeToPush() {
   if (!notificationsSupported()) throw new Error('not-supported');
   if (Notification.permission === 'denied') throw new Error('denied');
+  if (!VAPID_PUBLIC_KEY) throw new Error('vapid-missing');
 
   if (Notification.permission !== 'granted') {
     const perm = await Notification.requestPermission();

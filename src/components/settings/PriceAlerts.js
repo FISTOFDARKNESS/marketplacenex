@@ -47,7 +47,11 @@ export default function PriceAlerts({ lang = 'en' }) {
         setEnabled(true);
       }
     } catch (e) {
-      setError(e.message === 'denied' ? t.permissionDenied : t.enableError);
+      console.error('Push enable error:', e);
+      if (e.message === 'denied') setError(t.permissionDenied);
+      else if (e.message === 'vapid-missing') setError(t.vapidMissing);
+      else if (e.message === 'not-supported') setError(t.notSupported);
+      else setError(`${t.enableError} (${e.message})`);
     } finally {
       setBusy(false);
     }
