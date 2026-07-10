@@ -197,6 +197,7 @@ export default function Catalog({
                       height={250}
                       sizes="(max-width: 768px) 150px, 250px"
                       priority={idx < 4}
+                      unoptimized
                     />
                   </div>
                     <div className="bento-info">

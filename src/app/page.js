@@ -49,8 +49,8 @@ export default function Home() {
             setUser(data.user);
           }
         }
-      } catch (err) {
-        console.error('Failed to verify user session on mount', err);
+      } catch {
+        // Silently ignore if not authenticated
       }
     }
     checkAuth();
