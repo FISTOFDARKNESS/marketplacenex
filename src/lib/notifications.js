@@ -48,6 +48,7 @@ export async function subscribeToPush() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ subscription: sub.toJSON() }),
   });
+  if (res.status === 401) throw new Error('not-authenticated');
   if (!res.ok) throw new Error('subscribe-failed');
   return sub;
 }

@@ -18,6 +18,7 @@ export default function PriceAlerts({ lang = 'en' }) {
   const loadAlerts = useCallback(async () => {
     try {
       const res = await fetch('/api/settings/alerts');
+      if (res.status === 401) { setError(t.notAuthenticated); return; }
       const data = await res.json();
       if (data.success) {
         setAlerts(data.alerts);
@@ -51,6 +52,7 @@ export default function PriceAlerts({ lang = 'en' }) {
       if (msg === 'denied') setError(`${t.permissionDenied} (${msg})`);
       else if (msg === 'vapid-missing') setError(`${t.vapidMissing} (${msg})`);
       else if (msg === 'not-supported') setError(`${t.notSupported} (${msg})`);
+      else if (msg === 'not-authenticated') setError(t.notAuthenticated);
       else setError(`${t.enableError} (${msg})`);
     } finally {
       setBusy(false);
