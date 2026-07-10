@@ -7,7 +7,7 @@ export default function MarqueeBar({ lang = 'en' }) {
   const [marqueeItems, setMarqueeItems] = useState([]);
 
   useEffect(() => {
-    fetch('/api/items?limit=200')
+    fetch('/api/items?limit=20')
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.items.length > 0) {

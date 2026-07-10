@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { Heart, X, ShoppingCart, Trash2, Star, Gem } from 'lucide-react';
 
 const LANG = {
@@ -130,7 +131,7 @@ export default function WishlistDrawer({
               {wishlistItems.map((item) => (
                 <li key={item.id} className="wl-item">
                   <div className="wl-item-img">
-                    <img src={item.img} alt={item.name} />
+                    <Image src={item.img} alt={item.name} width={150} height={150} sizes="100px" />
                     {item.rarity === 'legendary' && (
                       <span className="wl-rarity-badge legendary">
                         <Gem style={{ width: 10, height: 10 }} />
@@ -145,7 +146,7 @@ export default function WishlistDrawer({
                     )}
                   </div>
                   <div className="wl-item-info">
-                    <h4 className="wl-item-name">{item.name}</h4>
+                    <p className="wl-item-name">{item.name}</p>
                     <div className="wl-item-meta">
                       <span className="wl-item-rap">{t.rap}: {item.rapLabel}</span>
                       <span className="wl-item-price">${item.price.toLocaleString()}</span>
@@ -162,6 +163,7 @@ export default function WishlistDrawer({
                         className="wl-remove-btn"
                         onClick={() => onRemove(item.id)}
                         title={t.remove}
+                        aria-label={t.remove}
                       >
                         <Trash2 style={{ width: 14, height: 14 }} />
                       </button>

@@ -40,19 +40,19 @@ export default function Footer({ onScrollTo, lang = 'en' }) {
             </p>
           </div>
           <div className="footer-col">
-            <h4>{isPt ? 'Plataforma' : 'Platform'}</h4>
+            <p className="footer-label">{isPt ? 'Plataforma' : 'Platform'}</p>
             <a href="#catalog" onClick={(e) => { e.preventDefault(); onScrollTo('catalog'); }}>{c.browseBtn || (isPt ? 'Navegar' : 'Browse items')}</a>
             <a href="#catalog" onClick={(e) => { e.preventDefault(); onScrollTo('catalog'); }}>{c.sellBtn}</a>
             <a href="#how" onClick={(e) => { e.preventDefault(); onScrollTo('how'); }}>{n.howItWorks}</a>
           </div>
           <div className="footer-col">
-            <h4>{isPt ? 'Suporte' : 'Support'}</h4>
+            <p className="footer-label">{isPt ? 'Suporte' : 'Support'}</p>
             <a href="#" onClick={(e) => e.preventDefault()}>{isPt ? 'Contato' : 'Contact'}</a>
             <a href="#" onClick={(e) => e.preventDefault()}>{t.privacy}</a>
             <a href="#" onClick={(e) => e.preventDefault()}>{t.terms}</a>
           </div>
           <div className="footer-col">
-            <h4>{isPt ? 'Comunidade' : 'Community'}</h4>
+            <p className="footer-label">{isPt ? 'Comunidade' : 'Community'}</p>
             <a href="#" onClick={(e) => e.preventDefault()}>Discord</a>
             <a href="#" onClick={(e) => e.preventDefault()}>Twitter / X</a>
             <a href="#faq" onClick={(e) => { e.preventDefault(); onScrollTo('faq'); }}>{n.faq}</a>
@@ -61,9 +61,9 @@ export default function Footer({ onScrollTo, lang = 'en' }) {
         <div className="footer-bottom">
           <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{t.copy}</span>
           <div className="footer-socials">
-            <a href="#" onClick={(e) => e.preventDefault()}><MessageCircleSvg /></a>
-            <a href="#" onClick={(e) => e.preventDefault()}><TwitterSvg /></a>
-            <a href="#" onClick={(e) => e.preventDefault()}><MailSvg /></a>
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Discord"><MessageCircleSvg /></a>
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><TwitterSvg /></a>
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Email"><MailSvg /></a>
           </div>
         </div>
       </div>

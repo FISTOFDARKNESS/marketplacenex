@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import {
   LayoutGrid,
   Crown,
@@ -52,7 +53,7 @@ export default function Catalog({
 
       <div className="layout">
         <aside className="sidebar reveal in-view">
-          <h4>{t.category}</h4>
+          <p className="sidebar-label">{t.category}</p>
           <button
             className={`filter-option ${activeCatFilter === 'all' ? 'active' : ''}`}
             onClick={() => setActiveCatFilter('all')}
@@ -64,7 +65,7 @@ export default function Catalog({
             <span className="count">{allCount}</span>
           </button>
 
-          <h4>{t.rarity}</h4>
+          <p className="sidebar-label">{t.rarity}</p>
           <button
             className={`filter-option ${activeRarityFilter === 'legendary' ? 'active' : ''}`}
             onClick={() => setActiveRarityFilter(activeRarityFilter === 'legendary' ? null : 'legendary')}
@@ -86,7 +87,7 @@ export default function Catalog({
             <span className="count">{rareCount}</span>
           </button>
 
-          <h4>{t.priceRange}</h4>
+          <p className="sidebar-label">{t.priceRange}</p>
           <div className="price-range">
             <input
               id="minPrice"
@@ -104,7 +105,7 @@ export default function Catalog({
             />
           </div>
 
-          <h4>{t.payment}</h4>
+          <p className="sidebar-label">{t.payment}</p>
           <div className="filter-option active">
             <span className="filter-row">
               <Bitcoin className="icon" />
@@ -140,6 +141,7 @@ export default function Catalog({
                 {sortMode === 'demand' ? (lang === 'pt' ? 'demanda' : 'demand') : (lang === 'pt' ? 'preço' : 'price')}
               </p>
             </div>
+            <label htmlFor="sortSelect" className="sr-only">{t.sortOptions.demand}</label>
             <select
               className="sort-select"
               id="sortSelect"
@@ -183,11 +185,19 @@ export default function Catalog({
                       e.stopPropagation();
                       toggleWishlist(it.id);
                     }}
+                    aria-label={wishlist.has(it.id) ? (lang === 'pt' ? 'Remover dos favoritos' : 'Remove from favorites') : (lang === 'pt' ? 'Adicionar aos favoritos' : 'Add to favorites')}
                   >
                     <Heart className="icon" />
                   </button>
                   <div className="bento-img">
-                    <img src={it.img} alt={it.name} />
+                    <Image
+                      src={it.img}
+                      alt={it.name}
+                      width={250}
+                      height={250}
+                      sizes="(max-width: 768px) 150px, 250px"
+                      priority={idx < 4}
+                    />
                   </div>
                     <div className="bento-info">
                       <h3>{it.name}</h3>

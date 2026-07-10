@@ -23,7 +23,7 @@ export default function Navbar({
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <div className="logo-box" style={{ cursor: 'pointer' }} onClick={() => onScrollTo('hero')}>
+        <div className="logo-box" style={{ cursor: 'pointer' }} onClick={() => onScrollTo('hero')} aria-label={lang === 'pt' ? 'Ir para o topo' : 'Go to top'}>
           <Crown className="icon" />
         </div>
         <div className="search-box">
@@ -43,7 +43,9 @@ export default function Navbar({
         <a href="#faq" onClick={(e) => { e.preventDefault(); onScrollTo('faq'); }}>{t.faq}</a>
       </div>
       <div className="auth-buttons">
+        <label htmlFor="langSelect" className="sr-only">{lang === 'pt' ? 'Idioma' : 'Language'}</label>
         <select 
+          id="langSelect"
           value={lang} 
           onChange={(e) => setLang(e.target.value)} 
           style={{
@@ -71,6 +73,7 @@ export default function Navbar({
           title={t.wishlist}
           onClick={onOpenWishlist}
           style={{ position: 'relative' }}
+          aria-label={t.wishlist}
         >
           <Heart className="icon" />
           {wishlistCount > 0 && (
@@ -80,18 +83,18 @@ export default function Navbar({
 
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <button className="icon-btn" title="Finance" onClick={onOpenFinance}>
+            <button className="icon-btn" title="Finance" onClick={onOpenFinance} aria-label="Finance">
               <Wallet className="icon" />
             </button>
 
-            <Link href="/orders" className="nav-link-btn" title="Orders">
+            <Link href="/orders" className="nav-link-btn" title="Orders" aria-label="Orders">
               <Package size={16} />
             </Link>
-            <Link href="/inventory" className="nav-link-btn" title="Inventory">
+            <Link href="/inventory" className="nav-link-btn" title="Inventory" aria-label="Inventory">
               <Backpack size={16} />
             </Link>
             {user.role === 'admin' && (
-              <Link href="/admin/orders" className="nav-link-btn" title="Admin Orders" style={{ color: '#ef4444' }}>
+              <Link href="/admin/orders" className="nav-link-btn" title="Admin Orders" aria-label="Admin Orders" style={{ color: '#ef4444' }}>
                 <Shield size={16} />
               </Link>
             )}
