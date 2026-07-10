@@ -85,7 +85,28 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const timer = setTimeout(() => {
+      let cancelled = false;
+
+      const loadRecaptcha = () => new Promise((resolve) => {
+        if (window.grecaptcha) { resolve(); return; }
+        const existing = document.querySelector('script[src*="recaptcha/api.js"]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(), { once: true });
+          if (window.grecaptcha) { resolve(); }
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = 'https://www.google.com/recaptcha/api.js?render=explicit';
+        s.async = true;
+        s.defer = true;
+        s.onload = () => resolve();
+        document.head.appendChild(s);
+      });
+
+      const init = async () => {
+        await loadRecaptcha();
+        if (cancelled) return;
+
         const gcContainer = document.getElementById('recaptcha-container');
         if (gcContainer && window.grecaptcha) {
           try { window.grecaptcha.render(gcContainer, { sitekey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }); } catch {}
@@ -105,8 +126,10 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
             });
           }
         }
-      }, 200);
-      return () => clearTimeout(timer);
+      };
+
+      const timer = setTimeout(init, 200);
+      return () => { cancelled = true; clearTimeout(timer); };
     }
   }, [currentType]);
 

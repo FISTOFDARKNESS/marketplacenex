@@ -57,7 +57,7 @@ export const metadata = {
     images: ['/icon.svg'],
   },
   appleWebApp: {
-    capable: true,
+    capable: false,
     statusBarStyle: 'black-translucent',
     title: 'NexBlox',
   },
@@ -77,6 +77,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <meta name="mobile-web-app-capable" content="yes" />
         <Script id="disable-context-menu" strategy="afterInteractive">{`
           document.addEventListener('contextmenu', e => e.preventDefault());
           document.addEventListener('copy', e => e.preventDefault());
@@ -85,14 +86,10 @@ export default function RootLayout({ children }) {
         `}</Script>
         <LanguageProvider>{children}</LanguageProvider>
         <PwaRegister />
-        {/* Third-party scripts load after hydration to avoid blocking the main thread and COOP postMessage errors */}
+        {/* Google Identity Services loads after hydration (used by the auth modal).
+            reCAPTCHA is loaded on-demand inside the modal to avoid its cross-origin
+            frame SecurityError on every page load. */}
         <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
-        <Script
-          src="https://www.google.com/recaptcha/api.js"
-          strategy="afterInteractive"
-          async
-          defer
-        />
       </body>
     </html>
   );
