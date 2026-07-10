@@ -7,6 +7,8 @@
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "fetch-items": "node scripts/fetchItems.js",
     "postinstall": "npx prisma generate"
   },

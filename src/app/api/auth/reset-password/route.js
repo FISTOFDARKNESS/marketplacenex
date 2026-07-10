@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
 import jwt from 'jsonwebtoken';
 import { rateLimit, getIP } from '@/lib/rateLimit';
+import { logAudit } from '@/lib/audit';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-default-key';
 
@@ -53,6 +54,8 @@ export async function POST(req) {
       where: { id: user.id },
       data: { passwordHash },
     });
+
+    logAudit({ action: 'auth.reset-password.success', userId: user.id, req });
 
     console.log(`Password successfully updated for user: ${user.username}`);
 

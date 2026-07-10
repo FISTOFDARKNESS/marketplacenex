@@ -2,11 +2,19 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
 import { verifyOtpChallenge } from '@/lib/otp';
+import { rateLimit, getIP } from '@/lib/rateLimit';
+import { logAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
   try {
+    const ip = getIP(req);
+    const limit = rateLimit('gmail-verify-' + ip, 10, 600000); // 10 tries / 10 min per IP
+    if (!limit.success) {
+      return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+    }
+
     const token = req.cookies.get('token')?.value;
     const decoded = token && verifyToken(token);
     if (!decoded) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -15,7 +23,10 @@ export async function POST(req) {
     if (!code) return NextResponse.json({ error: 'Code required' }, { status: 400 });
 
     const result = await verifyOtpChallenge({ userId: decoded.id, type: 'gmail-verify', code });
-    if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+    if (!result.ok) {
+      logAudit({ action: 'gmail.verify.fail', userId: decoded.id, req, meta: { reason: result.error } });
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
 
     const challenge = await prisma.otpChallenge.findFirst({
       where: { userId: decoded.id, type: 'gmail-verify', consumedAt: { not: null } },
@@ -28,6 +39,8 @@ export async function POST(req) {
       where: { id: decoded.id },
       data: { gmail, gmailVerified: true },
     });
+
+    logAudit({ action: 'gmail.verify.success', userId: decoded.id, req, meta: { gmail } });
 
     return NextResponse.json({ success: true, gmail });
   } catch (error) {

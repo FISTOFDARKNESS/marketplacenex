@@ -32,6 +32,7 @@ model User {
   verifications   RobloxVerification[]
   sessions        Session[]
   otpChallenges   OtpChallenge[]
+  auditLogs       AuditLog[]
 }
 
 model Session {
@@ -174,4 +175,19 @@ model DepositOrder {
   status        String   @default("PENDING")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  target    String?
+  ip        String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([action])
+  @@index([userId])
+  @@index([createdAt])
 }

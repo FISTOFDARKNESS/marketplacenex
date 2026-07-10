@@ -2,11 +2,19 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
 import { verifyOtpChallenge } from '@/lib/otp';
+import { rateLimit, getIP } from '@/lib/rateLimit';
+import { logAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
   try {
+    const ip = getIP(req);
+    const limit = rateLimit('session-revoke-' + ip, 10, 600000); // 10 tries / 10 min per IP
+    if (!limit.success) {
+      return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+    }
+
     const token = req.cookies.get('token')?.value;
     const decoded = token && verifyToken(token);
     if (!decoded) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -21,9 +29,14 @@ export async function POST(req) {
     }
 
     const result = await verifyOtpChallenge({ userId: decoded.id, type: 'session-revoke', code });
-    if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+    if (!result.ok) {
+      logAudit({ action: 'session.revoke.fail', userId: decoded.id, target: sessionId, req, meta: { reason: result.error } });
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
 
     await prisma.session.delete({ where: { id: sessionId } });
+
+    logAudit({ action: 'session.revoke.success', userId: decoded.id, target: sessionId, req });
 
     return NextResponse.json({ success: true });
   } catch (error) {
