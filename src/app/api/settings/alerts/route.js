@@ -5,8 +5,6 @@ import { serializeItems } from '@/lib/serializer';
 
 export const dynamic = 'force-dynamic';
 
-const MAX_ALERTS = 25;
-
 export async function GET(req) {
   try {
     const token = req.cookies.get('token')?.value;
@@ -31,7 +29,7 @@ export async function GET(req) {
       onRapDown: a.onRapDown,
     }));
 
-    return NextResponse.json({ success: true, alerts: result, max: MAX_ALERTS });
+    return NextResponse.json({ success: true, alerts: result });
   } catch (error) {
     console.error('Get alerts error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -48,10 +46,7 @@ export async function POST(req) {
     const { itemId, onPriceUp, onPriceDown, onRapUp, onRapDown } = body;
     if (!itemId) return NextResponse.json({ error: 'itemId required' }, { status: 400 });
 
-    const count = await prisma.priceAlert.count({ where: { userId: decoded.id } });
-    if (count >= MAX_ALERTS) {
-      return NextResponse.json({ error: `You can track at most ${MAX_ALERTS} items.` }, { status: 400 });
-    }
+    // Unlimited alerts
 
     const item = await prisma.item.findUnique({ where: { id: itemId } });
     if (!item) return NextResponse.json({ error: 'Item not found' }, { status: 404 });

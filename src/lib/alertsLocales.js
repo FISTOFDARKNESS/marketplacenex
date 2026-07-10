@@ -2,7 +2,7 @@ export const ALERTS_LOCALES = {
   en: {
     enabled: 'Notifications on', disabled: 'Notifications off', enable: 'Enable', disable: 'Disable',
     processing: 'Working...', permissionDenied: 'Notification permission was denied.', enableError: 'Could not enable notifications.',
-    notSupported: 'This browser does not support push notifications.', maxReached: 'You can track at most 25 items.', vapidMissing: 'Push is not configured on the server (missing VAPID key).',
+    notSupported: 'This browser does not support push notifications.', maxReached: 'Unlimited alerts enabled.', vapidMissing: 'Push is not configured on the server (missing VAPID key).',
     searchPlaceholder: 'Search an item to track...', searching: 'Searching...', addError: 'Could not add alert.',
     empty: 'No tracked items yet. Search above to add one.', remove: 'Remove', priceUp: 'Price Up', priceDown: 'Price Down',
     rapUp: 'RAP Up', rapDown: 'RAP Down',
@@ -10,7 +10,7 @@ export const ALERTS_LOCALES = {
   pt: {
     enabled: 'Notificacoes ativas', disabled: 'Notificacoes off', enable: 'Ativar', disable: 'Desativar',
     processing: 'Processando...', permissionDenied: 'Permissao de notificacao negada.', enableError: 'Nao foi possivel ativar notificacoes.',
-    notSupported: 'Este navegador nao suporta notificacoes push.', maxReached: 'Voce pode rastrear no maximo 25 itens.', vapidMissing: 'Push nao configurado no servidor (falta chave VAPID).',
+    notSupported: 'Este navegador nao suporta notificacoes push.', maxReached: 'Alertas ilimitados ativados.', vapidMissing: 'Push nao configurado no servidor (falta chave VAPID).',
     searchPlaceholder: 'Busque um item para rastrear...', searching: 'Buscando...', addError: 'Nao foi possivel adicionar.',
     empty: 'Nenhum item rastreado. Busque acima para adicionar.', remove: 'Remover', priceUp: 'Preco Sobe', priceDown: 'Preco Cai',
     rapUp: 'RAP Sobe', rapDown: 'RAP Cai',
@@ -18,7 +18,7 @@ export const ALERTS_LOCALES = {
   it: {
     enabled: 'Notifiche attive', disabled: 'Notifiche off', enable: 'Attiva', disable: 'Disattiva',
     processing: 'Attendi...', permissionDenied: 'Permesso di notifica negato.', enableError: 'Impossibile attivare le notifiche.',
-    notSupported: 'Questo browser non supporta le notifiche push.', maxReached: 'Puoi monitorare al massimo 25 oggetti.', vapidMissing: 'Push non configurato sul server (chiave VAPID mancante).',
+    notSupported: 'Questo browser non supporta le notifiche push.', maxReached: 'Avvisi illimitati attivati.', vapidMissing: 'Push non configurato sul server (chiave VAPID mancante).',
     searchPlaceholder: 'Cerca un oggetto da monitorare...', searching: 'Ricerca...', addError: 'Impossibile aggiungere.',
     empty: 'Nessun oggetto monitorato. Cerca sopra.', remove: 'Rimuovi', priceUp: 'Prezzo Su', priceDown: 'Prezzo Giu',
     rapUp: 'RAP Su', rapDown: 'RAP Giu',
@@ -26,7 +26,7 @@ export const ALERTS_LOCALES = {
   es: {
     enabled: 'Notificaciones activas', disabled: 'Notificaciones off', enable: 'Activar', disable: 'Desactivar',
     processing: 'Procesando...', permissionDenied: 'Permiso de notificacion denegado.', enableError: 'No se pudieron activar las notificaciones.',
-    notSupported: 'Este navegador no admite notificaciones push.', maxReached: 'Puedes seguir maximo 25 articulos.', vapidMissing: 'Push no configurado en el servidor (falta clave VAPID).',
+    notSupported: 'Este navegador no admite notificaciones push.', maxReached: 'Alertas ilimitadas activadas.', vapidMissing: 'Push no configurado en el servidor (falta clave VAPID).',
     searchPlaceholder: 'Busca un articulo para seguir...', searching: 'Buscando...', addError: 'No se pudo agregar.',
     empty: 'Ningun articulo seguido. Busca arriba.', remove: 'Quitar', priceUp: 'Precio Sube', priceDown: 'Precio Baja',
     rapUp: 'RAP Sube', rapDown: 'RAP Baja',
@@ -34,7 +34,7 @@ export const ALERTS_LOCALES = {
   fr: {
     enabled: 'Notifications actives', disabled: 'Notifications off', enable: 'Activer', disable: 'Desactiver',
     processing: 'En cours...', permissionDenied: 'Permission de notification refusee.', enableError: 'Impossible d activer les notifications.',
-    notSupported: 'Ce navigateur ne prend pas en charge les notifications push.', maxReached: 'Vous pouvez suivre 25 articles max.', vapidMissing: 'Push non configure sur le serveur (cle VAPID manquante).',
+    notSupported: 'Ce navigateur ne prend pas en charge les notifications push.', maxReached: 'Alertes illimitees activees.', vapidMissing: 'Push non configure sur le serveur (cle VAPID manquante).',
     searchPlaceholder: 'Recherchez un article a suivre...', searching: 'Recherche...', addError: 'Impossible d ajouter.',
     empty: 'Aucun article suivi. Recherchez ci-dessus.', remove: 'Retirer', priceUp: 'Prix Monte', priceDown: 'Prix Baisse',
     rapUp: 'RAP Monte', rapDown: 'RAP Baisse',
@@ -42,7 +42,7 @@ export const ALERTS_LOCALES = {
   de: {
     enabled: 'Benachrichtigungen an', disabled: 'Benachrichtigungen aus', enable: 'Aktivieren', disable: 'Deaktivieren',
     processing: 'Warten...', permissionDenied: 'Benachrichtigungsberechtigung verweigert.', enableError: 'Benachrichtigungen konnten nicht aktiviert werden.',
-    notSupported: 'Dieser Browser unterstutzt keine Push-Benachrichtigungen.', maxReached: 'Du kannst maximal 25 Items verfolgen.', vapidMissing: 'Push nicht auf dem Server konfiguriert (VAPID-Schlussel fehlt).',
+    notSupported: 'Dieser Browser unterstutzt keine Push-Benachrichtigungen.', maxReached: 'Unbegrenzte Benachrichtigungen aktiviert.', vapidMissing: 'Push nicht auf dem Server konfiguriert (VAPID-Schlussel fehlt).',
     searchPlaceholder: 'Item zum Verfolgen suchen...', searching: 'Suche...', addError: 'Hinzufugen fehlgeschlagen.',
     empty: 'Noch keine Items verfolgt. Suche oben.', remove: 'Entfernen', priceUp: 'Preis Hoch', priceDown: 'Preis Runter',
     rapUp: 'RAP Hoch', rapDown: 'RAP Runter',

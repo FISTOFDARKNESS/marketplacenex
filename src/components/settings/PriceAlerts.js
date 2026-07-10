@@ -10,7 +10,6 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [alerts, setAlerts] = useState([]);
-  const [max, setMax] = useState(25);
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -22,7 +21,6 @@ export default function PriceAlerts({ lang = 'en' }) {
       const data = await res.json();
       if (data.success) {
         setAlerts(data.alerts);
-        setMax(data.max);
       }
     } catch { /* ignore */ }
   }, []);
@@ -75,7 +73,7 @@ export default function PriceAlerts({ lang = 'en' }) {
 
   async function addAlert(item) {
     setError('');
-    if (alerts.length >= max) { setError(t.maxReached); return; }
+    // no limit
     try {
       const res = await fetch('/api/settings/alerts', {
         method: 'POST',
@@ -181,7 +179,7 @@ export default function PriceAlerts({ lang = 'en' }) {
               </div>
             ))}
           </div>
-          <div className="pa-counter">{alerts.length} / {max}</div>
+          <div className="pa-counter">{alerts.length}</div>
         </>
       )}
     </div>
