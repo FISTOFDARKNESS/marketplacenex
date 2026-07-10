@@ -50,9 +50,13 @@ export async function GET(req) {
       orderBy = { demand: 'desc' };
     }
 
+    const hasFilter = !!(cat || rarity || search || minPrice || maxPrice);
+    const take = hasFilter ? undefined : 700;
+
     const items = await prisma.item.findMany({
       where,
       orderBy,
+      take,
     });
 
     return NextResponse.json({ success: true, items: serializeItems(items) });
