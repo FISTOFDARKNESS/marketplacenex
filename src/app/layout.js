@@ -6,21 +6,31 @@ export const metadata = {
   title: 'NexBlox - Buy & Sell Roblox Limiteds',
   description: 'Verified sellers, live RAP tracking, and instant payouts. Your experience, our pleasure.',
   manifest: '/manifest.json',
+  applicationName: 'NexBlox',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'NexBlox',
   },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export const viewport = {
   themeColor: '#0A0A0A',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <meta name="mobile-web-app-capable" content="yes" />
         <script dangerouslySetInnerHTML={{
           __html: `
             document.addEventListener('contextmenu', e => e.preventDefault());
