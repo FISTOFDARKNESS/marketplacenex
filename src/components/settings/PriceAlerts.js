@@ -16,7 +16,9 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [supported, setSupported] = useState(null);
   const [error, setError] = useState('');
 
-  useEffect(() => { setSupported(notificationsSupported()); }, []);
+  useEffect(() => {
+    setSupported(notificationsSupported());
+  }, []);
 
   const loadAlerts = useCallback(async () => {
     try {
