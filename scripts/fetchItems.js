@@ -62,7 +62,6 @@ async function main() {
   }
 
   const entries = Object.entries(data.items)
-    .filter(([, item]) => item[3] > 0)
     .sort(([, a], [, b]) => (b[2] || 0) - (a[2] || 0))
     .slice(0, MAX_ITEMS);
 
