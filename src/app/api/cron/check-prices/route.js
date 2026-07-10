@@ -4,6 +4,26 @@ import { configureWebPush, webpush } from '@/lib/webpush';
 
 export const dynamic = 'force-dynamic';
 
+const ROLIMONS_API = 'https://www.rolimons.com/itemapi/itemdetails';
+
+// Fetch fresh rap/price for every item ONCE per run (1 HTTP request),
+// then index by robloxAssetId so we only compare items that have alerts.
+async function fetchFreshPrices() {
+  try {
+    const res = await fetch(ROLIMONS_API, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.success || !data.items) return null;
+    const map = new Map();
+    for (const [assetId, arr] of Object.entries(data.items)) {
+      map.set(assetId, { rap: arr[2] || 0, price: arr[3] > 0 ? arr[3] : (arr[2] || 0) });
+    }
+    return map;
+  } catch {
+    return null;
+  }
+}
+
 function buildMessage(item, reasons, lang = 'en') {
   const labels = {
     priceUp: lang === 'pt' ? 'preço subiu' : 'price went up',
@@ -24,34 +44,43 @@ export async function POST(req) {
 
     configureWebPush();
 
+    const fresh = await fetchFreshPrices();
+
     const alerts = await prisma.priceAlert.findMany({
       where: { active: true },
       include: { item: true, user: { include: { pushSubscriptions: true } } },
     });
 
     let sent = 0;
+    let refreshed = 0;
     const staleSubs = [];
 
     for (const alert of alerts) {
       const item = alert.item;
       if (!item) continue;
 
+      // Prefer fresh Rolimons data; fall back to the DB row.
+      const f = fresh?.get(item.robloxAssetId.toString());
+      const curPrice = f ? f.price : item.price;
+      const curRap = f ? f.rap : item.rap;
+
       const reasons = [];
-      if (alert.lastPrice != null && item.price !== alert.lastPrice) {
-        if (item.price > alert.lastPrice && alert.onPriceUp) reasons.push('priceUp');
-        if (item.price < alert.lastPrice && alert.onPriceDown) reasons.push('priceDown');
+      if (alert.lastPrice != null && curPrice !== alert.lastPrice) {
+        if (curPrice > alert.lastPrice && alert.onPriceUp) reasons.push('priceUp');
+        if (curPrice < alert.lastPrice && alert.onPriceDown) reasons.push('priceDown');
       }
-      if (alert.lastRap != null && item.rap !== alert.lastRap) {
-        if (item.rap > alert.lastRap && alert.onRapUp) reasons.push('rapUp');
-        if (item.rap < alert.lastRap && alert.onRapDown) reasons.push('rapDown');
+      if (alert.lastRap != null && curRap !== alert.lastRap) {
+        if (curRap > alert.lastRap && alert.onRapUp) reasons.push('rapUp');
+        if (curRap < alert.lastRap && alert.onRapDown) reasons.push('rapDown');
       }
 
       // Always keep last values fresh so we only alert on real changes
-      if (item.price !== alert.lastPrice || item.rap !== alert.lastRap) {
+      if (curPrice !== alert.lastPrice || curRap !== alert.lastRap) {
         await prisma.priceAlert.update({
           where: { id: alert.id },
-          data: { lastPrice: item.price, lastRap: item.rap },
+          data: { lastPrice: curPrice, lastRap: curRap },
         }).catch(() => {});
+        refreshed++;
       }
 
       if (reasons.length === 0) continue;
@@ -82,7 +111,7 @@ export async function POST(req) {
       await prisma.pushSubscription.deleteMany({ where: { id: { in: staleSubs } } }).catch(() => {});
     }
 
-    return NextResponse.json({ success: true, checked: alerts.length, sent });
+    return NextResponse.json({ success: true, checked: alerts.length, refreshed, sent });
   } catch (error) {
     console.error('Check prices error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
