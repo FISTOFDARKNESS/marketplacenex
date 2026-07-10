@@ -6,11 +6,11 @@ export function middleware(request) {
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://unpkg.com https://www.google.com https://www.gstatic.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' blob: data: https://tr.rbxcdn.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com https://www.gstatic.com;
+    img-src 'self' blob: data: https://*.rbxcdn.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://accounts.google.com https://www.google.com;
-    frame-src 'self' https://accounts.google.com https://www.google.com;
+    connect-src 'self' https://accounts.google.com https://www.google.com https://www.gstatic.com;
+    frame-src 'self' https://accounts.google.com https://www.google.com https://www.gstatic.com;
     frame-ancestors 'none';
   `.replace(/\s{2,}/g, ' ').trim();
 
