@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { locales } from '@/lib/locales';
+import { formatNumber } from '@/lib/format';
 
 function StatCounter({ target, prefix = '', suffix = '', decimals = 0, duration = 1400 }) {
   const [count, setCount] = useState(0);
@@ -25,10 +26,7 @@ function StatCounter({ target, prefix = '', suffix = '', decimals = 0, duration 
   return (
     <div className="stat-num">
       {prefix}
-      {count.toLocaleString(undefined, {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      })}
+      {formatNumber(count, decimals)}
       {suffix}
     </div>
   );

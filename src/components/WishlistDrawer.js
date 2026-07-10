@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Image from 'next/image';
+import { formatNumber } from '@/lib/format';
 import { Heart, X, ShoppingCart, Trash2, Star, Gem } from 'lucide-react';
 
 const LANG = {
@@ -149,7 +150,7 @@ export default function WishlistDrawer({
                     <p className="wl-item-name">{item.name}</p>
                     <div className="wl-item-meta">
                       <span className="wl-item-rap">{t.rap}: {item.rapLabel}</span>
-                      <span className="wl-item-price">${item.price.toLocaleString()}</span>
+                      <span className="wl-item-price">${formatNumber(item.price)}</span>
                     </div>
                     <div className="wl-item-actions">
                       <button

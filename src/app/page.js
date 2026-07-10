@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import MarqueeBar from '@/components/MarqueeBar';
@@ -10,12 +11,14 @@ import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
-import { AuthModal } from '@/components/Modals';
-import PurchaseModal from '@/components/PurchaseModal';
-import FinancePanel from '@/components/finance/FinancePanel';
 import Toast from '@/components/Toast';
-import WishlistDrawer from '@/components/WishlistDrawer';
 import { useLang } from '@/lib/LanguageProvider';
+
+// Interactive overlays: code-split and skip SSR (they mount only on user action)
+const AuthModal = dynamic(() => import('@/components/Modals').then((m) => m.AuthModal), { ssr: false });
+const PurchaseModal = dynamic(() => import('@/components/PurchaseModal'), { ssr: false });
+const FinancePanel = dynamic(() => import('@/components/finance/FinancePanel'), { ssr: false });
+const WishlistDrawer = dynamic(() => import('@/components/WishlistDrawer'), { ssr: false });
 
 export default function Home() {
   const { lang } = useLang();

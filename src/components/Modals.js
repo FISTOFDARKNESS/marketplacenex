@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { locales } from '@/lib/locales';
+import { formatNumber } from '@/lib/format';
 
 export function DetailModal({ item, onClose, onBuy }) {
   if (!item) return null;
@@ -26,7 +27,7 @@ export function DetailModal({ item, onClose, onBuy }) {
             </div>
             <div>
               <span>Price</span>
-              <b style={{ color: 'var(--gold)' }}>${item.price.toLocaleString()}</b>
+              <b style={{ color: 'var(--gold)' }}>${formatNumber(item.price)}</b>
             </div>
           </div>
           <button

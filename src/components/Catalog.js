@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { formatNumber } from '@/lib/format';
 import {
   LayoutGrid,
   Crown,
@@ -204,7 +205,7 @@ export default function Catalog({
                       <h3>{it.name}</h3>
                       <div className="bento-meta">
                         <span className="bento-rap">RAP: {it.rapLabel}</span>
-                        <span className="bento-value">Value: {it.price.toLocaleString()}</span>
+                        <span className="bento-value">Value: {formatNumber(it.price)}</span>
                       </div>
                       <div className="bento-usd">${it.usdPrice}</div>
                       {it.size === 'feature' && (

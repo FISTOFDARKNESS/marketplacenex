@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Check, AlertTriangle, Wallet, Clock, Bitcoin } from 'lucide-react';
+import { formatNumber } from '@/lib/format';
 
 export default function PurchaseModal({ item, user, onClose, onOpenFinance, onPurchaseComplete }) {
   const [sellers, setSellers] = useState([]);
@@ -107,7 +108,7 @@ export default function PurchaseModal({ item, user, onClose, onOpenFinance, onPu
               </div>
               <div className="purchase-detail-row">
                 <span>Value</span>
-                <b>{item.price.toLocaleString()} Robux</b>
+                <b>{formatNumber(item.price)} Robux</b>
               </div>
               <div className="purchase-detail-row">
                 <span>Seller</span>

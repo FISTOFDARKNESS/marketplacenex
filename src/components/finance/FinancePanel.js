@@ -6,6 +6,7 @@ import {
   AlertTriangle, Bitcoin, DollarSign, CreditCard, TrendingUp,
   History, ExternalLink, Gauge, Zap, Layers
 } from 'lucide-react';
+import { formatNumber } from '@/lib/format';
 
 export default function FinancePanel({ user, onClose }) {
   const [tab, setTab] = useState('balance');
@@ -94,7 +95,7 @@ export default function FinancePanel({ user, onClose }) {
     const perStep = 5 + (seed % 10);
     const pos = Math.max(0, w.queuePos - steps * perStep);
     const progress = Math.min(100, ((10000 - pos) / 10000) * 100);
-    return { label: `#${pos.toLocaleString()}`, done: false, progress };
+    return { label: `#${formatNumber(pos)}`, done: false, progress };
   }
 
   if (!user) return null;
@@ -143,7 +144,7 @@ export default function FinancePanel({ user, onClose }) {
                 </div>
                 <div className="fm-balance-amount">${balance.toFixed(2)}</div>
                 <div className="fm-balance-convert">
-                  ≈ {Math.floor(balance / robuxRate).toLocaleString()} Robux
+                  ≈ {formatNumber(Math.floor(balance / robuxRate))} Robux
                 </div>
               </div>
 
@@ -168,7 +169,7 @@ export default function FinancePanel({ user, onClose }) {
                           return (
                             <div key={w.id} className={`fm-queue-item ${st.done ? 'done' : ''}`}>
                               <div className="fm-qi-left">
-                                <div className="fm-qi-amount">{w.amount.toLocaleString()} Robux</div>
+                                <div className="fm-qi-amount">{formatNumber(w.amount)} Robux</div>
                                 <div className="fm-qi-progress-bar">
                                   <div className="fm-qi-progress-fill" style={{ width: `${st.progress || 0}%` }} />
                                 </div>
@@ -278,8 +279,8 @@ export default function FinancePanel({ user, onClose }) {
                       className={`fm-amount-btn ${selected ? 'active' : ''}`}
                       onClick={() => setDepositAmount(selected ? '' : String(amt))}
                     >
-                      <span className="fm-amt-usd">${amt.toLocaleString()}</span>
-                      <span className="fm-amt-robux">≈ {robux.toLocaleString()} Robux</span>
+                      <span className="fm-amt-usd">${formatNumber(amt)}</span>
+                      <span className="fm-amt-robux">≈ {formatNumber(robux)} Robux</span>
                     </button>
                   );
                 })}
@@ -287,7 +288,7 @@ export default function FinancePanel({ user, onClose }) {
 
               <button type="submit" className="fm-btn" disabled={loading || !depositAmount}>
                 {loading ? <><Clock size={16} /> Processing...</> : (
-                  <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay ${parseFloat(depositAmount || 0).toLocaleString()} USD</>
+                  <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay ${formatNumber(parseFloat(depositAmount || 0))} USD</>
                 )}
               </button>
             </form>
