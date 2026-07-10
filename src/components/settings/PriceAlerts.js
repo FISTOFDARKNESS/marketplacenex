@@ -46,10 +46,11 @@ export default function PriceAlerts({ lang = 'en' }) {
       }
     } catch (e) {
       const msg = e?.message || e?.toString() || String(e);
+      const detail = `[${e?.name || 'Error'}] ${msg}`;
       console.error('[Push] enable error:', { message: msg, name: e?.name, stack: e?.stack, full: e });
-      if (msg === 'denied') setError(t.permissionDenied);
-      else if (msg === 'vapid-missing') setError(t.vapidMissing);
-      else if (msg === 'not-supported') setError(t.notSupported);
+      if (msg === 'denied') setError(`${t.permissionDenied} (${msg})`);
+      else if (msg === 'vapid-missing') setError(`${t.vapidMissing} (${msg})`);
+      else if (msg === 'not-supported') setError(`${t.notSupported} (${msg})`);
       else setError(`${t.enableError} (${msg})`);
     } finally {
       setBusy(false);
