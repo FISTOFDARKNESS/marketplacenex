@@ -25,6 +25,7 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [items, setItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
+  const [totalItems, setTotalItems] = useState(0);
 
   // Filters state
   const [activeCatFilter, setActiveCatFilter] = useState('all');
@@ -80,11 +81,14 @@ export default function Home() {
 
           const res = await fetch(`/api/items?${params.toString()}`, { signal: controller.signal });
           clearTimeout(timeout);
-          if (res.ok) {
-            const data = await res.json();
-            if (!cancelled) setItems(data.items || []);
-            return;
-          }
+           if (res.ok) {
+             const data = await res.json();
+             if (!cancelled) {
+               setItems(data.items || []);
+               if (typeof data.total === 'number') setTotalItems(data.total);
+             }
+             return;
+           }
         } catch {
           if (attempt < retries) {
             await new Promise(r => setTimeout(r, 1000));
@@ -204,6 +208,7 @@ export default function Home() {
       <Hero
         onBrowseClick={() => scrollToSection('catalog')}
         onHowItWorksClick={() => scrollToSection('how')}
+        itemsListed={totalItems}
         lang={lang}
       />
 
@@ -224,6 +229,7 @@ export default function Home() {
         setMaxPrice={setMaxPrice}
         sortMode={sortMode}
         setSortMode={setSortMode}
+        totalItems={totalItems}
         wishlist={wishlist}
         toggleWishlist={toggleWishlist}
         onStartSelling={() => addToast('rocket', lang === 'pt' ? 'Redirecionando para onboarding do vendedor...' : 'Redirecting to seller onboarding...')}

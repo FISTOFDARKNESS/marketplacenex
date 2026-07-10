@@ -53,13 +53,12 @@ export async function GET(req) {
     const hasFilter = !!(cat || rarity || search || minPrice || maxPrice);
     const take = hasFilter ? undefined : 700;
 
-    const items = await prisma.item.findMany({
-      where,
-      orderBy,
-      take,
-    });
+    const [items, total] = await Promise.all([
+      prisma.item.findMany({ where, orderBy, take }),
+      prisma.item.count(),
+    ]);
 
-    return NextResponse.json({ success: true, items: serializeItems(items) });
+    return NextResponse.json({ success: true, items: serializeItems(items), total });
   } catch (error) {
     console.error('Fetch items error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -74,6 +74,7 @@ export default function Catalog({
   setMaxPrice,
   sortMode,
   setSortMode,
+  totalItems,
   wishlist,
   toggleWishlist,
   onStartSelling,
@@ -195,7 +196,7 @@ export default function Catalog({
             <div>
               <h2 className="catalog-title">{t.listingsHead}</h2>
               <p className="catalog-subtitle">
-                {items.length} {items.length !== 1 ? t.verifiedPlural : t.verified} · {t.sortedBy}{' '}
+                {totalItems || items.length} {totalItems === 1 || (!totalItems && items.length === 1) ? t.verified : t.verifiedPlural} · {t.sortedBy}{' '}
                 {sortMode === 'demand'
                   ? (lang === 'pt' ? 'demanda' : 'demand')
                   : sortMode === 'high'

@@ -32,7 +32,7 @@ function StatCounter({ target, prefix = '', suffix = '', decimals = 0, duration 
   );
 }
 
-export default function Hero({ onBrowseClick, onHowItWorksClick, lang = 'en' }) {
+export default function Hero({ onBrowseClick, onHowItWorksClick, itemsListed = 2514, lang = 'en' }) {
   const t = locales[lang].hero;
 
   return (
@@ -57,7 +57,7 @@ export default function Hero({ onBrowseClick, onHowItWorksClick, lang = 'en' }) 
       </div>
       <div className="stats-row">
         <div className="stat">
-          <StatCounter target={42180} />
+          <StatCounter target={itemsListed} />
           <div className="stat-label">{t.stats.itemsListed}</div>
         </div>
         <div className="stat">
