@@ -61,9 +61,9 @@ export default function Footer({ onScrollTo, lang = 'en' }) {
         <div className="footer-bottom">
           <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{t.copy}</span>
           <div className="footer-socials">
-            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Discord"><MessageCircleSvg /></a>
-            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><TwitterSvg /></a>
-            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Email"><MailSvg /></a>
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Discord" rel="noopener noreferrer"><MessageCircleSvg /></a>
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter" rel="noopener noreferrer"><TwitterSvg /></a>
+            <a href="#" onClick={(e) => e.preventDefault()} aria-label="Email" rel="noopener noreferrer"><MailSvg /></a>
           </div>
         </div>
       </div>

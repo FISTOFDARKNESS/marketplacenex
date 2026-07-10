@@ -53,6 +53,25 @@ button {
   cursor: pointer;
 }
 
+/* ---------- ACCESSIBLE KEYBOARD FOCUS ---------- */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Remove the default outline only when focus-visible is supported (mouse users) */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure the language <select> and search input show a clear focus ring */
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
 .icon {
   width: 16px;
   height: 16px;
@@ -414,6 +433,10 @@ button {
 .marquee-track {
   display: inline-flex;
   animation: scroll 28s linear infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: content;
 }
 
 .marquee-bar:hover .marquee-track {
@@ -421,8 +444,8 @@ button {
 }
 
 @keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .marquee-item {

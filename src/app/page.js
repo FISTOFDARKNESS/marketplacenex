@@ -85,12 +85,12 @@ export default function Home() {
             if (!cancelled) setItems(data.items || []);
             return;
           }
-        } catch (err) {
-          if (attempt === retries) {
-            console.error('Failed to load catalog items:', err);
-          } else {
+        } catch {
+          if (attempt < retries) {
             await new Promise(r => setTimeout(r, 1000));
           }
+          // On final failure, loadingItems stays false and the empty-state
+          // fallback is shown — no console noise.
         } finally {
           if (!cancelled) setLoadingItems(false);
         }

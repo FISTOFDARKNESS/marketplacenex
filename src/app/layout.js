@@ -4,10 +4,58 @@ import { LanguageProvider } from '@/lib/LanguageProvider';
 import PwaRegister from '@/components/PwaRegister';
 
 export const metadata = {
-  title: 'NexBlox - Buy & Sell Roblox Limiteds',
-  description: 'Verified sellers, live RAP tracking, and instant payouts. Your experience, our pleasure.',
-  manifest: '/manifest.json',
+  metadataBase: new URL('https://nexblox.com'),
+  title: {
+    default: 'NexBlox - Buy & Sell Roblox Limiteds',
+    template: '%s | NexBlox',
+  },
+  description: 'Verified sellers, live RAP tracking, and instant payouts. Trade Roblox limiteds safely with admin-verified transactions on NexBlox.',
+  keywords: ['Roblox limiteds', 'Roblox trading', 'buy Roblox items', 'sell Roblox limiteds', 'Roblox marketplace', 'RAP tracking'],
   applicationName: 'NexBlox',
+  manifest: '/manifest.json',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: '/',
+    languages: {
+      en: '/',
+      'pt-BR': '/',
+      it: '/',
+      es: '/',
+      fr: '/',
+      de: '/',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://nexblox.com',
+    siteName: 'NexBlox',
+    title: 'NexBlox - Buy & Sell Roblox Limiteds',
+    description: 'Verified sellers, live RAP tracking, and instant payouts. Trade Roblox limiteds safely with admin-verified transactions.',
+    locale: 'en_US',
+    images: [
+      {
+        url: '/icon.svg',
+        width: 512,
+        height: 512,
+        alt: 'NexBlox',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NexBlox - Buy & Sell Roblox Limiteds',
+    description: 'Verified sellers, live RAP tracking, and instant payouts. Trade Roblox limiteds safely.',
+    images: ['/icon.svg'],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
