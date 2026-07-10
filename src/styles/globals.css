@@ -1529,8 +1529,10 @@ input:focus-visible {
 }
 
 .modal {
-  background: var(--bg-2);
-  border: 1px solid var(--line);
+  background: rgba(17, 17, 21, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-lg);
   padding: var(--s4);
   max-width: 520px;
@@ -2564,8 +2566,10 @@ input:focus-visible {
 .sidebar {
   width: 240px;
   flex-shrink: 0;
-  background: #131316;
-  border-right: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -2678,8 +2682,10 @@ input:focus-visible {
 
 /* ---------- DATA TABLE ---------- */
 .table-wrap {
-  background: #131316;
-  border: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -2850,7 +2856,10 @@ input:focus-visible {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: #1a1a1e;
+  background: rgba(26, 26, 30, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   margin-bottom: 8px;
 }
@@ -2903,7 +2912,10 @@ input:focus-visible {
   gap: 8px;
 }
 .page-grid-card {
-  background: #1a1a1e;
+  background: rgba(26, 26, 30, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   padding: 12px;
   text-align: center;
@@ -2977,17 +2989,17 @@ input:focus-visible {
   border-color: #f59e0b;
 }
 .verify-phrase {
-  background: #0f0f13;
-  border: 1px solid #2a2a2e;
+  background: rgba(15, 15, 19, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   padding: 16px;
-  margin-bottom: 16px;
   font-size: 18px;
   font-weight: 700;
   color: #fbbf24;
-  letter-spacing: 0.5px;
   text-align: center;
-  word-break: break-all;
+  letter-spacing: 0.5px;
 }
 .verify-actions {
   display: flex;
@@ -3017,8 +3029,10 @@ input:focus-visible {
 /* ---------- HELP / CONTACT FORM ---------- */
 .help-card {
   max-width: 520px;
-  background: #131316;
-  border: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 24px;
 }
@@ -3135,8 +3149,10 @@ input:focus-visible {
   align-items: center;
   gap: 14px;
   padding: 20px;
-  background: #131316;
-  border: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
 }
 .dash-card-icon {
@@ -3171,8 +3187,10 @@ input:focus-visible {
   color: #e5e7eb;
 }
 .dash-revenue-card {
-  background: #131316;
-  border: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 20px;
 }
@@ -3225,8 +3243,10 @@ input:focus-visible {
   align-items: center;
   gap: 10px;
   padding: 16px 20px;
-  background: #131316;
-  border: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   color: #6b7280;
   font-size: 14px;
@@ -3570,8 +3590,10 @@ input:focus-visible {
   gap: 14px;
 }
 .inv-card {
-  background: #131316;
-  border: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 12px;
   display: flex;
@@ -3676,8 +3698,10 @@ input:focus-visible {
   position: relative;
   width: 100%;
   max-width: 360px;
-  background: #131316;
-  border: 1px solid var(--line);
+  background: rgba(19, 19, 22, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   padding: 24px;
   text-align: center;
@@ -3713,8 +3737,10 @@ input:focus-visible {
 }
 .inv-modal-rows {
   text-align: left;
-  background: #0f0f13;
-  border: 1px solid var(--line);
+  background: rgba(15, 15, 19, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   padding: 12px 14px;
   margin-bottom: 16px;
@@ -3746,8 +3772,10 @@ input:focus-visible {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: #0f0f13;
-  border: 1px solid var(--line);
+  background: rgba(15, 15, 19, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
 }
 .sec-device-icon {
@@ -3808,8 +3836,10 @@ input:focus-visible {
   align-items: center;
   gap: 5px;
   padding: 7px 11px;
-  background: #1a1a1e;
-  border: 1px solid var(--line);
+  background: rgba(26, 26, 30, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 8px;
   color: #ef4444;
   font-size: 12px;

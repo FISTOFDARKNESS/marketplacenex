@@ -302,8 +302,10 @@ export default function FinancePanel({ user, onClose }) {
 
       <style>{`
         .finance-modal {
-          background: #111113;
-          border: 1px solid #2a2a2e;
+          background: rgba(17, 17, 19, 0.75);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 16px;
           max-width: 480px;
           width: 100%;
@@ -332,7 +334,10 @@ export default function FinancePanel({ user, onClose }) {
           gap: 6px;
           margin: 16px 24px 0;
           padding: 4px;
-          background: #1a1a1e;
+          background: rgba(26, 26, 30, 0.5);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 10px;
         }
         .fm-tab {
@@ -375,8 +380,10 @@ export default function FinancePanel({ user, onClose }) {
         }
 
         .fm-balance-card {
-          background: linear-gradient(135deg, #1e1e24, #151518);
-          border: 1px solid #2a2a2e;
+          background: rgba(30, 30, 36, 0.5);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 12px;
           padding: 20px;
           margin-bottom: 20px;
@@ -422,12 +429,15 @@ export default function FinancePanel({ user, onClose }) {
           justify-content: space-between;
           gap: 12px;
           padding: 10px 14px;
-          background: #1a1a1e;
+          background: rgba(26, 26, 30, 0.5);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 8px;
           margin-bottom: 4px;
           transition: background 0.15s;
         }
-        .fm-queue-item:hover { background: #202024; }
+        .fm-queue-item:hover { background: rgba(32, 32, 36, 0.6); }
         .fm-queue-item.done { opacity: 0.6; }
         .fm-qi-left { flex: 1; min-width: 0; }
         .fm-qi-amount { font-size: 13px; font-weight: 600; color: #e5e7eb; margin-bottom: 6px; }
@@ -471,7 +481,10 @@ export default function FinancePanel({ user, onClose }) {
           gap: 6px;
           margin-bottom: 16px;
           padding: 4px;
-          background: #1a1a1e;
+          background: rgba(26, 26, 30, 0.5);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 8px;
         }
         .fm-toggle-btn {
@@ -513,15 +526,17 @@ export default function FinancePanel({ user, onClose }) {
           align-items: center;
           gap: 4px;
           padding: 16px 8px;
-          background: #1a1a1e;
-          border: 1px solid #2a2a2e;
+          background: rgba(26, 26, 30, 0.5);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.2s;
           font-family: inherit;
         }
-        .fm-amount-btn:hover { border-color: #3a3a3e; }
-        .fm-amount-btn.active { border-color: #f59e0b; background: rgba(245,158,11,0.08); }
+        .fm-amount-btn:hover { border-color: rgba(255,255,255,0.15); }
+        .fm-amount-btn.active { border-color: #f59e0b; background: rgba(245,158,11,0.12); }
         .fm-amt-usd { font-size: 16px; font-weight: 700; color: #fff; }
         .fm-amount-btn.active .fm-amt-usd { color: #fbbf24; }
         .fm-amt-robux { font-size: 10px; color: #6b7280; }
@@ -531,16 +546,18 @@ export default function FinancePanel({ user, onClose }) {
           align-items: center;
           gap: 6px;
           padding: 14px 8px;
-          background: #1a1a1e;
-          border: 1px solid #2a2a2e;
+          background: rgba(26, 26, 30, 0.5);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.2s;
           font-family: inherit;
           color: #6b7280;
         }
-        .fm-pm-card:hover { border-color: #3a3a3e; color: #d1d5db; }
-        .fm-pm-card.active { border-color: #f59e0b; background: rgba(245,158,11,0.08); color: #fff; }
+        .fm-pm-card:hover { border-color: rgba(255,255,255,0.15); color: #d1d5db; }
+        .fm-pm-card.active { border-color: #f59e0b; background: rgba(245,158,11,0.12); color: #fff; }
         .fm-pm-card svg { color: currentColor; }
         .fm-pm-label { font-size: 12px; font-weight: 600; }
         .fm-pm-bonus { font-size: 10px; color: #22c55e; font-weight: 500; background: rgba(34,197,94,0.12); padding: 2px 8px; border-radius: 4px; }
@@ -556,8 +573,10 @@ export default function FinancePanel({ user, onClose }) {
         .fm-input-wrap input {
           width: 100%;
           padding: 12px 14px;
-          background: #1a1a1e;
-          border: 1px solid #2a2a2e;
+          background: rgba(26, 26, 30, 0.5);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 10px;
           color: #fff;
           font-size: 15px;

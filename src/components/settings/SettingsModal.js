@@ -93,7 +93,8 @@ export function VerifyModal({ user, onClose }) {
                 Copy this phrase and paste it in your Roblox bio for <b>{robloxUser}</b>
               </p>
               <div style={{
-                background: '#1a1a1e', border: '1px solid #2a2a2e', borderRadius: '10px',
+                background: 'rgba(26, 26, 30, 0.5)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '10px',
                 padding: '16px', marginBottom: '16px', fontSize: '18px', fontWeight: 700,
                 color: '#fbbf24', letterSpacing: '0.5px',
               }}>
@@ -101,15 +102,17 @@ export function VerifyModal({ user, onClose }) {
               </div>
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '16px' }}>
                 <button onClick={handleCopy} style={{
-                  display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#1a1a1e',
-                  border: '1px solid #2a2a2e', borderRadius: '8px', color: '#d1d5db', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px',
+                  background: 'rgba(26, 26, 30, 0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '8px', color: '#d1d5db', cursor: 'pointer',
                   fontSize: '13px', fontFamily: 'inherit',
                 }}>
                   {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy</>}
                 </button>
                 <a href="https://www.roblox.com/users/profile/edit" target="_blank" rel="noopener noreferrer" style={{
-                  display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#1a1a1e',
-                  border: '1px solid #2a2a2e', borderRadius: '8px', color: '#d1d5db', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px',
+                  background: 'rgba(26, 26, 30, 0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '8px', color: '#d1d5db', cursor: 'pointer',
                   fontSize: '13px', textDecoration: 'none',
                 }}>
                   <ExternalLink size={14} /> {appLocales[lang].settings.openRoblox}
@@ -171,7 +174,8 @@ export function OrdersModal({ user, onClose }) {
             orders.map(o => (
               <div key={o.id} style={{
                 display: 'flex', alignItems: 'center', gap: '12px', padding: '12px',
-                background: '#1a1a1e', borderRadius: '10px', marginBottom: '8px',
+                background: 'rgba(26, 26, 30, 0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '10px', marginBottom: '8px',
               }}>
                 <img src={o.item.img} alt={o.item.name} style={{ width: 48, height: 48, borderRadius: '6px', objectFit: 'cover' }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -226,7 +230,8 @@ export function InventoryModal({ user, onClose }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
               {inventory.map(inv => (
                 <div key={inv.id} style={{
-                  background: '#1a1a1e', borderRadius: '10px', padding: '12px', textAlign: 'center',
+                  background: 'rgba(26, 26, 30, 0.5)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '10px', padding: '12px', textAlign: 'center',
                 }}>
                   <img src={inv.item.img} alt={inv.item.name} style={{ width: '100%', aspectRatio: '1', borderRadius: '6px', objectFit: 'cover', marginBottom: '8px' }} />
                   <div style={{ fontSize: '12px', fontWeight: 600, color: '#e5e7eb' }}>{inv.item.name}</div>
@@ -289,7 +294,8 @@ export function AdminOrdersModal({ user, onClose }) {
             pendingOrders.map(o => (
               <div key={o.id} style={{
                 display: 'flex', alignItems: 'center', gap: '12px', padding: '12px',
-                background: '#1a1a1e', borderRadius: '10px', marginBottom: '8px',
+                background: 'rgba(26, 26, 30, 0.5)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '10px', marginBottom: '8px',
               }}>
                 <img src={o.item?.img} alt={o.item?.name} style={{ width: 48, height: 48, borderRadius: '6px', objectFit: 'cover' }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
