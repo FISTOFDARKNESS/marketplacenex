@@ -1631,9 +1631,9 @@ input:focus-visible {
 
 /* ---------- PURCHASE MODAL ---------- */
 .purchase-modal {
-  max-width: 360px;
+  max-width: 320px;
   grid-template-columns: 1fr;
-  padding: var(--s3);
+  padding: var(--s2);
 }
 
 .purchase-steps {
@@ -1738,8 +1738,8 @@ input:focus-visible {
 }
 
 .purchase-step-icon {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   margin: 0 auto var(--s2);
   background: transparent;
   border-radius: var(--radius-md);

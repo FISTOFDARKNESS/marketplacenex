@@ -72,7 +72,7 @@ export default function PurchaseModal({ item, user, onClose, onOpenFinance, onPu
 
   return (
     <div className="modal-overlay show" onClick={(e) => e.target.classList.contains('modal-overlay') && onClose()}>
-      <div className="modal purchase-modal" style={{ maxWidth: '340px' }}>
+      <div className="modal purchase-modal" style={{ maxWidth: '300px' }}>
         <button className="modal-close" onClick={onClose}><X className="icon" /></button>
 
         <div className="purchase-body">
