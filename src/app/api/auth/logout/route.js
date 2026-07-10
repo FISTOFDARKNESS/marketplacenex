@@ -8,6 +8,14 @@ export async function POST(req) {
     await destroySession(decoded?.sid);
   }
   const response = NextResponse.json({ success: true });
-  response.cookies.delete('token');
+  // Overwrite the cookie with matching attributes and immediate expiry so the
+  // browser reliably removes it ( Secure + SameSite must match the set call ).
+  response.cookies.set('token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 0,
+  });
   return response;
 }
