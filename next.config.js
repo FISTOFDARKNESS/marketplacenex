@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  productionBrowserSourceMaps: false, // Disables source maps in production
-  compress: true, // Enables gzip/brotli compression
+  productionBrowserSourceMaps: false,
+  compress: true,
   images: {
     remotePatterns: [
       {
