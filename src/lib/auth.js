@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { prisma } from './db';
 import { sendLoginAlertEmail } from './email';
+import { getBaseUrl } from './url';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-default-key';
 
@@ -57,7 +58,8 @@ export async function sendNewLoginAlert(userId, sessionJti, req) {
     const device = `${browser} on ${os}`;
     const token = generateEndSessionToken(sessionJti, userId);
 
-    await sendLoginAlertEmail(user.gmail, token, { browser, os, device, ip });
+    const baseUrl = getBaseUrl(req);
+    await sendLoginAlertEmail(user.gmail, token, { browser, os, device, ip }, baseUrl);
   } catch (e) {
     console.error('Failed to send login alert:', e);
   }

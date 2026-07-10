@@ -62,9 +62,9 @@ function otpTemplate(code, title, message) {
   </html>`;
 }
 
-export async function sendLoginAlertEmail(toEmail, endSessionToken, info) {
+export async function sendLoginAlertEmail(toEmail, endSessionToken, info, baseUrl) {
   const { browser, os, device, ip } = info;
-  const link = `${process.env.NEXT_PUBLIC_APP_URL || 'https://marketplacenexblox.vercel.app'}/end-session?token=${endSessionToken}`;
+  const link = `${baseUrl.replace(/\/$/, '')}/end-session?token=${endSessionToken}`;
   const html = `
   <!DOCTYPE html>
   <html lang="en">
