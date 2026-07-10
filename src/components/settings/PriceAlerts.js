@@ -13,7 +13,10 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [supported, setSupported] = useState(null);
   const [error, setError] = useState('');
+
+  useEffect(() => { setSupported(notificationsSupported()); }, []);
 
   const loadAlerts = useCallback(async () => {
     try {
@@ -24,7 +27,7 @@ export default function PriceAlerts({ lang = 'en' }) {
         setAlerts(data.alerts);
       }
     } catch { /* ignore */ }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     (async () => {
@@ -112,30 +115,30 @@ export default function PriceAlerts({ lang = 'en' }) {
     } catch { /* ignore */ }
   }
 
-  const supported = notificationsSupported();
-
   return (
     <div className="price-alerts">
-      <div className="pa-enable-row">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {enabled ? <Bell size={16} style={{ color: '#FFD700' }} /> : <BellOff size={16} style={{ color: '#9ca3af' }} />}
-          <span style={{ fontSize: '13px', color: enabled ? '#FFD700' : '#9ca3af' }}>
-            {enabled ? t.enabled : t.disabled}
-          </span>
+      {supported !== null && (
+        <div className="pa-enable-row">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {enabled ? <Bell size={16} style={{ color: '#FFD700' }} /> : <BellOff size={16} style={{ color: '#9ca3af' }} />}
+            <span style={{ fontSize: '13px', color: enabled ? '#FFD700' : '#9ca3af' }}>
+              {enabled ? t.enabled : t.disabled}
+            </span>
+          </div>
+          {supported && (
+            <button
+              className="pa-toggle"
+              onClick={handleEnableToggle}
+              disabled={busy}
+              style={enabled ? { borderColor: 'rgba(239,68,68,0.3)', color: '#ef4444' } : {}}
+            >
+              {busy ? t.processing : enabled ? t.disable : t.enable}
+            </button>
+          )}
         </div>
-        {supported && (
-          <button
-            className="pa-toggle"
-            onClick={handleEnableToggle}
-            disabled={busy}
-            style={enabled ? { borderColor: 'rgba(239,68,68,0.3)', color: '#ef4444' } : {}}
-          >
-            {busy ? t.processing : enabled ? t.disable : t.enable}
-          </button>
-        )}
-      </div>
+      )}
 
-      {!supported && <div className="pa-note">{t.notSupported}</div>}
+      {supported === false && <div className="pa-note">{t.notSupported}</div>}
       {error && <div className="pa-error">{error}</div>}
 
       {enabled && (
