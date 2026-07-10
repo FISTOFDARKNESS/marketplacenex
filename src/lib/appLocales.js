@@ -2,7 +2,7 @@ export const appLocales = {
   en: {
     common: { loading: 'Loading...', cancel: 'Cancel', close: 'Close', save: 'Save', all: 'All', search: 'Search', noResults: 'No results found.', back: 'Back' },
     settings: {
-      pageTitle: 'Settings', pageDesc: 'Manage your account settings and linked Roblox account.', noSessions: 'No active sessions.',
+      pageTitle: 'Settings', priceAlerts: 'Price Alerts', pageDesc: 'Manage your account settings and linked Roblox account.', noSessions: 'No active sessions.',
       account: 'Account', username: 'Username', robloxVerification: 'Roblox Verification',
       cookieExpired: 'Your saved Roblox cookie has expired. Please enter a new one.',
       linked: 'Linked', unlink: 'Unlink Roblox Account', bioVerification: 'Bio Verification', cookieVerification: 'Cookie Verification',
@@ -69,7 +69,7 @@ export const appLocales = {
   pt: {
     common: { loading: 'Carregando...', cancel: 'Cancelar', close: 'Fechar', save: 'Salvar', all: 'Todos', search: 'Pesquisar', noResults: 'Nenhum resultado encontrado.', back: 'Voltar' },
     settings: {
-      pageTitle: 'Configurações', pageDesc: 'Gerencie as configurações da sua conta e conta Roblox vinculada.', noSessions: 'Nenhuma sessão ativa.',
+      pageTitle: 'Configurações', priceAlerts: 'Alertas de Preço', pageDesc: 'Gerencie as configurações da sua conta e conta Roblox vinculada.', noSessions: 'Nenhuma sessão ativa.',
       account: 'Conta', username: 'Nome de usuário', robloxVerification: 'Verificação Roblox',
       cookieExpired: 'Seu cookie Roblox salvo expirou. Insira um novo.',
       linked: 'Vinculado', unlink: 'Desvincular conta Roblox', bioVerification: 'Verificação por Bio', cookieVerification: 'Verificação por Cookie',
@@ -136,7 +136,7 @@ export const appLocales = {
   it: {
     common: { loading: 'Caricamento...', cancel: 'Annulla', close: 'Chiudi', save: 'Salva', all: 'Tutti', search: 'Cerca', noResults: 'Nessun risultato.', back: 'Indietro' },
     settings: {
-      pageTitle: 'Impostazioni', pageDesc: 'Gestisci le impostazioni del tuo account e l\'account Roblox collegato.', noSessions: 'Nessuna sessione attiva.',
+      pageTitle: 'Impostazioni', priceAlerts: 'Avvisi Prezzo', pageDesc: 'Gestisci le impostazioni del tuo account e l\'account Roblox collegato.', noSessions: 'Nessuna sessione attiva.',
       account: 'Account', username: 'Nome utente', robloxVerification: 'Verifica Roblox',
       cookieExpired: 'Il tuo cookie Roblox salvato è scaduto. Inseriscine uno nuovo.',
       linked: 'Collegato', unlink: 'Scollega account Roblox', bioVerification: 'Verifica Bio', cookieVerification: 'Verifica Cookie',
@@ -203,7 +203,7 @@ export const appLocales = {
   es: {
     common: { loading: 'Cargando...', cancel: 'Cancelar', close: 'Cerrar', save: 'Guardar', all: 'Todos', search: 'Buscar', noResults: 'No se encontraron resultados.', back: 'Atrás' },
     settings: {
-      pageTitle: 'Configuración', pageDesc: 'Administra la configuración de tu cuenta y la cuenta Roblox vinculada.', noSessions: 'No hay sesiones activas.',
+      pageTitle: 'Configuración', priceAlerts: 'Alertas de Precio', pageDesc: 'Administra la configuración de tu cuenta y la cuenta Roblox vinculada.', noSessions: 'No hay sesiones activas.',
       account: 'Cuenta', username: 'Nombre de usuario', robloxVerification: 'Verificación Roblox',
       cookieExpired: 'Tu cookie de Roblox guardada ha expirado. Introduce una nueva.',
       linked: 'Vinculado', unlink: 'Desvincular cuenta Roblox', bioVerification: 'Verificación por Bio', cookieVerification: 'Verificación por Cookie',
@@ -272,7 +272,7 @@ export const appLocales = {
     settings: {
       account: 'Compte', username: 'Nom d’utilisateur', robloxVerification: 'Vérification Roblox',
       cookieExpired: 'Votre cookie Roblox enregistré a expiré. Veuillez en saisir un nouveau.',
-      pageTitle: 'Paramètres', pageDesc: 'Gérez les paramètres de votre compte et de votre compte Roblox lié.', noSessions: 'Aucune session active.',
+      pageTitle: 'Paramètres', priceAlerts: 'Alertes de Prix', pageDesc: 'Gérez les paramètres de votre compte et de votre compte Roblox lié.', noSessions: 'Aucune session active.',
       linked: 'Lié', unlink: 'Dissocier le compte Roblox', bioVerification: 'Vérification par Bio', cookieVerification: 'Vérification par Cookie',
       bioDesc: 'Saisissez votre nom d’utilisateur Roblox. Nous vous donnerons une phrase à coller dans votre bio.',
       cookieDesc: 'Collez votre cookie .ROBLOSECURITY pour vérifier votre compte Roblox.',
@@ -337,7 +337,7 @@ export const appLocales = {
   de: {
     common: { loading: 'Wird geladen...', cancel: 'Abbrechen', close: 'Schließen', save: 'Speichern', all: 'Alle', search: 'Suchen', noResults: 'Keine Ergebnisse gefunden.', back: 'Zurück' },
     settings: {
-      pageTitle: 'Einstellungen', pageDesc: 'Verwalten Sie Ihre Kontoeinstellungen und Ihr verknüpftes Roblox-Konto.', noSessions: 'Keine aktiven Sitzungen.',
+      pageTitle: 'Einstellungen', priceAlerts: 'Preis-Alarme', pageDesc: 'Verwalten Sie Ihre Kontoeinstellungen und Ihr verknüpftes Roblox-Konto.', noSessions: 'Keine aktiven Sitzungen.',
       account: 'Konto', username: 'Benutzername', robloxVerification: 'Roblox-Verifizierung',
       cookieExpired: 'Ihr gespeichertes Roblox-Cookie ist abgelaufen. Bitte geben Sie eines neues ein.',
       linked: 'Verknüpft', unlink: 'Roblox-Konto trennen', bioVerification: 'Bio-Verifizierung', cookieVerification: 'Cookie-Verifizierung',

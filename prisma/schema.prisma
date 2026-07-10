@@ -33,6 +33,8 @@ model User {
   sessions        Session[]
   otpChallenges   OtpChallenge[]
   auditLogs       AuditLog[]
+  pushSubscriptions PushSubscription[]
+  priceAlerts     PriceAlert[]
 }
 
 model Session {
@@ -86,6 +88,7 @@ model Item {
   wishlist       Wishlist[]
   userItems      UserItem[]
   orders         Order[]
+  priceAlerts    PriceAlert[]
 }
 
 model Transaction {
@@ -193,4 +196,36 @@ model AuditLog {
   @@index([action])
   @@index([userId])
   @@index([createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  auth      String
+  p256dh    String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model PriceAlert {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId     String
+  item       Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  onPriceUp  Boolean  @default(false)
+  onPriceDown Boolean @default(false)
+  onRapUp    Boolean  @default(false)
+  onRapDown  Boolean  @default(false)
+  lastPrice  Float?
+  lastRap    Int?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, itemId])
+  @@index([userId])
 }

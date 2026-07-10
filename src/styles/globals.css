@@ -3810,3 +3810,199 @@ input:focus-visible {
   border-color: rgba(239,68,68,0.4);
   background: rgba(239,68,68,0.08);
 }
+
+/* ===== PRICE ALERTS (Settings) ===== */
+.price-alerts { font-family: 'Inter', sans-serif; }
+
+.pa-enable-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.pa-toggle {
+  background: linear-gradient(135deg, #EAC847, #D97706);
+  color: #0B0B0F;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+.pa-toggle:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(233,196,106,0.25); }
+.pa-toggle:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.pa-note {
+  font-size: 12px;
+  color: #9ca3af;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.pa-error {
+  font-size: 12px;
+  color: #ef4444;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+}
+
+.pa-picker { margin-bottom: 14px; }
+
+.pa-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pa-search-icon {
+  position: absolute;
+  left: 12px;
+  width: 14px;
+  height: 14px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.pa-search {
+  width: 100%;
+  background: #131316;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 12px 9px 34px;
+  color: #e5e7eb;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.pa-search:focus { border-color: rgba(255,215,0,0.4); }
+
+.pa-search-hint {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.pa-results {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.pa-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #131316;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #e5e7eb;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.pa-result:hover { border-color: rgba(255,215,0,0.4); background: rgba(255,215,0,0.04); }
+.pa-result-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pa-result svg { color: #FFD700; flex-shrink: 0; }
+
+.pa-list { display: flex; flex-direction: column; gap: 8px; }
+
+.pa-empty {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  padding: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+}
+
+.pa-item {
+  background: #131316;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.pa-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.pa-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pa-remove {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.pa-remove:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+
+.pa-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pa-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #0B0B0F;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #9ca3af;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pa-flag svg { width: 12px; height: 12px; }
+.pa-flag:hover { border-color: rgba(255,255,255,0.2); color: #e5e7eb; }
+.pa-flag.active {
+  background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,180,0,0.08));
+  border-color: rgba(255,215,0,0.3);
+  color: #FFD700;
+  font-weight: 600;
+}
+
+.pa-counter {
+  text-align: right;
+  font-size: 11px;
+  color: #6b7280;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 10px;
+}

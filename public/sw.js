@@ -56,3 +56,43 @@ self.addEventListener('fetch', (event) => {
     )
   );
 });
+
+// Push: show a notification when the server sends a price/RAP alert
+self.addEventListener('push', (event) => {
+  let payload = { title: 'NexBlox', body: 'Price update', data: {} };
+  try {
+    if (event.data) payload = Object.assign(payload, event.data.json());
+  } catch (e) { /* ignore parse errors */ }
+
+  const options = {
+    body: payload.body,
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: payload.data && payload.data.itemId ? 'alert-' + payload.data.itemId : 'nexblox-alert',
+    data: payload.data || {},
+    vibrate: [120, 60, 120],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title || 'NexBlox', options)
+  );
+});
+
+// Notification click: open the item in the site's browse/catalog
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const data = event.notification.data || {};
+  const url = data.itemId ? '/?item=' + data.itemId + '#catalog' : '/#catalog';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ('focus' in client) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    })
+  );
+});

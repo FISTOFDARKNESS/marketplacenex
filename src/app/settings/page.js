@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw, Smartphone, Monitor, ShieldCheck, Send, LogOut, X } from 'lucide-react';
+import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw, Smartphone, Monitor, ShieldCheck, Send, LogOut, X, Bell } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import PriceAlerts from '@/components/settings/PriceAlerts';
 import { useLang } from '@/lib/LanguageProvider';
 import { appLocales } from '@/lib/appLocales';
 
@@ -231,6 +232,16 @@ export default function SettingsPage() {
           <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
             <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{t.username}</div>
             <div style={{ fontSize: '14px', color: '#e5e7eb', fontWeight: 600 }}>{user?.username || '...'}</div>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <Bell size={18} style={{ color: '#FFD700' }} />
+            <h3 style={{ margin: 0, fontSize: '15px' }}>{t.priceAlerts}</h3>
+          </div>
+          <div style={{ background: '#1a1a1e', borderRadius: '10px', padding: '16px' }}>
+            <PriceAlerts lang={lang} />
           </div>
         </div>
 
