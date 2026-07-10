@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw, Smartphone, Monitor, ShieldCheck, Send, LogOut, X, Bell } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
-import PriceAlerts from '@/components/settings/PriceAlerts';
 import { useLang } from '@/lib/LanguageProvider';
+
+const PriceAlerts = dynamic(() => import('@/components/settings/PriceAlerts'), { ssr: false });
 import { appLocales } from '@/lib/appLocales';
 
 export default function SettingsPage() {
