@@ -16,6 +16,7 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [supported, setSupported] = useState(null);
   const [error, setError] = useState('');
   const [lastAdded, setLastAdded] = useState(null);
+  const [pendingAdd, setPendingAdd] = useState(null);
 
   useEffect(() => {
     setSupported(notificationsSupported());
@@ -81,7 +82,9 @@ export default function PriceAlerts({ lang = 'en' }) {
   }
 
   async function addAlert(item) {
+    if (pendingAdd) return;
     setError('');
+    setPendingAdd(item.id);
     try {
       const res = await fetch('/api/settings/alerts', {
         method: 'POST',
@@ -92,12 +95,17 @@ export default function PriceAlerts({ lang = 'en' }) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || t.addError); return; }
+      if (!res.ok) { setError(data.error || t.addError); setPendingAdd(null); return; }
       setResults((prev) => prev.filter((r) => r.id !== item.id));
       setLastAdded(item.id);
+      setPendingAdd(null);
       setTimeout(() => setLastAdded((cur) => (cur === item.id ? null : cur)), 2000);
       await loadAlerts();
-    } catch { setError(t.addError); }
+    } catch (e) {
+      setError(t.addError);
+      console.error('[PriceAlerts] addAlert error:', e);
+      setPendingAdd(null);
+    }
   }
 
   async function patchAlert(id, patch) {
@@ -159,15 +167,16 @@ export default function PriceAlerts({ lang = 'en' }) {
             {searching && <div className="pa-search-hint">{t.searching}</div>}
             {results.length > 0 && (
               <div className="pa-results">
-                {results.map((it) => {
-                  const added = lastAdded === it.id;
-                  return (
-                    <button key={it.id} className={`pa-result ${added ? 'added' : ''}`} onClick={() => !added && addAlert(it)}>
-                      <span className="pa-result-name">{it.name}</span>
-                      {added ? <Check size={14} /> : <Plus size={14} />}
-                    </button>
-                  );
-                })}
+                  {results.map((it) => {
+                    const added = lastAdded === it.id;
+                    const adding = pendingAdd === it.id;
+                    return (
+                      <button key={it.id} className={`pa-result ${added ? 'added' : ''} ${adding ? 'adding' : ''}`} onClick={() => !added && !adding && addAlert(it)} disabled={adding}>
+                        <span className="pa-result-name">{it.name}</span>
+                        {added ? <Check size={14} /> : adding ? <span className="pa-spinner" /> : <Plus size={14} />}
+                      </button>
+                    );
+                  })}
               </div>
             )}
           </div>
