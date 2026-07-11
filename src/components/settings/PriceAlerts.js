@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, BellOff, Search, Plus, Check, X, Trash2, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { Bell, BellOff, Search, Plus, Check, CheckCircle, X, Trash2, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { notificationsSupported, subscribeToPush, unsubscribeFromPush, getExistingSubscription } from '@/lib/notifications';
 import { ALERTS_LOCALES } from '@/lib/alertsLocales';
 
@@ -33,6 +33,7 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [searching, setSearching] = useState(false);
   const [supported, setSupported] = useState(null);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(null);
   const [pendingAdd, setPendingAdd] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [formPriceUp, setFormPriceUp] = useState(true);
@@ -44,6 +45,12 @@ export default function PriceAlerts({ lang = 'en' }) {
   useEffect(() => {
     setSupported(notificationsSupported());
   }, []);
+
+  useEffect(() => {
+    if (!success) return;
+    const id = setTimeout(() => setSuccess(null), 3000);
+    return () => clearTimeout(id);
+  }, [success]);
 
   const loadAlerts = useCallback(async () => {
     try {
@@ -130,19 +137,20 @@ export default function PriceAlerts({ lang = 'en' }) {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || t.addError); setPendingAdd(null); return; }
-      setAlerts((prev) => [{
+      const newAlert = {
         id: data.id,
         item: selectedItem,
         onPriceUp: formPriceUp, onPriceDown: formPriceDown,
         onRapUp: formRapUp, onRapDown: formRapDown,
         duration: formDuration || null,
         createdAt: new Date().toISOString(),
-      }, ...prev]);
+      };
+      setAlerts((prev) => [newAlert, ...prev]);
       setSelectedItem(null);
       setPendingAdd(null);
       setSearch('');
       setResults([]);
-      loadAlerts().catch(() => {});
+      setTimeout(() => setSuccess(newAlert), 100);
     } catch (e) {
       setError(t.addError);
       console.error('[PriceAlerts] addAlert error:', e);
@@ -252,6 +260,14 @@ export default function PriceAlerts({ lang = 'en' }) {
                 </button>
               </div>
             )}
+
+            {success && (
+              <div className="pa-success">
+                <CheckCircle size={14} />
+                <span>Tracking <strong>{success.item?.name}</strong></span>
+              </div>
+            )}
+
           </div>
 
           <div className="pa-list">
