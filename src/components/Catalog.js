@@ -264,7 +264,7 @@ export default function Catalog({
                         className="grail-buy"
                         onClick={(e) => { e.stopPropagation(); onBuyClick(grail); }}
                       >
-                        Start Selling
+                        Buy
                       </button>
                     </div>
                   </div>
