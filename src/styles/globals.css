@@ -3903,6 +3903,103 @@ input:focus-visible {
 
 .pa-picker { margin-bottom: 14px; }
 
+.pa-config {
+  margin-top: 10px;
+  background: rgba(19, 19, 22, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px;
+}
+.pa-config-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.pa-config-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+.pa-config-close {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  transition: color 0.15s;
+}
+.pa-config-close:hover { color: #ef4444; }
+.pa-config-label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  margin-top: 10px;
+}
+.pa-config-label:first-of-type { margin-top: 0; }
+.pa-duration-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.pa-dur-btn {
+  flex: 1;
+  padding: 7px 6px;
+  background: rgba(11, 11, 15, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  color: #9ca3af;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.pa-dur-btn:hover { border-color: rgba(255,255,255,0.15); color: #d1d5db; }
+.pa-dur-btn.active {
+  background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,180,0,0.08));
+  border-color: rgba(255,215,0,0.3);
+  color: #FFD700;
+  font-weight: 600;
+}
+.pa-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px;
+  background: linear-gradient(135deg, #EAC847, #D97706);
+  border: none;
+  border-radius: 8px;
+  color: #0B0B0F;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.pa-add-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(233,196,106,0.25); }
+.pa-add-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.pa-duration {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+.pa-duration svg { color: #9ca3af; }
+
 .pa-search-wrap {
   position: relative;
   display: flex;

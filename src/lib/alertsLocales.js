@@ -5,7 +5,7 @@ export const ALERTS_LOCALES = {
     notSupported: 'This browser does not support push notifications.', maxReached: 'Unlimited alerts enabled.', vapidMissing: 'Push is not configured on the server (missing VAPID key).', notAuthenticated: 'You must be logged in to enable notifications.',
     searchPlaceholder: 'Search an item to track...', searching: 'Searching...', addError: 'Could not add alert.',
     empty: 'No tracked items yet. Search above to add one.', remove: 'Remove', priceUp: 'Price Up', priceDown: 'Price Down',
-    rapUp: 'RAP Up', rapDown: 'RAP Down',
+    rapUp: 'RAP Up', rapDown: 'RAP Down', notifyWhen: 'Notify when:', forDuration: 'For how long:', confirmAdd: 'Add Alert',
   },
   pt: {
     enabled: 'Notificacoes ativas', disabled: 'Notificacoes off', enable: 'Ativar', disable: 'Desativar',
@@ -13,7 +13,7 @@ export const ALERTS_LOCALES = {
     notSupported: 'Este navegador nao suporta notificacoes push.', maxReached: 'Alertas ilimitados ativados.', vapidMissing: 'Push nao configurado no servidor (falta chave VAPID).', notAuthenticated: 'Voce precisa estar logado para ativar notificacoes.',
     searchPlaceholder: 'Busque um item para rastrear...', searching: 'Buscando...', addError: 'Nao foi possivel adicionar.',
     empty: 'Nenhum item rastreado. Busque acima para adicionar.', remove: 'Remover', priceUp: 'Preco Sobe', priceDown: 'Preco Cai',
-    rapUp: 'RAP Sobe', rapDown: 'RAP Cai',
+    rapUp: 'RAP Sobe', rapDown: 'RAP Cai', notifyWhen: 'Notificar quando:', forDuration: 'Por quanto tempo:', confirmAdd: 'Adicionar Alerta',
   },
   it: {
     enabled: 'Notifiche attive', disabled: 'Notifiche off', enable: 'Attiva', disable: 'Disattiva',
@@ -21,7 +21,7 @@ export const ALERTS_LOCALES = {
     notSupported: 'Questo browser non supporta le notifiche push.', maxReached: 'Avvisi illimitati attivati.', vapidMissing: 'Push non configurato sul server (chiave VAPID mancante).', notAuthenticated: 'Devi avere effettuato l accesso per attivare le notifiche.',
     searchPlaceholder: 'Cerca un oggetto da monitorare...', searching: 'Ricerca...', addError: 'Impossibile aggiungere.',
     empty: 'Nessun oggetto monitorato. Cerca sopra.', remove: 'Rimuovi', priceUp: 'Prezzo Su', priceDown: 'Prezzo Giu',
-    rapUp: 'RAP Su', rapDown: 'RAP Giu',
+    rapUp: 'RAP Su', rapDown: 'RAP Giu', notifyWhen: 'Notifica quando:', forDuration: 'Per quanto tempo:', confirmAdd: 'Aggiungi Avviso',
   },
   es: {
     enabled: 'Notificaciones activas', disabled: 'Notificaciones off', enable: 'Activar', disable: 'Desactivar',
@@ -29,7 +29,7 @@ export const ALERTS_LOCALES = {
     notSupported: 'Este navegador no admite notificaciones push.', maxReached: 'Alertas ilimitadas activadas.', vapidMissing: 'Push no configurado en el servidor (falta clave VAPID).', notAuthenticated: 'Debes iniciar sesion para activar notificaciones.',
     searchPlaceholder: 'Busca un articulo para seguir...', searching: 'Buscando...', addError: 'No se pudo agregar.',
     empty: 'Ningun articulo seguido. Busca arriba.', remove: 'Quitar', priceUp: 'Precio Sube', priceDown: 'Precio Baja',
-    rapUp: 'RAP Sube', rapDown: 'RAP Baja',
+    rapUp: 'RAP Sube', rapDown: 'RAP Baja', notifyWhen: 'Notificar cuando:', forDuration: 'Por cuanto tiempo:', confirmAdd: 'Anadir Alerta',
   },
   fr: {
     enabled: 'Notifications actives', disabled: 'Notifications off', enable: 'Activer', disable: 'Desactiver',
@@ -37,7 +37,7 @@ export const ALERTS_LOCALES = {
     notSupported: 'Ce navigateur ne prend pas en charge les notifications push.', maxReached: 'Alertes illimitees activees.', vapidMissing: 'Push non configure sur le serveur (cle VAPID manquante).', notAuthenticated: 'Vous devez etre connecte pour activer les notifications.',
     searchPlaceholder: 'Recherchez un article a suivre...', searching: 'Recherche...', addError: 'Impossible d ajouter.',
     empty: 'Aucun article suivi. Recherchez ci-dessus.', remove: 'Retirer', priceUp: 'Prix Monte', priceDown: 'Prix Baisse',
-    rapUp: 'RAP Monte', rapDown: 'RAP Baisse',
+    rapUp: 'RAP Monte', rapDown: 'RAP Baisse', notifyWhen: 'Notifier quand:', forDuration: 'Pour combien de temps:', confirmAdd: 'Ajouter Alerte',
   },
   de: {
     enabled: 'Benachrichtigungen an', disabled: 'Benachrichtigungen aus', enable: 'Aktivieren', disable: 'Deaktivieren',
@@ -45,6 +45,6 @@ export const ALERTS_LOCALES = {
     notSupported: 'Dieser Browser unterstutzt keine Push-Benachrichtigungen.', maxReached: 'Unbegrenzte Benachrichtigungen aktiviert.', vapidMissing: 'Push nicht auf dem Server konfiguriert (VAPID-Schlussel fehlt).', notAuthenticated: 'Sie mussen eingeloggt sein, um Benachrichtigungen zu aktivieren.',
     searchPlaceholder: 'Item zum Verfolgen suchen...', searching: 'Suche...', addError: 'Hinzufugen fehlgeschlagen.',
     empty: 'Noch keine Items verfolgt. Suche oben.', remove: 'Entfernen', priceUp: 'Preis Hoch', priceDown: 'Preis Runter',
-    rapUp: 'RAP Hoch', rapDown: 'RAP Runter',
+    rapUp: 'RAP Hoch', rapDown: 'RAP Runter', notifyWhen: 'Benachrichtigen wenn:', forDuration: 'Wie lange:', confirmAdd: 'Alarm Hinzufugen',
   },
 };

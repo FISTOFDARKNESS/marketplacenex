@@ -1,9 +1,27 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Bell, BellOff, Search, Plus, Check, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
+import { Bell, BellOff, Search, Plus, Check, X, Trash2, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { notificationsSupported, subscribeToPush, unsubscribeFromPush, getExistingSubscription } from '@/lib/notifications';
 import { ALERTS_LOCALES } from '@/lib/alertsLocales';
+
+const DURATIONS = [
+  { value: 0, label: 'Indefinite' },
+  { value: 1, label: '1 day' },
+  { value: 7, label: '7 days' },
+  { value: 30, label: '30 days' },
+];
+
+function formatDuration(duration, createdAt) {
+  if (!duration) return null;
+  const expires = new Date(new Date(createdAt).getTime() + duration * 86400000);
+  const remaining = expires - Date.now();
+  if (remaining <= 0) return 'Expired';
+  const days = Math.floor(remaining / 86400000);
+  const hours = Math.floor((remaining % 86400000) / 3600000);
+  if (days > 0) return `${days}d ${hours}h`;
+  return `${hours}h`;
+}
 
 export default function PriceAlerts({ lang = 'en' }) {
   const t = ALERTS_LOCALES[lang] || ALERTS_LOCALES.en;
@@ -15,8 +33,13 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [searching, setSearching] = useState(false);
   const [supported, setSupported] = useState(null);
   const [error, setError] = useState('');
-  const [lastAdded, setLastAdded] = useState(null);
   const [pendingAdd, setPendingAdd] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [formPriceUp, setFormPriceUp] = useState(true);
+  const [formPriceDown, setFormPriceDown] = useState(false);
+  const [formRapUp, setFormRapUp] = useState(false);
+  const [formRapDown, setFormRapDown] = useState(false);
+  const [formDuration, setFormDuration] = useState(0);
 
   useEffect(() => {
     setSupported(notificationsSupported());
@@ -54,7 +77,6 @@ export default function PriceAlerts({ lang = 'en' }) {
       }
     } catch (e) {
       const msg = e?.message || e?.toString() || String(e);
-      const detail = `[${e?.name || 'Error'}] ${msg}`;
       console.error('[Push] enable error:', { message: msg, name: e?.name, stack: e?.stack, full: e });
       if (msg === 'denied') setError(`${t.permissionDenied} (${msg})`);
       else if (msg === 'vapid-missing') setError(`${t.vapidMissing} (${msg})`);
@@ -68,7 +90,7 @@ export default function PriceAlerts({ lang = 'en' }) {
 
   async function runSearch(q) {
     setSearch(q);
-    if (!q.trim()) { setResults([]); return; }
+    if (!q.trim()) { setResults([]); setSelectedItem(null); return; }
     setSearching(true);
     try {
       const res = await fetch(`/api/items?search=${encodeURIComponent(q)}&limit=12`);
@@ -81,30 +103,45 @@ export default function PriceAlerts({ lang = 'en' }) {
     finally { setSearching(false); }
   }
 
-  async function addAlert(item) {
-    if (pendingAdd) return;
+  function selectItem(item) {
+    setSelectedItem(item);
     setError('');
-    setPendingAdd(item.id);
+    setFormPriceUp(true);
+    setFormPriceDown(false);
+    setFormRapUp(false);
+    setFormRapDown(false);
+    setFormDuration(0);
+  }
+
+  async function addAlert() {
+    if (pendingAdd || !selectedItem) return;
+    setError('');
+    setPendingAdd(selectedItem.id);
     try {
       const res = await fetch('/api/settings/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          itemId: item.id,
-          onPriceUp: true, onPriceDown: false, onRapUp: false, onRapDown: false,
+          itemId: selectedItem.id,
+          onPriceUp: formPriceUp, onPriceDown: formPriceDown,
+          onRapUp: formRapUp, onRapDown: formRapDown,
+          duration: formDuration || null,
         }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || t.addError); setPendingAdd(null); return; }
-      setResults((prev) => prev.filter((r) => r.id !== item.id));
       setAlerts((prev) => [{
         id: data.id,
-        item,
-        onPriceUp: true, onPriceDown: false, onRapUp: false, onRapDown: false,
+        item: selectedItem,
+        onPriceUp: formPriceUp, onPriceDown: formPriceDown,
+        onRapUp: formRapUp, onRapDown: formRapDown,
+        duration: formDuration || null,
+        createdAt: new Date().toISOString(),
       }, ...prev]);
-      setLastAdded(item.id);
+      setSelectedItem(null);
       setPendingAdd(null);
-      setTimeout(() => setLastAdded((cur) => (cur === item.id ? null : cur)), 2000);
+      setSearch('');
+      setResults([]);
       loadAlerts().catch(() => {});
     } catch (e) {
       setError(t.addError);
@@ -170,40 +207,79 @@ export default function PriceAlerts({ lang = 'en' }) {
               />
             </div>
             {searching && <div className="pa-search-hint">{t.searching}</div>}
-            {results.length > 0 && (
+
+            {results.length > 0 && !selectedItem && (
               <div className="pa-results">
-                  {results.map((it) => {
-                    const added = lastAdded === it.id;
-                    const adding = pendingAdd === it.id;
-                    return (
-                      <button key={it.id} className={`pa-result ${added ? 'added' : ''} ${adding ? 'adding' : ''}`} onClick={() => !added && !adding && addAlert(it)} disabled={adding}>
-                        <span className="pa-result-name">{it.name}</span>
-                        {added ? <Check size={14} /> : adding ? <span className="pa-spinner" /> : <Plus size={14} />}
-                      </button>
-                    );
-                  })}
+                {results.map((it) => (
+                  <button key={it.id} className="pa-result" onClick={() => selectItem(it)}>
+                    <span className="pa-result-name">{it.name}</span>
+                    <Plus size={14} />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {selectedItem && (
+              <div className="pa-config">
+                <div className="pa-config-head">
+                  <span className="pa-config-name">{selectedItem.name}</span>
+                  <button className="pa-config-close" onClick={() => { setSelectedItem(null); setError(''); }}>
+                    <X size={14} />
+                  </button>
+                </div>
+                <div className="pa-config-label">{t.notifyWhen}</div>
+                <div className="pa-flags">
+                  <FlagBtn active={formPriceUp} onClick={() => setFormPriceUp(!formPriceUp)} icon={<TrendingUp size={12} />} label={t.priceUp} />
+                  <FlagBtn active={formPriceDown} onClick={() => setFormPriceDown(!formPriceDown)} icon={<TrendingDown size={12} />} label={t.priceDown} />
+                  <FlagBtn active={formRapUp} onClick={() => setFormRapUp(!formRapUp)} icon={<TrendingUp size={12} />} label={t.rapUp} />
+                  <FlagBtn active={formRapDown} onClick={() => setFormRapDown(!formRapDown)} icon={<TrendingDown size={12} />} label={t.rapDown} />
+                </div>
+                <div className="pa-config-label">{t.forDuration}</div>
+                <div className="pa-duration-row">
+                  {DURATIONS.map((d) => (
+                    <button
+                      key={d.value}
+                      className={`pa-dur-btn ${formDuration === d.value ? 'active' : ''}`}
+                      onClick={() => setFormDuration(d.value)}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+                <button className="pa-add-btn" onClick={addAlert} disabled={pendingAdd}>
+                  {pendingAdd ? <span className="pa-spinner" /> : <Plus size={14} />}
+                  {t.confirmAdd}
+                </button>
               </div>
             )}
           </div>
 
           <div className="pa-list">
             {alerts.length === 0 && <div className="pa-empty">{t.empty}</div>}
-            {alerts.map((a) => (
-              <div key={a.id} className="pa-item">
-                <div className="pa-item-head">
-                  <span className="pa-item-name">{a.item?.name || 'Unknown'}</span>
-                  <button className="pa-remove" onClick={() => removeAlert(a.id)} aria-label={t.remove}>
-                    <Trash2 size={13} />
-                  </button>
+            {alerts.map((a) => {
+              const durLabel = formatDuration(a.duration, a.createdAt);
+              return (
+                <div key={a.id} className="pa-item">
+                  <div className="pa-item-head">
+                    <span className="pa-item-name">{a.item?.name || 'Unknown'}</span>
+                    <button className="pa-remove" onClick={() => removeAlert(a.id)} aria-label={t.remove}>
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                  <div className="pa-flags">
+                    <FlagBtn active={a.onPriceUp} onClick={() => patchAlert(a.id, { onPriceUp: !a.onPriceUp })} icon={<TrendingUp size={12} />} label={t.priceUp} />
+                    <FlagBtn active={a.onPriceDown} onClick={() => patchAlert(a.id, { onPriceDown: !a.onPriceDown })} icon={<TrendingDown size={12} />} label={t.priceDown} />
+                    <FlagBtn active={a.onRapUp} onClick={() => patchAlert(a.id, { onRapUp: !a.onRapUp })} icon={<TrendingUp size={12} />} label={t.rapUp} />
+                    <FlagBtn active={a.onRapDown} onClick={() => patchAlert(a.id, { onRapDown: !a.onRapDown })} icon={<TrendingDown size={12} />} label={t.rapDown} />
+                  </div>
+                  {durLabel && (
+                    <div className="pa-duration">
+                      <Clock size={11} /> {durLabel}
+                    </div>
+                  )}
                 </div>
-                <div className="pa-flags">
-                  <FlagBtn active={a.onPriceUp} onClick={() => patchAlert(a.id, { onPriceUp: !a.onPriceUp })} icon={<TrendingUp size={12} />} label={t.priceUp} />
-                  <FlagBtn active={a.onPriceDown} onClick={() => patchAlert(a.id, { onPriceDown: !a.onPriceDown })} icon={<TrendingDown size={12} />} label={t.priceDown} />
-                  <FlagBtn active={a.onRapUp} onClick={() => patchAlert(a.id, { onRapUp: !a.onRapUp })} icon={<TrendingUp size={12} />} label={t.rapUp} />
-                  <FlagBtn active={a.onRapDown} onClick={() => patchAlert(a.id, { onRapDown: !a.onRapDown })} icon={<TrendingDown size={12} />} label={t.rapDown} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="pa-counter">{alerts.length}</div>
         </>

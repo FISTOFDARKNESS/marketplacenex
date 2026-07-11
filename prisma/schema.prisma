@@ -220,6 +220,7 @@ model PriceAlert {
   onPriceDown Boolean @default(false)
   onRapUp    Boolean  @default(false)
   onRapDown  Boolean  @default(false)
+  duration   Int?     @default(0)
   lastPrice  Float?
   lastRap    Int?
   active     Boolean  @default(true)
