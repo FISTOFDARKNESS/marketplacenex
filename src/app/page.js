@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import MarqueeBar from '@/components/MarqueeBar';
@@ -22,6 +23,7 @@ const WishlistDrawer = dynamic(() => import('@/components/WishlistDrawer'), { ss
 
 export default function Home() {
   const { lang } = useLang();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState(null);
   const [items, setItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
@@ -107,6 +109,25 @@ export default function Home() {
 
     return () => { clearTimeout(delayDebounceFn); cancelled = true; };
   }, [activeCatFilter, activeRarityFilter, searchTerm, minPrice, maxPrice, sortMode]);
+
+  // Auto-open purchase modal when URL has ?item= (from push notification click)
+  useEffect(() => {
+    const itemId = searchParams.get('item');
+    if (!itemId) return;
+    window.history.replaceState({}, '', '/');
+    if (!user) {
+      setModalState({ type: 'login', data: null });
+      return;
+    }
+    const found = items.find((i) => i.id === itemId);
+    if (found) { setModalState({ type: 'purchase', data: found }); return; }
+    fetch(`/api/items/${itemId}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.item) setModalState({ type: 'purchase', data: d.item });
+      })
+      .catch(() => {});
+  }, [searchParams, user, items]);
 
   const addToast = (icon, message) => {
     const id = Date.now();
