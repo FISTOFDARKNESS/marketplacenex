@@ -15,7 +15,6 @@ export default function DepositRobux({ user, onClose, onDepositComplete, onOpenL
 
   useEffect(() => {
     if (!user) { setError('Not logged in'); setStep('error'); return; }
-    if (!user.robloxCookie) { setStep('link'); return; }
     fetch('/api/deposit/robux-balance')
       .then(r => r.json())
       .then(d => {
