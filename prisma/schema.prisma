@@ -35,6 +35,8 @@ model User {
   auditLogs       AuditLog[]
   pushSubscriptions PushSubscription[]
   priceAlerts     PriceAlert[]
+  sellerProfile   SellerProfile?
+  sellerItems     SellerItem[]
 }
 
 model Session {
@@ -89,6 +91,7 @@ model Item {
   userItems      UserItem[]
   orders         Order[]
   priceAlerts    PriceAlert[]
+  sellerItems    SellerItem[]
 }
 
 model Transaction {
