@@ -237,6 +237,7 @@ export default function SettingsPage() {
             <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{t.username}</div>
             <div style={{ fontSize: '14px', color: '#e5e7eb', fontWeight: 600 }}>{user?.username || '...'}</div>
           </div>
+        </div>
 
         <div className="settings-section">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
