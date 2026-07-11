@@ -3,18 +3,12 @@ const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 async function getXsrf(cookie) {
   const res = await fetch('https://auth.roblox.com/v2/logout', {
     method: 'POST',
-    headers: { 'User-Agent': USER_AGENT },
-    credentials: 'include',
+    headers: {
+      'User-Agent': USER_AGENT,
+      Cookie: `.ROBLOSECURITY=${cookie}`,
+    },
   });
   return res.headers.get('x-csrf-token') || '';
-}
-
-function headers(cookie) {
-  return {
-    'User-Agent': USER_AGENT,
-    'X-CSRF-TOKEN': '',
-    'Content-Type': 'application/json',
-  };
 }
 
 async function authedHeaders(cookie) {
