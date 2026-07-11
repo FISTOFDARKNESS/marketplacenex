@@ -14,9 +14,9 @@ export default function FinancePanel({ user, onClose }) {
   const [balance, setBalance] = useState(0);
   const [withdrawals, setWithdrawals] = useState({ receber: [], enviar: [] });
   const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [withdrawType, setWithdrawType] = useState('receber');
+  const [withdrawMethod, setWithdrawMethod] = useState('robux');
   const [depositAmount, setDepositAmount] = useState('');
-  const [depositMethod, setDepositMethod] = useState('crypto');
+  const [depositMethod, setDepositMethod] = useState('robux');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -46,7 +46,7 @@ export default function FinancePanel({ user, onClose }) {
       const res = await fetch('/api/withdraw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: parseFloat(withdrawAmount), type: withdrawType }),
+        body: JSON.stringify({ amount: parseFloat(withdrawAmount), type: 'receber' }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
@@ -57,9 +57,9 @@ export default function FinancePanel({ user, onClose }) {
         const balData = await balRes.json();
         if (balData.success) setBalance(balData.balance);
       }
-      const qRes = await fetch(`/api/withdraw?type=${withdrawType}`);
+      const qRes = await fetch(`/api/withdraw?type=receber`);
       const qData = await qRes.json();
-      if (qData.success) setWithdrawals(prev => ({ ...prev, [withdrawType]: qData.withdrawals }));
+      if (qData.success) setWithdrawals(prev => ({ ...prev, receber: qData.withdrawals }));
     } catch { setError('Connection failed'); }
     finally { setLoading(false); }
   }
@@ -199,43 +199,58 @@ export default function FinancePanel({ user, onClose }) {
           )}
 
           {tab === 'withdraw' && (
-            <form onSubmit={handleWithdraw} className="fm-form">
+            <div className="fm-form">
               <div className="fm-form-header">
                 <ArrowUpRight size={20} />
                 <div>
-                  <h3>Withdraw Robux</h3>
-                  <p className="fm-sub">Convert balance to Robux via processing queue</p>
+                  <h3>Withdraw Funds</h3>
+                  <p className="fm-sub">Choose a withdrawal method</p>
                 </div>
               </div>
 
-              <div className="fm-toggle">
-                <button type="button" className={`fm-toggle-btn ${withdrawType === 'receber' ? 'active' : ''}`} onClick={() => setWithdrawType('receber')}>
-                  <Zap size={14} /> Receber
-                </button>
-                <button type="button" className={`fm-toggle-btn ${withdrawType === 'enviar' ? 'active' : ''}`} onClick={() => setWithdrawType('enviar')}>
-                  <ArrowUpRight size={14} /> Enviar
-                </button>
+              <label className="fm-label">Method</label>
+              <div className="fm-pm-grid">
+                {[
+                  { id: 'robux', icon: <Wallet size={18} />, label: 'Robux', bonus: '✓' },
+                  { id: 'paypal', icon: <DollarSign size={18} />, label: 'PayPal', bonus: 'Soon' },
+                  { id: 'cashapp', icon: <CreditCard size={18} />, label: 'Cash App', bonus: 'Soon' },
+                ].map(m => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    className={`fm-pm-card ${withdrawMethod === m.id ? 'active' : ''} ${m.bonus === 'Soon' ? 'fm-coming-soon' : ''}`}
+                    onClick={() => m.bonus === 'Soon' ? setError(`${m.label} — Coming soon`) : setWithdrawMethod(m.id)}
+                  >
+                    {m.icon}
+                    <span className="fm-pm-label">{m.label}</span>
+                    <span className="fm-pm-bonus">{m.bonus}</span>
+                  </button>
+                ))}
               </div>
 
-              <div className="fm-input-wrap">
-                <label className="fm-label">Amount (Robux)</label>
-                <input
-                  type="number"
-                  placeholder="e.g. 10000"
-                  value={withdrawAmount}
-                  onChange={e => setWithdrawAmount(e.target.value)}
-                  required min="7143"
-                />
-              </div>
+              {withdrawMethod === 'robux' && (
+                <form onSubmit={handleWithdraw}>
+                  <div className="fm-input-wrap">
+                    <label className="fm-label">Amount (Robux)</label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 10000"
+                      value={withdrawAmount}
+                      onChange={e => setWithdrawAmount(e.target.value)}
+                      required min="100"
+                    />
+                  </div>
 
-              <div className="fm-conversion">
-                <span>≈ ${((parseFloat(withdrawAmount) || 0) * robuxRate).toFixed(2)} USD · Minimum $25 (7,143 Robux)</span>
-              </div>
+                  <div className="fm-conversion">
+                    <span>≈ ${((parseFloat(withdrawAmount) || 0) * robuxRate).toFixed(2)} USD · Min {formatNumber(Math.ceil(25 / robuxRate))} Robux</span>
+                  </div>
 
-              <button type="submit" className="fm-btn" disabled={loading || !withdrawAmount}>
-                {loading ? <><Clock size={16} /> Processing...</> : 'Submit Withdrawal'}
-              </button>
-            </form>
+                  <button type="submit" className="fm-btn" disabled={loading || !withdrawAmount}>
+                    {loading ? <><Clock size={16} /> Processing...</> : 'Withdraw Robux'}
+                  </button>
+                </form>
+              )}
+            </div>
           )}
 
           {tab === 'deposit' && (
@@ -243,14 +258,14 @@ export default function FinancePanel({ user, onClose }) {
               {depositMethod === 'robux' ? (
                 <DepositRobux
                   user={user}
-                  onClose={() => setDepositMethod('crypto')}
+                  onClose={() => setDepositMethod('robux')}
                   onDepositComplete={(newBalance) => {
                     setBalance(newBalance);
-                    setDepositMethod('crypto');
                   }}
                   onOpenLinkRoblox={() => window.open('/settings', '_blank')}
                 />
-              ) : (
+              ) : null}
+              {depositMethod !== 'robux' && (
               <form onSubmit={handleDeposit} className="fm-form">
                 <div className="fm-form-header">
                   <ArrowDownLeft size={20} />
@@ -263,16 +278,16 @@ export default function FinancePanel({ user, onClose }) {
                 <label className="fm-label">Payment Method</label>
                 <div className="fm-pm-grid">
                   {[
-                    { id: 'crypto', icon: <Bitcoin size={18} />, label: 'Crypto', bonus: '1.0x' },
-                    { id: 'paypal', icon: <DollarSign size={18} />, label: 'PayPal', bonus: '0.95x' },
-                    { id: 'cashapp', icon: <CreditCard size={18} />, label: 'Cash App', bonus: '0.97x' },
-                    { id: 'robux', icon: <Wallet size={18} />, label: 'Robux', bonus: '-' },
+                    { id: 'robux', icon: <Wallet size={18} />, label: 'Robux', bonus: '✓' },
+                    { id: 'crypto', icon: <Bitcoin size={18} />, label: 'Crypto', bonus: 'Soon' },
+                    { id: 'paypal', icon: <DollarSign size={18} />, label: 'PayPal', bonus: 'Soon' },
+                    { id: 'cashapp', icon: <CreditCard size={18} />, label: 'Cash App', bonus: 'Soon' },
                   ].map(m => (
                     <button
                       key={m.id}
                       type="button"
-                      className={`fm-pm-card ${depositMethod === m.id ? 'active' : ''}`}
-                      onClick={() => setDepositMethod(m.id)}
+                      className={`fm-pm-card ${depositMethod === m.id ? 'active' : ''} ${m.bonus === 'Soon' ? 'fm-coming-soon' : ''}`}
+                      onClick={() => m.bonus === 'Soon' ? setError(`${m.label} — Coming soon`) : setDepositMethod(m.id)}
                     >
                       {m.icon}
                       <span className="fm-pm-label">{m.label}</span>
@@ -280,33 +295,6 @@ export default function FinancePanel({ user, onClose }) {
                     </button>
                   ))}
                 </div>
-
-                {depositMethod !== 'robux' && (<>
-                <label className="fm-label">Select Amount</label>
-                <div className="fm-amount-grid">
-                  {[25, 50, 100, 500, 1000, 10000].map(amt => {
-                    const robux = Math.floor(amt * 100 * { crypto: 1, paypal: 0.95, cashapp: 0.97 }[depositMethod]);
-                    const selected = parseFloat(depositAmount) === amt;
-                    return (
-                      <button
-                        key={amt}
-                        type="button"
-                        className={`fm-amount-btn ${selected ? 'active' : ''}`}
-                        onClick={() => setDepositAmount(selected ? '' : String(amt))}
-                      >
-                        <span className="fm-amt-usd">${formatNumber(amt)}</span>
-                        <span className="fm-amt-robux">≈ {formatNumber(robux)} Robux</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <button type="submit" className="fm-btn" disabled={loading || !depositAmount}>
-                  {loading ? <><Clock size={16} /> Processing...</> : (
-                    <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay ${formatNumber(parseFloat(depositAmount || 0))} USD</>
-                  )}
-                </button>
-                </>)}
               </form>
               )}
             </>
@@ -576,6 +564,8 @@ export default function FinancePanel({ user, onClose }) {
         }
         .fm-pm-card:hover { border-color: rgba(255,255,255,0.15); color: #d1d5db; }
         .fm-pm-card.active { border-color: #f59e0b; background: rgba(245,158,11,0.12); color: #fff; }
+        .fm-pm-card.fm-coming-soon { opacity: 0.5; cursor: not-allowed; }
+        .fm-pm-card.fm-coming-soon:hover { border-color: rgba(255,255,255,0.06); color: #6b7280; }
         .fm-pm-card svg { color: currentColor; }
         .fm-pm-label { font-size: 12px; font-weight: 600; }
         .fm-pm-bonus { font-size: 10px; color: #22c55e; font-weight: 500; background: rgba(34,197,94,0.12); padding: 2px 8px; border-radius: 4px; }
