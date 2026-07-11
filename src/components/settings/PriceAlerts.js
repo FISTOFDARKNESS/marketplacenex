@@ -97,10 +97,15 @@ export default function PriceAlerts({ lang = 'en' }) {
       const data = await res.json();
       if (!res.ok) { setError(data.error || t.addError); setPendingAdd(null); return; }
       setResults((prev) => prev.filter((r) => r.id !== item.id));
+      setAlerts((prev) => [{
+        id: data.id,
+        item,
+        onPriceUp: true, onPriceDown: false, onRapUp: false, onRapDown: false,
+      }, ...prev]);
       setLastAdded(item.id);
       setPendingAdd(null);
       setTimeout(() => setLastAdded((cur) => (cur === item.id ? null : cur)), 2000);
-      await loadAlerts();
+      loadAlerts().catch(() => {});
     } catch (e) {
       setError(t.addError);
       console.error('[PriceAlerts] addAlert error:', e);
