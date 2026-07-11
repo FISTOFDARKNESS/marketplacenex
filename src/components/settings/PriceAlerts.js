@@ -34,6 +34,7 @@ export default function PriceAlerts({ lang = 'en' }) {
   const [supported, setSupported] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(null);
+  const [testing, setTesting] = useState(false);
   const [pendingAdd, setPendingAdd] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [formPriceUp, setFormPriceUp] = useState(true);
@@ -176,6 +177,21 @@ export default function PriceAlerts({ lang = 'en' }) {
     } catch { /* ignore */ }
   }
 
+  async function sendTestNotification() {
+    setTesting(true);
+    setError('');
+    try {
+      const res = await fetch('/api/settings/alerts/test-notification', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || 'Test failed'); return; }
+      setSuccess({ item: { name: `Test push sent (${data.sent})` } });
+    } catch {
+      setError('Test notification failed');
+    } finally {
+      setTesting(false);
+    }
+  }
+
   return (
     <div className="price-alerts">
       {supported !== null && (
@@ -297,7 +313,12 @@ export default function PriceAlerts({ lang = 'en' }) {
               );
             })}
           </div>
-          <div className="pa-counter">{alerts.length}</div>
+          <div className="pa-counter">
+            {alerts.length}
+            <button className="pa-test-btn" onClick={sendTestNotification} disabled={testing}>
+              {testing ? '...' : 'Test Push'}
+            </button>
+          </div>
         </>
       )}
     </div>

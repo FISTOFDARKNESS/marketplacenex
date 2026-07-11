@@ -4179,9 +4179,24 @@ input:focus-visible {
 }
 
 .pa-counter {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 11px;
   color: #6b7280;
   font-family: 'JetBrains Mono', monospace;
   margin-top: 10px;
 }
+.pa-test-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pa-test-btn:hover { border-color: rgba(255,215,0,0.3); color: #FFD700; }
+.pa-test-btn:disabled { opacity: 0.5; cursor: not-allowed; }
