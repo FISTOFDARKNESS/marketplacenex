@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Package } from 'lucide-react';
+import { Search, Package, Tag, LayoutDashboard, Plus, Eye, ChevronDown } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { useLang } from '@/lib/LanguageProvider';
 import { appLocales } from '@/lib/appLocales';
@@ -11,16 +11,21 @@ export default function OrdersPage() {
   const router = useRouter();
   const { lang } = useLang();
   const t = appLocales[lang].orders;
+  const st = appLocales[lang].sell;
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
+  const [sellMenuOpen, setSellMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     fetch('/api/auth/me')
       .then(r => r.json())
       .then(d => {
         if (!d.authenticated) { router.push('/'); return null; }
+        setUser(d);
         return fetch('/api/orders');
       })
       .then(r => r ? r.json() : null)
@@ -31,6 +36,14 @@ export default function OrdersPage() {
       })
       .catch(e => setError('Network error: ' + e.message))
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setSellMenuOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
   async function handleLogout() {
@@ -61,6 +74,24 @@ export default function OrdersPage() {
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
+          </div>
+          <div className="sell-dropdown-wrap" ref={menuRef}>
+            <button className="orders-sell-badge" onClick={() => setSellMenuOpen(!sellMenuOpen)}>
+              <Tag size={15} /> {st.startSelling} <ChevronDown size={12} className={`sell-chevron${sellMenuOpen ? ' sell-chevron-open' : ''}`} />
+            </button>
+            {sellMenuOpen && (
+              <div className="sell-dropdown">
+                <button className="sell-dropdown-item" onClick={() => { setSellMenuOpen(false); router.push('/sell/dashboard'); }}>
+                  <LayoutDashboard size={16} /> {st.dashboard}
+                </button>
+                <button className="sell-dropdown-item" onClick={() => { setSellMenuOpen(false); router.push('/sell/add-items'); }}>
+                  <Plus size={16} /> {st.addItems}
+                </button>
+                <button className="sell-dropdown-item" onClick={() => { setSellMenuOpen(false); router.push('/sell'); }}>
+                  <Tag size={16} /> {st.title}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

@@ -212,6 +212,39 @@ model PushSubscription {
   @@index([userId])
 }
 
+model SellerProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  robloxUsername  String?
+  robloxId       BigInt?
+  avatarUrl      String?
+  totalValue     Float    @default(0)
+  isPublic       Boolean  @default(true)
+  totalSales     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  items          SellerItem[]
+}
+
+model SellerItem {
+  id        String   @id @default(uuid())
+  sellerId  String
+  seller    SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  priceRobux Int
+  priceUsd  Float
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sellerId])
+  @@index([itemId])
+}
+
 model PriceAlert {
   id         String   @id @default(uuid())
   userId     String

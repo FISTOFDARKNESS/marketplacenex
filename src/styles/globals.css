@@ -4362,3 +4362,143 @@ input:focus-visible {
 }
 .deposit-robux .spin { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* === SELL / SELLER SYSTEM === */
+.sell-dropdown-wrap { position: relative; }
+.sell-start-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; background: linear-gradient(135deg, #EAC847, #D97706);
+  border: none; border-radius: 10px; color: #0B0B0F;
+  font-size: 13px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.sell-start-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(233,196,106,0.25); }
+.sell-chevron { transition: transform 0.2s; }
+.sell-chevron-open { transform: rotate(180deg); }
+.sell-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: #1A1A20; border: 1px solid #2A2A30;
+  border-radius: 10px; padding: 6px; min-width: 190px;
+  z-index: 50; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.sell-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
+  background: none; border: none; border-radius: 6px;
+  color: #d1d5db; font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: background 0.15s;
+}
+.sell-dropdown-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.sell-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; background: rgba(255,255,255,0.04);
+  border: 1px solid #2A2A30; border-radius: 8px;
+  color: #9ca3af; font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: all 0.15s;
+}
+.sell-tab:hover { background: rgba(255,255,255,0.08); color: #d1d5db; }
+.sell-tab-active { background: rgba(234,200,71,0.1); border-color: rgba(234,200,71,0.3); color: #EAC847; }
+.sell-price-input {
+  width: 100%; padding: 7px 10px; background: rgba(19,19,22,0.5);
+  border: 1px solid rgba(255,255,255,0.06); border-radius: 6px;
+  color: #e5e7eb; font-size: 13px; font-family: inherit; outline: none;
+  transition: border-color 0.15s; box-sizing: border-box;
+}
+.sell-price-input:focus { border-color: rgba(255,215,0,0.3); }
+.sell-price-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.sell-add-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 7px 0; width: 100%;
+  background: linear-gradient(135deg, #EAC847, #D97706);
+  border: none; border-radius: 6px; color: #0B0B0F;
+  font-size: 12px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+}
+.sell-add-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(233,196,106,0.25); }
+.sell-add-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+.sell-msg {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; margin-bottom: 16px;
+}
+.sell-msg-success { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+.sell-msg-error { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+.sell-msg-info { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+.sell-profile-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; background: #1A1A20;
+  border: 1px solid #2A2A30; border-radius: 12px; margin-bottom: 20px;
+}
+.sell-profile-avatar-wrap { flex-shrink: 0; }
+.sell-profile-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  object-fit: cover; border: 2px solid #EAC847;
+}
+.sell-profile-avatar-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.06); color: #6b7280;
+}
+.sell-profile-info { display: flex; flex-direction: column; gap: 2px; }
+.sell-profile-name { font-size: 14px; font-weight: 600; color: #e5e7eb; }
+.sell-profile-status { font-size: 11px; color: #6b7280; }
+
+/* === SELL PREVIEW / PUBLIC STORE === */
+.sell-preview-header {
+  padding: 16px 20px; max-width: 900px; margin: 0 auto;
+}
+.sell-preview-back {
+  background: none; border: none; color: #9ca3af;
+  font-size: 14px; font-family: inherit; cursor: pointer;
+  transition: color 0.15s;
+}
+.sell-preview-back:hover { color: #e5e7eb; }
+.sell-preview-profile {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 32px 0 24px; text-align: center;
+}
+.sell-preview-avatar-wrap { position: relative; margin-bottom: 12px; }
+.sell-preview-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  object-fit: cover; border: 3px solid #EAC847;
+  box-shadow: 0 0 20px rgba(234,200,71,0.2);
+}
+.sell-preview-avatar-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); color: #6b7280;
+  border: 3px solid #EAC847;
+}
+.sell-preview-crown {
+  position: absolute; bottom: -2px; right: -4px;
+  color: #EAC847; filter: drop-shadow(0 0 6px rgba(234,200,71,0.4));
+}
+.sell-preview-name { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.sell-preview-stats {
+  display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+}
+.sell-preview-stat {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 13px; color: #9ca3af;
+}
+
+/* Orders page Start Selling badge */
+.orders-sell-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; background: linear-gradient(135deg, #EAC847, #D97706);
+  border: none; border-radius: 8px; color: #0B0B0F;
+  font-size: 13px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap; position: relative;
+}
+.orders-sell-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(233,196,106,0.25); }
+.orders-sell-badge .sell-chevron { font-size: 12px; }
+.orders-sell-badge + .sell-dropdown { min-width: 170px; }
+
+@media (max-width: 768px) {
+  .sell-preview-profile { padding: 20px 0 16px; }
+  .sell-preview-name { font-size: 17px; }
+  .sell-preview-stats { gap: 10px; }
+  .sell-profile-bar { flex-wrap: wrap; }
+  .sell-profile-bar .purchase-btn { margin-left: 0 !important; width: 100%; }
+}

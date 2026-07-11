@@ -102,3 +102,30 @@ export async function buyGamepass(cookie, passId) {
   if (!buyRes.ok) throw new Error('Failed to purchase gamepass');
   return buyRes.json();
 }
+
+export async function fetchRobloxInventory(cookie, userId, assetType = 'Asset') {
+  let allItems = [];
+  let cursor = '';
+  for (let page = 0; page < 10; page++) {
+    const url = `https://inventory.roblox.com/v2/users/${userId}/inventory?assetTypes=${assetType}&limit=100${cursor ? `&cursor=${cursor}` : ''}`;
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': USER_AGENT,
+        Cookie: `.ROBLOSECURITY=${cookie}`,
+      },
+    });
+    if (!res.ok) break;
+    const data = await res.json();
+    if (data.data) allItems = allItems.concat(data.data);
+    if (!data.nextPageCursor) break;
+    cursor = data.nextPageCursor;
+  }
+  return allItems;
+}
+
+export async function getRobloxAvatarUrl(userId) {
+  const res = await fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.data?.[0]?.imageUrl || null;
+}
