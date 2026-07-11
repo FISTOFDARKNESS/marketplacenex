@@ -93,7 +93,7 @@ export default function Navbar({
             <Link href="/inventory" className="nav-link-btn" title="Inventory" aria-label="Inventory">
               <Backpack size={16} />
             </Link>
-            {user.role === 'admin' && (
+            {user?.role === 'admin' && (
               <Link href="/admin/orders" className="nav-link-btn" title="Admin Orders" aria-label="Admin Orders" style={{ color: '#ef4444' }}>
                 <Shield size={16} />
               </Link>
