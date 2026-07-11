@@ -38,6 +38,8 @@ const COOLDOWN_MS = 86400000;
 export async function POST(req) {
   try {
     const secret = req.headers.get('x-cron-secret');
+    console.log('[Cron] received secret:', secret ? `"${secret}" (len ${secret.length})` : 'MISSING');
+    console.log('[Cron] expected secret:', process.env.CRON_SECRET ? `"${process.env.CRON_SECRET}" (len ${process.env.CRON_SECRET.length})` : 'NOT SET');
     if (!secret || secret !== process.env.CRON_SECRET) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
