@@ -245,7 +245,7 @@ export default function SettingsPage() {
             <h3 style={{ margin: 0, fontSize: '15px' }}>{t.priceAlerts}</h3>
           </div>
           <div className="settings-card">
-            <PriceAlerts lang={lang} />
+            <PriceAlerts lang={lang} user={user} />
           </div>
         </div>
 

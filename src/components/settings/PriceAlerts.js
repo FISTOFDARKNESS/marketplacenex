@@ -23,7 +23,7 @@ function formatDuration(duration, createdAt) {
   return `${hours}h`;
 }
 
-export default function PriceAlerts({ lang = 'en' }) {
+export default function PriceAlerts({ lang = 'en', user }) {
   const t = ALERTS_LOCALES[lang] || ALERTS_LOCALES.en;
   const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -315,9 +315,11 @@ export default function PriceAlerts({ lang = 'en' }) {
           </div>
           <div className="pa-counter">
             {alerts.length}
-            <button className="pa-test-btn" onClick={sendTestNotification} disabled={testing}>
-              {testing ? '...' : 'Test Push'}
-            </button>
+            {user?.role === 'admin' && (
+              <button className="pa-test-btn" onClick={sendTestNotification} disabled={testing}>
+                {testing ? '...' : 'Test Push'}
+              </button>
+            )}
           </div>
         </>
       )}
