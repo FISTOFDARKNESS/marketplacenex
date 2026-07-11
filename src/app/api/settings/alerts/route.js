@@ -28,6 +28,8 @@ export async function GET(req) {
       onRapUp: a.onRapUp,
       onRapDown: a.onRapDown,
       duration: a.duration,
+      active: a.active,
+      lastNotifiedAt: a.lastNotifiedAt?.toISOString() || null,
       createdAt: a.createdAt.toISOString(),
     }));
 

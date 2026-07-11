@@ -10,7 +10,7 @@ export async function PATCH(req, { params }) {
     const decoded = token && verifyToken(token);
     if (!decoded) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
-    const { onPriceUp, onPriceDown, onRapUp, onRapDown } = await req.json();
+    const { onPriceUp, onPriceDown, onRapUp, onRapDown, duration } = await req.json();
 
     const existing = await prisma.priceAlert.findFirst({ where: { id: params.id, userId: decoded.id } });
     if (!existing) return NextResponse.json({ error: 'Alert not found' }, { status: 404 });
@@ -22,6 +22,7 @@ export async function PATCH(req, { params }) {
         onPriceDown: onPriceDown !== undefined ? !!onPriceDown : existing.onPriceDown,
         onRapUp: onRapUp !== undefined ? !!onRapUp : existing.onRapUp,
         onRapDown: onRapDown !== undefined ? !!onRapDown : existing.onRapDown,
+        duration: duration !== undefined ? (typeof duration === 'number' && duration > 0 ? duration : null) : existing.duration,
       },
     });
 

@@ -16,11 +16,21 @@ function formatDuration(duration, createdAt) {
   if (!duration) return null;
   const expires = new Date(new Date(createdAt).getTime() + duration * 86400000);
   const remaining = expires - Date.now();
-  if (remaining <= 0) return 'Expired';
+  if (remaining <= 0) return null;
   const days = Math.floor(remaining / 86400000);
   const hours = Math.floor((remaining % 86400000) / 3600000);
   if (days > 0) return `${days}d ${hours}h`;
   return `${hours}h`;
+}
+
+function formatCooldown(lastNotifiedAt) {
+  if (!lastNotifiedAt) return null;
+  const remaining = 86400000 - (Date.now() - new Date(lastNotifiedAt).getTime());
+  if (remaining <= 0) return null;
+  const hours = Math.floor(remaining / 3600000);
+  const mins = Math.floor((remaining % 3600000) / 60000);
+  if (hours > 0) return `Next in ${hours}h ${mins}m`;
+  return `Next in ${mins}m`;
 }
 
 export default function PriceAlerts({ lang = 'en', user }) {
@@ -37,6 +47,8 @@ export default function PriceAlerts({ lang = 'en', user }) {
   const [testing, setTesting] = useState(false);
   const [pendingAdd, setPendingAdd] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [editDurId, setEditDurId] = useState(null);
+  const [now, setNow] = useState(Date.now());
   const [formPriceUp, setFormPriceUp] = useState(true);
   const [formPriceDown, setFormPriceDown] = useState(false);
   const [formRapUp, setFormRapUp] = useState(false);
@@ -52,6 +64,11 @@ export default function PriceAlerts({ lang = 'en', user }) {
     const id = setTimeout(() => setSuccess(null), 3000);
     return () => clearTimeout(id);
   }, [success]);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(id);
+  }, []);
 
   const loadAlerts = useCallback(async () => {
     try {
@@ -290,13 +307,18 @@ export default function PriceAlerts({ lang = 'en', user }) {
             {alerts.length === 0 && <div className="pa-empty">{t.empty}</div>}
             {alerts.map((a) => {
               const durLabel = formatDuration(a.duration, a.createdAt);
+              const cooldownLabel = formatCooldown(a.lastNotifiedAt);
+              const editing = editDurId === a.id;
               return (
-                <div key={a.id} className="pa-item">
+                <div key={a.id} className={`pa-item ${!a.active ? 'pa-expired' : ''}`}>
                   <div className="pa-item-head">
                     <span className="pa-item-name">{a.item?.name || 'Unknown'}</span>
-                    <button className="pa-remove" onClick={() => removeAlert(a.id)} aria-label={t.remove}>
-                      <Trash2 size={13} />
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {!a.active && <span className="pa-expired-badge">Expired</span>}
+                      <button className="pa-remove" onClick={() => removeAlert(a.id)} aria-label={t.remove}>
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
                   <div className="pa-flags">
                     <FlagBtn active={a.onPriceUp} onClick={() => patchAlert(a.id, { onPriceUp: !a.onPriceUp })} icon={<TrendingUp size={12} />} label={t.priceUp} />
@@ -304,11 +326,40 @@ export default function PriceAlerts({ lang = 'en', user }) {
                     <FlagBtn active={a.onRapUp} onClick={() => patchAlert(a.id, { onRapUp: !a.onRapUp })} icon={<TrendingUp size={12} />} label={t.rapUp} />
                     <FlagBtn active={a.onRapDown} onClick={() => patchAlert(a.id, { onRapDown: !a.onRapDown })} icon={<TrendingDown size={12} />} label={t.rapDown} />
                   </div>
-                  {durLabel && (
-                    <div className="pa-duration">
-                      <Clock size={11} /> {durLabel}
-                    </div>
-                  )}
+                  <div className="pa-meta">
+                    {(durLabel || a.duration != null) && (
+                      <div className="pa-meta-row">
+                        <Clock size={11} />
+                        {editing ? (
+                          <div className="pa-dur-edit">
+                            {DURATIONS.map((d) => (
+                              <button
+                                key={d.value}
+                                className={`pa-dur-opt ${a.duration === d.value || (a.duration == null && d.value === 0) ? 'active' : ''}`}
+                                onClick={() => {
+                                  patchAlert(a.id, { duration: d.value || null });
+                                  setEditDurId(null);
+                                }}
+                              >
+                                {d.label}
+                              </button>
+                            ))}
+                            <button className="pa-dur-opt cancel" onClick={() => setEditDurId(null)}>Cancel</button>
+                          </div>
+                        ) : (
+                          <span className="pa-dur-label">
+                            {a.duration ? `${a.duration}d` : 'Indefinite'}
+                            <button className="pa-change" onClick={() => setEditDurId(a.id)}>Change</button>
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {cooldownLabel && a.active && (
+                      <div className="pa-cooldown">
+                        <Bell size={11} /> {cooldownLabel}
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
