@@ -1,19 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw, Smartphone, Monitor, ShieldCheck, Send, LogOut, X, Bell } from 'lucide-react';
+import { Bell, User, Shield, Check, Copy, ExternalLink, AlertTriangle, Eye, EyeOff, Trash2, RefreshCw, Smartphone, Monitor, ShieldCheck, Send, LogOut, X } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import PriceAlerts from '@/components/settings/PriceAlerts';
 import { useLang } from '@/lib/LanguageProvider';
-
-const PriceAlerts = dynamic(() => import('@/components/settings/PriceAlerts'), { ssr: false });
 import { appLocales } from '@/lib/appLocales';
 
 export default function SettingsPage() {
   const router = useRouter();
   const { lang } = useLang();
   const t = appLocales[lang].settings;
+  const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState(null);
   const [method, setMethod] = useState('bio');
   const [step, setStep] = useState('start');
@@ -38,6 +37,7 @@ export default function SettingsPage() {
   const [otpBusy, setOtpBusy] = useState(false);
   const [otpMsg, setOtpMsg] = useState(null);
 
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => {
       if (!d.authenticated) { router.push('/'); return; }
@@ -214,6 +214,8 @@ export default function SettingsPage() {
     } catch { setOtpMsg({ text: t.failedEndSession, ok: false }); }
     finally { setOtpBusy(false); }
   }
+
+  if (!mounted) return null;
 
   return (
     <div className="app-layout">
