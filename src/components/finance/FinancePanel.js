@@ -7,6 +7,7 @@ import {
   History, ExternalLink, Gauge, Zap, Layers
 } from 'lucide-react';
 import { formatNumber } from '@/lib/format';
+import DepositRobux from '@/components/deposit/DepositRobux';
 
 export default function FinancePanel({ user, onClose }) {
   const [tab, setTab] = useState('balance');
@@ -238,60 +239,77 @@ export default function FinancePanel({ user, onClose }) {
           )}
 
           {tab === 'deposit' && (
-            <form onSubmit={handleDeposit} className="fm-form">
-              <div className="fm-form-header">
-                <ArrowDownLeft size={20} />
-                <div>
-                  <h3>Deposit USD</h3>
-                  <p className="fm-sub">Add funds to your balance to withdraw Robux</p>
+            <>
+              {depositMethod === 'robux' ? (
+                <DepositRobux
+                  user={user}
+                  onClose={() => setDepositMethod('crypto')}
+                  onDepositComplete={(newBalance) => {
+                    setBalance(newBalance);
+                    setDepositMethod('crypto');
+                  }}
+                  onOpenLinkRoblox={() => window.open('/settings', '_blank')}
+                />
+              ) : (
+              <form onSubmit={handleDeposit} className="fm-form">
+                <div className="fm-form-header">
+                  <ArrowDownLeft size={20} />
+                  <div>
+                    <h3>Deposit Funds</h3>
+                    <p className="fm-sub">Choose a payment method</p>
+                  </div>
                 </div>
-              </div>
 
-              <label className="fm-label">Payment Method</label>
-              <div className="fm-pm-grid">
-                {[
-                  { id: 'crypto', icon: <Bitcoin size={18} />, label: 'Crypto', bonus: '1.0x' },
-                  { id: 'paypal', icon: <DollarSign size={18} />, label: 'PayPal', bonus: '0.95x' },
-                  { id: 'cashapp', icon: <CreditCard size={18} />, label: 'Cash App', bonus: '0.97x' },
-                ].map(m => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    className={`fm-pm-card ${depositMethod === m.id ? 'active' : ''}`}
-                    onClick={() => setDepositMethod(m.id)}
-                  >
-                    {m.icon}
-                    <span className="fm-pm-label">{m.label}</span>
-                    <span className="fm-pm-bonus">{m.bonus}</span>
-                  </button>
-                ))}
-              </div>
-
-              <label className="fm-label">Select Amount</label>
-              <div className="fm-amount-grid">
-                {[25, 50, 100, 500, 1000, 10000].map(amt => {
-                  const robux = Math.floor(amt * 100 * { crypto: 1, paypal: 0.95, cashapp: 0.97 }[depositMethod]);
-                  const selected = parseFloat(depositAmount) === amt;
-                  return (
+                <label className="fm-label">Payment Method</label>
+                <div className="fm-pm-grid">
+                  {[
+                    { id: 'crypto', icon: <Bitcoin size={18} />, label: 'Crypto', bonus: '1.0x' },
+                    { id: 'paypal', icon: <DollarSign size={18} />, label: 'PayPal', bonus: '0.95x' },
+                    { id: 'cashapp', icon: <CreditCard size={18} />, label: 'Cash App', bonus: '0.97x' },
+                    { id: 'robux', icon: <Wallet size={18} />, label: 'Robux', bonus: '-' },
+                  ].map(m => (
                     <button
-                      key={amt}
+                      key={m.id}
                       type="button"
-                      className={`fm-amount-btn ${selected ? 'active' : ''}`}
-                      onClick={() => setDepositAmount(selected ? '' : String(amt))}
+                      className={`fm-pm-card ${depositMethod === m.id ? 'active' : ''}`}
+                      onClick={() => setDepositMethod(m.id)}
                     >
-                      <span className="fm-amt-usd">${formatNumber(amt)}</span>
-                      <span className="fm-amt-robux">≈ {formatNumber(robux)} Robux</span>
+                      {m.icon}
+                      <span className="fm-pm-label">{m.label}</span>
+                      <span className="fm-pm-bonus">{m.bonus}</span>
                     </button>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
 
-              <button type="submit" className="fm-btn" disabled={loading || !depositAmount}>
-                {loading ? <><Clock size={16} /> Processing...</> : (
-                  <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay ${formatNumber(parseFloat(depositAmount || 0))} USD</>
-                )}
-              </button>
-            </form>
+                {depositMethod !== 'robux' && (<>
+                <label className="fm-label">Select Amount</label>
+                <div className="fm-amount-grid">
+                  {[25, 50, 100, 500, 1000, 10000].map(amt => {
+                    const robux = Math.floor(amt * 100 * { crypto: 1, paypal: 0.95, cashapp: 0.97 }[depositMethod]);
+                    const selected = parseFloat(depositAmount) === amt;
+                    return (
+                      <button
+                        key={amt}
+                        type="button"
+                        className={`fm-amount-btn ${selected ? 'active' : ''}`}
+                        onClick={() => setDepositAmount(selected ? '' : String(amt))}
+                      >
+                        <span className="fm-amt-usd">${formatNumber(amt)}</span>
+                        <span className="fm-amt-robux">≈ {formatNumber(robux)} Robux</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button type="submit" className="fm-btn" disabled={loading || !depositAmount}>
+                  {loading ? <><Clock size={16} /> Processing...</> : (
+                    <>{depositMethod === 'crypto' ? <Bitcoin size={16} /> : depositMethod === 'paypal' ? <DollarSign size={16} /> : <CreditCard size={16} />} Pay ${formatNumber(parseFloat(depositAmount || 0))} USD</>
+                  )}
+                </button>
+                </>)}
+              </form>
+              )}
+            </>
           )}
         </div>
 

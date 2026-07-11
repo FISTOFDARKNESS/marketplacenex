@@ -178,6 +178,8 @@ model DepositOrder {
   robuxAmount   Int
   paymentMethod String
   paymentUrl    String?
+  gamepassId    BigInt?
+  robloxUserId  BigInt?
   status        String   @default("PENDING")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

@@ -4270,3 +4270,95 @@ input:focus-visible {
   color: #6b7280;
 }
 .pa-cooldown svg { color: #9ca3af; flex-shrink: 0; }
+
+.deposit-robux {
+  padding: 0 4px;
+}
+.deposit-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  text-align: center;
+  font-size: 13px;
+  color: #d1d5db;
+}
+.deposit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.deposit-balance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #9ca3af;
+  padding: 8px 10px;
+  background: rgba(11,11,15,0.4);
+  border-radius: 8px;
+}
+.deposit-balance strong { color: #e5e7eb; }
+.deposit-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+.deposit-input {
+  width: 100%;
+  padding: 9px 12px;
+  background: rgba(19,19,22,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.deposit-input:focus { border-color: rgba(255,215,0,0.3); }
+.deposit-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.deposit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, #EAC847, #D97706);
+  border: none;
+  border-radius: 8px;
+  color: #0B0B0F;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-decoration: none;
+}
+.deposit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(233,196,106,0.25); }
+.deposit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+.deposit-btn-primary { margin-bottom: 8px; }
+.deposit-error {
+  font-size: 12px;
+  color: #ef4444;
+  padding: 6px 8px;
+  background: rgba(239,68,68,0.08);
+  border-radius: 6px;
+}
+.deposit-pay {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.deposit-pay p {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.5;
+}
+.deposit-robux .spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
