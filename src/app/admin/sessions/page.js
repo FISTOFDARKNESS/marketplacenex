@@ -24,7 +24,7 @@ export default function AdminSessionsPage() {
     fetch('/api/auth/me')
       .then((r) => r.json())
       .then((d) => {
-        if (!d.authenticated || d.user.role !== 'admin') { router.push('/'); return; }
+        if (!d.authenticated || d.user?.role !== 'admin') { router.push('/'); return; }
         return fetch('/api/admin/sessions');
       })
       .then((r) => (r ? r.json() : null))

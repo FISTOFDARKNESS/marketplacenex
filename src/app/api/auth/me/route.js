@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyToken, signToken } from '@/lib/auth';
+import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,24 +42,10 @@ export async function GET(req) {
       }
     }
 
-    // Re-issue the token so its role reflects the current DB state.
-    // This fixes stale role when a user is promoted to admin after login.
-    const newToken = signToken({
-      id: user.id,
-      username: user.username,
-      role: user.role,
-      sid: decoded.sid,
-    });
-
-    const response = NextResponse.json({ authenticated: true, user });
-    response.cookies.set('token', newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 604800,
-      path: '/',
-    });
-    return response;
+    // Role is always read fresh from the DB here (and admin APIs use
+    // getAuthUser), so a promotion to admin takes effect immediately
+    // without re-issuing the JWT.
+    return NextResponse.json({ authenticated: true, user });
   } catch (error) {
     console.error('Auth check error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

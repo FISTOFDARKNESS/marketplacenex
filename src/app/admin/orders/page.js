@@ -18,7 +18,7 @@ export default function AdminOrdersPage() {
     fetch('/api/auth/me')
       .then(r => r.json())
       .then(d => {
-        if (!d.authenticated || d.user.role !== 'admin') { router.push('/'); return; }
+        if (!d.authenticated || d.user?.role !== 'admin') { router.push('/'); return; }
         return fetch('/api/orders?all=true');
       })
       .then(r => r ? r.json() : null)
