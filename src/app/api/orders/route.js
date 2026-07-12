@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyToken } from '@/lib/auth';
+import { verifyToken, getAuthUser } from '@/lib/auth';
 import { serializeItem } from '@/lib/serializer';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +20,8 @@ export async function GET(req) {
     }
 
     if (all) {
-      if (decoded.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
+      const user = await getAuthUser(req);
+      if (!user || user.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
       const orders = await prisma.order.findMany({
         include: { item: true, user: { select: { username: true } } },
         orderBy: { createdAt: 'desc' },

@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyToken } from '@/lib/auth';
+import { getAuthUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
   try {
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    const decoded = verifyToken(token);
-    if (!decoded || decoded.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
+    const user = await getAuthUser(req);
+    if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (user.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
 
     const logs = await prisma.auditLog.findMany({
       orderBy: { createdAt: 'desc' },

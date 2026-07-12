@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyToken } from '@/lib/auth';
+import { getAuthUser } from '@/lib/auth';
 import { rateLimit, getIP } from '@/lib/rateLimit';
 import { logAudit } from '@/lib/audit';
 
@@ -14,10 +14,9 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429 });
     }
 
-    const token = req.cookies.get('token')?.value;
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    const decoded = verifyToken(token);
-    if (!decoded || decoded.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
+    const user = await getAuthUser(req);
+    if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (user.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
 
     const { orderId } = await req.json();
     if (!orderId) return NextResponse.json({ error: 'Order ID required' }, { status: 400 });

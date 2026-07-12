@@ -93,3 +93,19 @@ export function verifyToken(token) {
     return null;
   }
 }
+
+// Reads the authenticated user straight from the database (fresh role),
+// so admin access always reflects the current DB state instead of the
+// possibly stale role baked into the JWT at login time.
+export async function getAuthUser(req) {
+  const token = req.cookies.get('token')?.value;
+  if (!token) return null;
+  const decoded = verifyToken(token);
+  if (!decoded || !decoded.id) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.id },
+    select: { id: true, username: true, email: true, role: true },
+  });
+  return user;
+}
