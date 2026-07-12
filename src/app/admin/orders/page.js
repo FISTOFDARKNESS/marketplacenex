@@ -27,8 +27,6 @@ export default function AdminOrdersPage() {
       .finally(() => setLoading(false));
   }
 
-  useEffect(() => { fetchAllOrders(); }, []);
-
   async function handleApprove(orderId) {
     try {
       const res = await fetch('/api/admin/approve-order', {
@@ -42,6 +40,18 @@ export default function AdminOrdersPage() {
 
   const pendingOrders = orders.filter(o => o.status === 'PENDING');
 
+  useEffect(() => {
+    fetchAllOrders();
+    const interval = setInterval(fetchAllOrders, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const statusColors = {
+    PENDING: '#f59e0b',
+    APPROVED: '#22c55e',
+    REJECTED: '#ef4444',
+  };
+
   return (
     <div className="page-layout">
       <div className="page-header">
@@ -50,25 +60,32 @@ export default function AdminOrdersPage() {
           <Shield size={20} style={{ color: '#ef4444' }} />
           <h1 style={{ margin: 0, fontSize: '20px' }}>{t.title} ({pendingOrders.length})</h1>
         </div>
-        <div />
+        <div style={{ fontSize: '12px', color: '#22c55e' }}>{loading ? t.loading : '●'}</div>
       </div>
 
       <div className="page-content">
-        {loading ? (
+        {loading && orders.length === 0 ? (
           <p className="page-empty">{t.loading}</p>
-        ) : pendingOrders.length === 0 ? (
+        ) : orders.length === 0 ? (
           <p className="page-empty">{t.noPending}</p>
         ) : (
-          pendingOrders.map(o => (
+          orders.map(o => (
             <div key={o.id} className="page-card">
               <img src={o.item?.img} alt={o.item?.name} className="page-card-img" />
               <div className="page-card-body">
                 <div className="page-card-name">{o.item?.name}</div>
                 <div className="page-card-sub">{t.user}: {o.user?.username || o.userId} → {o.robloxUser}</div>
+                <div style={{ fontSize: '11px', marginTop: '4px', color: statusColors[o.status] || '#888' }}>
+                  {o.status}
+                </div>
               </div>
-              <button onClick={() => handleApprove(o.id)} className="approve-btn">
-                {t.approve}
-              </button>
+              {o.status === 'PENDING' ? (
+                <button onClick={() => handleApprove(o.id)} className="approve-btn">
+                  {t.approve}
+                </button>
+              ) : (
+                <div style={{ fontSize: '12px', color: statusColors[o.status] || '#888' }}>—</div>
+              )}
             </div>
           ))
         )}
