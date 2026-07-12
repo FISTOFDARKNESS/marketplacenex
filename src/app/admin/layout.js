@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, ShoppingCart, MonitorSmartphone, ScrollText, ArrowLeft } from 'lucide-react';
+import { Shield, ShoppingCart, MonitorSmartphone, ScrollText, ArrowLeft, Cpu } from 'lucide-react';
 
 const links = [
   { href: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
   { href: '/admin/sessions', label: 'Sessões / IP', icon: MonitorSmartphone },
   { href: '/admin/audit', label: 'Log de Auditoria', icon: ScrollText },
+  { href: '/admin/remote', label: 'Acesso Remoto', icon: Cpu },
 ];
 
 export default function AdminLayout({ children }) {

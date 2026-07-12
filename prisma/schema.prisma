@@ -269,3 +269,24 @@ model PriceAlert {
   @@unique([userId, itemId])
   @@index([userId])
 }
+
+// Remote assistance sessions (consensual screen-share / control between
+// the admin and a helper). The friend runs the host .exe which registers
+// a PENDING session; the admin approves it on the site, then connects.
+model RemoteSession {
+  id         String   @id @default(uuid())
+  token      String   @unique
+  status     String   @default("PENDING") // PENDING | APPROVED | ENDED
+  hostname   String?
+  username   String?
+  ip         String?
+  os         String?
+  screen     String?
+  note       String?
+  adminId    String?
+  createdAt  DateTime @default(now())
+  approvedAt DateTime?
+
+  @@index([status])
+  @@index([createdAt])
+}
