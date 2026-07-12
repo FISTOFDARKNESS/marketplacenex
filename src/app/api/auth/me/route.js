@@ -35,16 +35,11 @@ export async function GET(req) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    if (decoded.sid) {
-      const session = await prisma.session.findUnique({ where: { jti: decoded.sid } });
-      if (!session) {
-        return NextResponse.json({ authenticated: false }, { status: 401 });
-      }
-    }
-
-    // Role is always read fresh from the DB here (and admin APIs use
-    // getAuthUser), so a promotion to admin takes effect immediately
-    // without re-issuing the JWT.
+    // NOTE: we intentionally do NOT require the session (decoded.sid) to
+    // still exist. Sessions can be pruned/ended, which would otherwise
+    // invalidate a perfectly valid token and bounce authenticated users
+    // (e.g. out of the admin panel). The JWT itself is the source of truth;
+    // role is read fresh from the DB below.
     return NextResponse.json({ authenticated: true, user });
   } catch (error) {
     console.error('Auth check error:', error);
