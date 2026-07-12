@@ -29,7 +29,7 @@ export default function OfflinePage() {
       }}>
         <Crown size={28} />
       </div>
-      <h1 style={{ fontSize: '22px', fontWeight: 800, margin: 0 }}>You're offline</h1>
+      <h1 style={{ fontSize: '22px', fontWeight: 800, margin: 0 }}>You&apos;re offline</h1>
       <p style={{ color: 'var(--muted)', fontSize: '14px', maxWidth: '320px', margin: 0 }}>
         Check your internet connection and try again. Your data is safe.
       </p>

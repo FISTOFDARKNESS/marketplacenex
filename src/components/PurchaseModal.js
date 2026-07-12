@@ -93,7 +93,7 @@ export default function PurchaseModal({ item, user, onClose, onOpenFinance, onPu
                 <Check size={24} style={{ color: '#22c55e' }} />
               </div>
               <h3 style={{ margin: '0 0 8px' }}>Order placed</h3>
-              <p className="purchase-muted">The item has been sent to <b>{robloxUser}'s</b> orders. They need to accept the trade.</p>
+               <p className="purchase-muted">The item has been sent to <b>{robloxUser}&apos;s</b> orders. They need to accept the trade.</p>
               <button className="purchase-btn" onClick={onClose} style={{ marginTop: '16px' }}>Done</button>
             </div>
           ) : (

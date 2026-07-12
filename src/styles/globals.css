@@ -4502,3 +4502,210 @@ input:focus-visible {
   .sell-profile-bar { flex-wrap: wrap; }
   .sell-profile-bar .purchase-btn { margin-left: 0 !important; width: 100%; }
 }
+
+/* ---------- ADMIN PANEL (nav + tables) ---------- */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+.admin-nav {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--bg-2);
+  border-right: 1px solid var(--line);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  padding: 6px 8px 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+
+.admin-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.15s, background 0.15s;
+  border: 1px solid transparent;
+}
+
+.admin-nav-link:hover {
+  color: var(--text);
+  background: var(--bg-3);
+}
+
+.admin-nav-link.active {
+  color: #1A1600;
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 18px var(--gold-soft);
+}
+
+.admin-nav-link .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-nav-back {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.admin-nav-back:hover {
+  color: var(--text);
+  border-color: var(--gold);
+}
+
+.admin-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-2);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 760px;
+}
+
+.admin-table thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-3);
+  position: sticky;
+  top: 0;
+}
+
+.admin-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: top;
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.admin-sub {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.admin-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.admin-meta {
+  max-width: 320px;
+  word-break: break-word;
+}
+
+.admin-revoke {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.admin-revoke:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.admin-revoke:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-search {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  min-width: 240px;
+}
+
+.admin-search:focus {
+  border-color: var(--gold);
+}
+
+@media (max-width: 768px) {
+  .admin-shell { flex-direction: column; }
+  .admin-nav {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .admin-nav-links { flex-direction: row; flex-wrap: wrap; flex: 1 1 100%; }
+  .admin-brand { border-bottom: none; margin-bottom: 0; padding: 0 8px; }
+  .admin-nav-back { flex: 1 1 100%; justify-content: center; }
+}

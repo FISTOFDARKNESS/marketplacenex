@@ -102,7 +102,7 @@ function EndSessionContent() {
             <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#22c55e', margin: '0 0 8px' }}>Session ended</h2>
             <p style={{ color: '#9ca3af', fontSize: '14px', margin: '0 0 20px' }}>The device has been signed out of your account.</p>
             <p style={{ color: '#6b7280', fontSize: '13px', margin: '0 0 24px' }}>
-              If there are other sessions you don't recognize, go to Settings → Security to review all active devices.
+              If there are other sessions you don&apos;t recognize, go to Settings → Security to review all active devices.
             </p>
             <button
               onClick={() => router.push('/')}
