@@ -17,9 +17,8 @@ export async function POST(req, { params }) {
         data: { status: 'APPROVED', approvedAt: new Date(), adminId: user.id },
       });
     } else if (action === 'end') {
-      await prisma.remoteSession.update({
+      await prisma.remoteSession.delete({
         where: { id: params.id },
-        data: { status: 'ENDED' },
       });
     } else {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
