@@ -1,8 +1,6 @@
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { put } from '@vercel/blob';
 import { randomUUID } from 'crypto';
 
-const UPLOAD_DIR = join(process.cwd(), 'public', 'uploads');
 const MAX_SIZE = 25 * 1024 * 1024;
 const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 const ALLOWED_VIDEOS = ['video/mp4'];
@@ -38,10 +36,11 @@ export async function saveFile(file, type) {
   }
 
   const filename = `${randomUUID()}.${ext}`;
-  const filepath = join(UPLOAD_DIR, filename);
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  await writeFile(filepath, buffer);
+  const blob = await put(filename, buffer, {
+    access: 'public',
+    contentType: file.type,
+  });
 
-  return `/uploads/${filename}`;
+  return blob.url;
 }

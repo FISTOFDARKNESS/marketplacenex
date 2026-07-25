@@ -1,1 +1,1 @@
-Switch reCAPTCHA from v2 explicit to v3 invisible
+Switch uploads to Vercel Blob storage
