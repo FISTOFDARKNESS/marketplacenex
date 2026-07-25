@@ -15,14 +15,17 @@ export default function Navbar({ user, onOpenAuth, onLogout, onScrollTo }) {
 
   useEffect(() => {
     if (user) {
-      fetch('/api/notifications').then(r => r.json()).then(d => {
-        if (d.success) {
+      fetch('/api/notifications').then(r => {
+        if (r.status === 401) { onLogout(); return; }
+        return r.json();
+      }).then(d => {
+        if (d && d.success) {
           setNotifications(d.notifications);
           setUnreadCount(d.unreadCount);
         }
       }).catch(() => {});
     }
-  }, [user]);
+  }, [user, onLogout]);
 
   useEffect(() => {
     function handleClick(e) {
@@ -36,7 +39,8 @@ export default function Navbar({ user, onOpenAuth, onLogout, onScrollTo }) {
   }, []);
 
   const markAllRead = async () => {
-    await fetch('/api/notifications', { method: 'POST' });
+    const res = await fetch('/api/notifications', { method: 'POST' });
+    if (res.status === 401) { onLogout(); return; }
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     setUnreadCount(0);
   };

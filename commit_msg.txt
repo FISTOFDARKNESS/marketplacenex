@@ -1,1 +1,1 @@
-Fix remaining RECAPTCHA_SECRET_KEY references in Modals.js
+Fix 401 on /api/notifications after logout by handling in Navbar
