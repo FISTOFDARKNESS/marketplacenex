@@ -1,1 +1,1 @@
-Add Google OAuth client ID
+Add Google client secret
