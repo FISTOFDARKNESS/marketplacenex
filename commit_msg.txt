@@ -1,0 +1,11 @@
+Complete overhaul: Roblox Studio Asset Marketplace
+
+- New Prisma schema for assets, users, follows, notifications, queue
+- Asset upload with thumbnail, video (.mp4), asset file (.rbxm/.rbxl) max 25MB
+- Admin queue with approve/reject and preview
+- Verification system (Roblox cookie + Universe ID)
+- Follow system with notifications
+- Marketplace browsing with search/sort
+- Asset detail pages with comments, likes, downloads
+- Profile pages with follower counts
+- Kept original dark/gold theme and styling
