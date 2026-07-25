@@ -1,1 +1,1 @@
-Fix logout session invalidation in getAuthUser
+Cleanup temp files
