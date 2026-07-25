@@ -1,1 +1,1 @@
-Fix 401 on /api/notifications after logout by handling in Navbar
+Update NEXT_PUBLIC_APP_URL to production Vercel URL
