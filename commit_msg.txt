@@ -1,1 +1,1 @@
-Load Google OAuth script dynamically for login button rendering
+Switch reCAPTCHA from v2 explicit to v3 invisible

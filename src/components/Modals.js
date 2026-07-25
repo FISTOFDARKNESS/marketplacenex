@@ -96,7 +96,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
           return;
         }
         const s = document.createElement('script');
-        s.src = 'https://www.google.com/recaptcha/api.js?render=explicit';
+        s.src = 'https://www.google.com/recaptcha/api.js';
         s.async = true;
         s.defer = true;
         s.onload = () => resolve();
@@ -126,10 +126,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
 
         const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
         if (recaptchaEnabled) {
-          const gcContainer = document.getElementById('recaptcha-container');
-          if (gcContainer && window.grecaptcha) {
-            try { window.grecaptcha.render(gcContainer, { sitekey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }); } catch {}
-          }
+          try { window.grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, {action: 'login'}); } catch {}
         }
 
         if (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && window.google) {
@@ -162,7 +159,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
             const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
             let recaptchaToken = '';
             if (recaptchaEnabled) {
-              try { recaptchaToken = window.grecaptcha?.getResponse?.() ?? ''; } catch {}
+              try { recaptchaToken = await window.grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY, {action: 'login'}); } catch {}
               if (!recaptchaToken) {
                 setError('Please complete the reCAPTCHA verification');
                 setLoading(false);
@@ -270,13 +267,10 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
                     <span
                       style={{ fontSize: '12px', cursor: 'pointer', color: 'var(--gold)', userSelect: 'none' }}
                       onClick={() => {
-                        setCurrentType('forgot');
-                        setError('');
-                        setMessage('');
-                        if (typeof window !== 'undefined' && window.grecaptcha) {
-                          window.grecaptcha.reset();
-                        }
-                      }}
+                         setCurrentType('forgot');
+                         setError('');
+                         setMessage('');
+                       }}
                     >
                       {t.toggleForgot}
                     </span>
@@ -292,9 +286,6 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
               </div>
             )}
 
-            {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-              <div id="recaptcha-container" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', minHeight: '78px' }}></div>
-            )}
             <button type="submit" className="modal-buy" disabled={loading} style={{ width: '100%' }}>
               {loading ? 'Processing...' : currentType === 'login' ? t.submitLogin : currentType === 'register' ? t.submitRegister : t.submitForgot}
             </button>
@@ -322,9 +313,6 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
                     setCurrentType(currentType === 'login' ? 'register' : 'login');
                     setError('');
                     setMessage('');
-                    if (typeof window !== 'undefined' && window.grecaptcha) {
-                      window.grecaptcha.reset();
-                    }
                   }}
             >
               {currentType === 'login' ? t.toggleRegister : t.toggleLogin}
