@@ -103,8 +103,25 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
         document.head.appendChild(s);
       });
 
+      const loadGoogleOAuth = () => new Promise((resolve) => {
+        if (window.google) { resolve(); return; }
+        const existing = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(), { once: true });
+          if (window.google) { resolve(); }
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = 'https://accounts.google.com/gsi/client';
+        s.async = true;
+        s.defer = true;
+        s.onload = () => resolve();
+        document.head.appendChild(s);
+      });
+
       const init = async () => {
         await loadRecaptcha();
+        await loadGoogleOAuth();
         if (cancelled) return;
 
         const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;

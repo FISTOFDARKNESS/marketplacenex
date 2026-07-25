@@ -1,1 +1,1 @@
-Update NEXT_PUBLIC_APP_URL to production Vercel URL
+Load Google OAuth script dynamically for login button rendering
