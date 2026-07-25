@@ -20,18 +20,15 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing Google credential' }, { status: 400 });
     }
 
-    // Verify Google ID Token via Google API
     const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
     if (!verifyRes.ok) {
       return NextResponse.json({ error: 'Invalid Google credential' }, { status: 400 });
     }
 
     const payload = await verifyRes.json();
-    if (!payload.email || payload.aud !== (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '855427189196-dummyclientid.apps.googleusercontent.com')) {
-      // Allow the default fallback ID for testing/verification ease if NEXT_PUBLIC_GOOGLE_CLIENT_ID isn't configured in dev
-      if (payload.aud !== '855427189196-dummyclientid.apps.googleusercontent.com') {
-         return NextResponse.json({ error: 'Token audience mismatch' }, { status: 400 });
-      }
+    const expectedAudience = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!payload.email || (expectedAudience && payload.aud !== expectedAudience)) {
+      return NextResponse.json({ error: 'Token audience mismatch' }, { status: 400 });
     }
 
     const email = payload.email.toLowerCase();
@@ -84,8 +81,9 @@ export async function POST(req) {
         username: user.username,
         email: user.email,
         role: user.role,
-        balance: user.balance,
+        verified: user.verified,
         robloxUsername: user.robloxUsername,
+        avatarUrl: user.avatarUrl,
       },
     });
 
