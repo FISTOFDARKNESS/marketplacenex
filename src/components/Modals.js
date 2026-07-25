@@ -275,7 +275,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
               </div>
             )}
 
-            {process.env.RECAPTCHA_SECRET_KEY && (
+            {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
               <div id="recaptcha-container" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', minHeight: '78px' }}></div>
             )}
             <button type="submit" className="modal-buy" disabled={loading} style={{ width: '100%' }}>

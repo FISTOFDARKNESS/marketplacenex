@@ -1,1 +1,1 @@
-Fix reCAPTCHA: use NEXT_PUBLIC_RECAPTCHA_SITE_KEY for browser-side check
+Fix remaining RECAPTCHA_SECRET_KEY references in Modals.js
