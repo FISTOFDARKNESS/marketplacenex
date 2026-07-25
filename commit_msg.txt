@@ -1,1 +1,1 @@
-Add Google client secret
+Fix auth modal: show reCAPTCHA and Google buttons only when configured

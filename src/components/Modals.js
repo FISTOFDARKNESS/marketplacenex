@@ -107,16 +107,19 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
         await loadRecaptcha();
         if (cancelled) return;
 
-        const gcContainer = document.getElementById('recaptcha-container');
-        if (gcContainer && window.grecaptcha) {
-          try { window.grecaptcha.render(gcContainer, { sitekey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }); } catch {}
+        const recaptchaEnabled = !!process.env.RECAPTCHA_SECRET_KEY;
+        if (recaptchaEnabled) {
+          const gcContainer = document.getElementById('recaptcha-container');
+          if (gcContainer && window.grecaptcha) {
+            try { window.grecaptcha.render(gcContainer, { sitekey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }); } catch {}
+          }
         }
 
-        if (window.google) {
+        if (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && window.google) {
           const btnContainer = document.getElementById('google-signin-btn');
           if (btnContainer) {
             window.google.accounts.id.initialize({
-              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '855427189196-dummyclientid.apps.googleusercontent.com',
+              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
               callback: handleGoogleLogin,
             });
             window.google.accounts.id.renderButton(btnContainer, {
@@ -139,15 +142,18 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
     setMessage('');
     setLoading(true);
 
-    let recaptchaToken = '';
-    try { recaptchaToken = window.grecaptcha?.getResponse?.() ?? ''; } catch {}
-    if (!recaptchaToken) {
-      setError('Please complete the reCAPTCHA verification');
-      setLoading(false);
-      return;
-    }
+            const recaptchaEnabled = !!process.env.RECAPTCHA_SECRET_KEY;
+            let recaptchaToken = '';
+            if (recaptchaEnabled) {
+              try { recaptchaToken = window.grecaptcha?.getResponse?.() ?? ''; } catch {}
+              if (!recaptchaToken) {
+                setError('Please complete the reCAPTCHA verification');
+                setLoading(false);
+                return;
+              }
+            }
 
-    try {
+            try {
       if (currentType === 'forgot') {
         const res = await fetch('/api/auth/forgot-password', {
           method: 'POST',
@@ -269,7 +275,9 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
               </div>
             )}
 
-            <div id="recaptcha-container" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', minHeight: '78px' }}></div>
+            {process.env.RECAPTCHA_SECRET_KEY && (
+              <div id="recaptcha-container" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center', minHeight: '78px' }}></div>
+            )}
             <button type="submit" className="modal-buy" disabled={loading} style={{ width: '100%' }}>
               {loading ? 'Processing...' : currentType === 'login' ? t.submitLogin : currentType === 'register' ? t.submitRegister : t.submitForgot}
             </button>
@@ -283,7 +291,9 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
                 <div style={{ flex: 1, height: '1px', background: 'var(--line)' }}></div>
               </div>
 
-              <div id="google-signin-btn" style={{ width: '100%', display: 'flex', justifyContent: 'center', minHeight: '40px' }}></div>
+              {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
+                <div id="google-signin-btn" style={{ width: '100%', display: 'flex', justifyContent: 'center', minHeight: '40px' }}></div>
+              )}
             </>
           )}
 
