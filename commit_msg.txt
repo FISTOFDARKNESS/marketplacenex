@@ -1,1 +1,1 @@
-Fix db.js and revert Neon adapter, update vercel.json
+Update vercel.json for proper Prisma generate
