@@ -1,1 +1,1 @@
-Update vercel.json for proper Prisma generate
+Fix logout session invalidation in getAuthUser

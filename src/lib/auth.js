@@ -103,6 +103,11 @@ export async function getAuthUser(req) {
   const decoded = verifyToken(token);
   if (!decoded || !decoded.id) return null;
 
+  const session = decoded.sid
+    ? await prisma.session.findUnique({ where: { jti: decoded.sid } })
+    : null;
+  if (!session) return null;
+
   const user = await prisma.user.findUnique({
     where: { id: decoded.id },
     select: { id: true, username: true, email: true, role: true },
