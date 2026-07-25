@@ -107,7 +107,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
         await loadRecaptcha();
         if (cancelled) return;
 
-        const recaptchaEnabled = !!process.env.RECAPTCHA_SECRET_KEY;
+        const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
         if (recaptchaEnabled) {
           const gcContainer = document.getElementById('recaptcha-container');
           if (gcContainer && window.grecaptcha) {
@@ -142,7 +142,7 @@ export function AuthModal({ type, onClose, onSubmit, lang = 'en' }) {
     setMessage('');
     setLoading(true);
 
-            const recaptchaEnabled = !!process.env.RECAPTCHA_SECRET_KEY;
+            const recaptchaEnabled = !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
             let recaptchaToken = '';
             if (recaptchaEnabled) {
               try { recaptchaToken = window.grecaptcha?.getResponse?.() ?? ''; } catch {}
