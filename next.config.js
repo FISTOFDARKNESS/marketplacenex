@@ -16,6 +16,10 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self' blob:; media-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' blob:",
+          },
+          {
             key: 'X-Frame-Options',
             value: 'DENY',
           },
