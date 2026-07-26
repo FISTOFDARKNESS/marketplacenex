@@ -28,10 +28,12 @@ export async function saveFile(file, type) {
   } else if (type === 'asset') {
     const name = file.name.toLowerCase();
     if (!ALLOWED_ASSETS.some(ext => name.endsWith(ext))) {
-      throw new Error('Invalid asset format. Only .rbxm and .rbxl files are allowed.');
+      throw new Error('Invalid asset format. Only .rbxm, .rbxl, and .rbxmx files are allowed.');
     }
-    ext = name.endsWith('.rbxm') ? 'rbxm' : 'rbxl';
+    ext = name.endsWith('.rbxm') ? 'rbxm' : name.endsWith('.rbxmx') ? 'rbxmx' : 'rbxl';
   } else {
+    throw new Error('Unknown file type');
+  }
 
   const filename = `${randomUUID()}.${ext}`;
   const filePath = `assets/${filename}`;

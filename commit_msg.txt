@@ -1,1 +1,1 @@
-Update upload page accept attributes to match allowed types
+Fix upload.js syntax error (missing throw in else branch)
