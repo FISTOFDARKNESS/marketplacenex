@@ -6,6 +6,19 @@ const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/jpg'];
 const ALLOWED_VIDEOS = ['video/mp4'];
 const ALLOWED_ASSETS = ['.rbxm', '.rbxl', '.rbxmx'];
 
+export function getFileExtension(type, fileName) {
+  if (type === 'image') {
+    if (fileName.toLowerCase().endsWith('.jpg')) return 'jpg';
+    return 'png';
+  } else if (type === 'video') {
+    return 'mp4';
+  } else if (type === 'asset') {
+    const ext = fileName.toLowerCase().split('.').pop();
+    return ext;
+  }
+  return '';
+}
+
 export async function saveFile(file, type) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
@@ -27,7 +40,7 @@ export async function saveFile(file, type) {
     ext = 'mp4';
   } else if (type === 'asset') {
     const name = file.name.toLowerCase();
-    if (!ALLOWED_ASSETS.some(ext => name.endsWith(ext))) {
+    if (!ALLOWED_ASSETS.some(a => name.endsWith(a))) {
       throw new Error('Invalid asset format. Only .rbxm, .rbxl, and .rbxmx files are allowed.');
     }
     ext = name.endsWith('.rbxm') ? 'rbxm' : name.endsWith('.rbxmx') ? 'rbxmx' : 'rbxl';
@@ -55,4 +68,21 @@ export async function saveFile(file, type) {
     .getPublicUrl(filePath);
 
   return urlData.publicUrl;
+}
+
+export async function getPresignedUrl(fileName, fileType) {
+  const ext = getFileExtension(fileType, fileName);
+  const filename = `${randomUUID()}.${ext}`;
+  const filePath = `assets/${filename}`;
+
+  const supabase = getSupabase();
+  const { data, error } = await supabase.storage
+    .from('marketplace')
+    .createSignedUrl(filePath, 60);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { signedUrl: data.signedUrl, publicUrl: data.publicUrl };
 }

@@ -1,1 +1,1 @@
-Fix Supabase storage bucket name from assets to marketplace
+Add presigned URL support for direct browser-to-Supabase uploads
