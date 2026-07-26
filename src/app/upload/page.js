@@ -9,8 +9,8 @@ import Toast from '@/components/Toast';
 import { proxyUrl } from '@/lib/storage-url';
 import { useLang } from '@/lib/LanguageProvider';
 
-const MAX_IMAGE = 6 * 1024 * 1024;
-const MAX_VIDEO = 15 * 1024 * 1024;
+const MAX_IMAGE = 5 * 1024 * 1024;
+const MAX_VIDEO = 20 * 1024 * 1024;
 const MAX_ASSET = 25 * 1024 * 1024;
 
 export default function UploadPage() {
@@ -77,11 +77,11 @@ export default function UploadPage() {
     }
 
     if (thumbnail.size > MAX_IMAGE) {
-      addToast('alert-triangle', 'Thumbnail must be under 6MB');
+      addToast('alert-triangle', 'Thumbnail must be under 5MB');
       return;
     }
     if (video && video.size > MAX_VIDEO) {
-      addToast('alert-triangle', 'Video must be under 15MB');
+      addToast('alert-triangle', 'Video must be under 20MB');
       return;
     }
     if (assetFile.size > MAX_ASSET) {
@@ -187,7 +187,7 @@ setUploading(true);
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <Image size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload thumbnail * (max 6MB)</div>
+                  <div>Click to upload thumbnail * (max 5MB)</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>PNG, JPEG</div>
                 </div>
               )}
@@ -207,7 +207,7 @@ setUploading(true);
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <Video size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload preview video (optional, max 15MB)</div>
+                  <div>Click to upload preview video (optional, max 20MB)</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>MP4 only</div>
                 </div>
               )}

@@ -1,8 +1,8 @@
 import { getSupabase } from './supabase';
 import { randomUUID } from 'crypto';
 
-const MAX_SIZE_IMAGE = 6 * 1024 * 1024;
-const MAX_SIZE_VIDEO = 15 * 1024 * 1024;
+const MAX_SIZE_IMAGE = 5 * 1024 * 1024;
+const MAX_SIZE_VIDEO = 20 * 1024 * 1024;
 const MAX_SIZE_ASSET = 25 * 1024 * 1024;
 const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/jpg'];
 const ALLOWED_VIDEOS = ['video/mp4'];
