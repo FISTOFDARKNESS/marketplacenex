@@ -110,6 +110,7 @@ model Asset {
   thumbnailUrl  String?
   videoUrl      String?
   assetFileUrl  String?
+  folderId      String?
   assetType     String?        @default("rbxm")
   fileSize      Int?
   downloads     Int            @default(0)

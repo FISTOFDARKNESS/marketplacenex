@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, Image, Video, File, Tag, DollarSign, X, Loader } from 'lucide-react';
+import { randomUUID } from 'crypto';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
@@ -24,6 +25,7 @@ export default function UploadPage() {
   const [assetFile, setAssetFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(1);
+  const [folderId, setFolderId] = useState(null);
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => {
@@ -38,12 +40,8 @@ export default function UploadPage() {
   };
   const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
-  const uploadFile = async (file, type) => {
-  const ext = file.name.split('.').pop() || 'png';
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const filePath = `assets/${filename}`;
-
-  const presignedRes = await fetch(`/api/upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}`);
+  const uploadFile = async (file, type, folder) => {
+  const presignedRes = await fetch(`/api/upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}&folderId=${encodeURIComponent(folder)}`);
   const presignedData = await presignedRes.json();
   if (!presignedData.success) throw new Error(presignedData.error);
 
@@ -74,29 +72,32 @@ export default function UploadPage() {
       return;
     }
 
-    setUploading(true);
-    try {
-      const thumbUrl = await uploadFile(thumbnail, 'image');
-      let videoUrl = null;
-      if (video) videoUrl = await uploadFile(video, 'video');
-      const assetUrl = await uploadFile(assetFile, 'asset');
+setUploading(true);
+      const currentFolderId = folderId || `${randomUUID}_uploads`;
+      if (!folderId) setFolderId(currentFolderId);
+      try {
+        const thumbUrl = await uploadFile(thumbnail, 'image', currentFolderId);
+        let videoUrl = null;
+        if (video) videoUrl = await uploadFile(video, 'video', currentFolderId);
+        const assetUrl = await uploadFile(assetFile, 'asset', currentFolderId);
 
-      const res = await fetch('/api/assets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          description,
-          tags: tags.split(',').map(t => t.trim()).filter(Boolean),
-          price,
-          priceRobux: price === 'Robux' ? parseInt(priceRobux) : null,
-          thumbnailUrl: thumbUrl,
-          videoUrl,
-          assetFileUrl: assetUrl,
-          assetType: assetFile.name.endsWith('.rbxl') ? 'rbxl' : 'rbxm',
-          fileSize: Math.round(assetFile.size / 1024),
-        }),
-      });
+        const res = await fetch('/api/assets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            description,
+            tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+            price,
+            priceRobux: price === 'Robux' ? parseInt(priceRobux) : null,
+            thumbnailUrl: thumbUrl,
+            videoUrl,
+            assetFileUrl: assetUrl,
+            folderId: currentFolderId,
+            assetType: assetFile.name.endsWith('.rbxl') ? 'rbxl' : 'rbxm',
+            fileSize: Math.round(assetFile.size / 1024),
+          }),
+        });
 
       const data = await res.json();
       if (data.success) {

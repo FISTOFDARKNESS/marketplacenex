@@ -2,17 +2,27 @@ import { NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
 import { randomUUID } from 'crypto';
 
+const getPrefix = (fileType) => {
+  if (fileType.startsWith('image/')) return 'thumbnail';
+  if (fileType.startsWith('video/')) return 'video';
+  return 'asset';
+};
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const fileName = searchParams.get('fileName') || 'file';
   const fileType = searchParams.get('fileType') || 'image/png';
+  const folderId = searchParams.get('folderId') || `${randomUUID()}_uploads`;
 
   const ext = fileName.split('.').pop() || 'png';
-  const filename = `${randomUUID()}.${ext}`;
-  const filePath = `assets/${filename}`;
+  const timestamp = Date.now();
+  const randomId = randomUUID().slice(0, 8);
+  const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '').slice(0, 40);
+  const prefix = getPrefix(fileType);
+  const filename = `${prefix}_${timestamp}_${randomId}_${safeName}.${ext}`;
+  const filePath = `${folderId}/${filename}`;
 
   const supabase = getSupabase();
-
   const { data, error } = await supabase.storage
     .from('marketplace')
     .createSignedUrl(filePath, 60);
@@ -25,5 +35,6 @@ export async function GET(req) {
     success: true,
     signedUrl: data.signedUrl,
     publicUrl: data.publicUrl,
+    folderId,
   });
 }

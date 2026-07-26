@@ -68,7 +68,7 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { name, description, tags, price, priceRobux, thumbnailUrl, videoUrl, assetFileUrl, assetType, fileSize } = body;
+    const { name, description, tags, price, priceRobux, thumbnailUrl, videoUrl, assetFileUrl, assetType, fileSize, folderId } = body;
 
     if (!name || !thumbnailUrl || !assetFileUrl) {
       return NextResponse.json({ error: 'Name, thumbnail, and asset file are required' }, { status: 400 });
@@ -95,6 +95,7 @@ export async function POST(req) {
         assetFileUrl,
         assetType: assetType || 'rbxm',
         fileSize: fileSize || 0,
+        folderId,
         status: 'QUEUE',
       },
     });

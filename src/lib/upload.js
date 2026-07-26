@@ -19,6 +19,14 @@ export function getFileExtension(type, fileName) {
   return '';
 }
 
+function getTimestamp() {
+  return Date.now();
+}
+
+function getRandomId() {
+  return randomUUID().slice(0, 8);
+}
+
 export async function saveFile(file, type) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
@@ -27,29 +35,33 @@ export async function saveFile(file, type) {
     throw new Error('File exceeds 25MB limit');
   }
 
-  let ext;
+  let prefix;
   if (type === 'image') {
     if (!ALLOWED_IMAGES.includes(file.type)) {
       throw new Error('Invalid image format. Use PNG, JPEG, or JPG.');
     }
-    ext = file.name.split('.').pop() || 'png';
+    prefix = 'thumbnail';
   } else if (type === 'video') {
     if (!ALLOWED_VIDEOS.includes(file.type)) {
       throw new Error('Invalid video format. Only MP4 is allowed.');
     }
-    ext = 'mp4';
+    prefix = 'video';
   } else if (type === 'asset') {
     const name = file.name.toLowerCase();
     if (!ALLOWED_ASSETS.some(a => name.endsWith(a))) {
       throw new Error('Invalid asset format. Only .rbxm, .rbxl, and .rbxmx files are allowed.');
     }
-    ext = name.endsWith('.rbxm') ? 'rbxm' : name.endsWith('.rbxmx') ? 'rbxmx' : 'rbxl';
+    prefix = 'asset';
   } else {
     throw new Error('Unknown file type');
   }
 
-  const filename = `${randomUUID()}.${ext}`;
-  const filePath = `assets/${filename}`;
+  const folderId = `${randomUUID()}_uploads`;
+  const timestamp = getTimestamp();
+  const randomId = getRandomId();
+  const ext = file.name.split('.').pop() || getFileExtension(type, file.name);
+  const filename = `${prefix}_${timestamp}_${randomId}.${ext}`;
+  const filePath = `${folderId}/${filename}`;
 
   const supabase = getSupabase();
   const { data, error } = await supabase.storage
@@ -70,10 +82,14 @@ export async function saveFile(file, type) {
   return urlData.publicUrl;
 }
 
-export async function getPresignedUrl(fileName, fileType) {
+export async function getPresignedUrl(fileName, fileType, folderId) {
   const ext = getFileExtension(fileType, fileName);
-  const filename = `${randomUUID()}.${ext}`;
-  const filePath = `assets/${filename}`;
+  const prefix = fileType.startsWith('image/') ? 'thumbnail' : fileType.startsWith('video/') ? 'video' : 'asset';
+  const timestamp = Date.now();
+  const randomId = randomUUID().slice(0, 8);
+  const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '').slice(0, 40);
+  const filename = `${prefix}_${timestamp}_${randomId}_${safeName}.${ext}`;
+  const filePath = `${folderId}/${filename}`;
 
   const supabase = getSupabase();
   const { data, error } = await supabase.storage

@@ -1,1 +1,1 @@
-Implement presigned URL direct browser-to-Supabase uploads to bypass Vercel body limit
+Update storage structure to per-upload folder with timestamps
