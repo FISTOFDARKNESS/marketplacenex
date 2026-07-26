@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, Image, Video, File, Tag, DollarSign, X, Loader } from 'lucide-react';
-import { randomUUID } from 'crypto';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
@@ -73,7 +72,7 @@ export default function UploadPage() {
     }
 
 setUploading(true);
-      const currentFolderId = folderId || `${randomUUID()}_uploads`;
+      const currentFolderId = folderId || `${crypto.randomUUID()}_uploads`;
       if (!folderId) setFolderId(currentFolderId);
       try {
         const thumbUrl = await uploadFile(thumbnail, 'image', currentFolderId);
