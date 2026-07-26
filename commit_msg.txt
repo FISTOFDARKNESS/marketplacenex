@@ -1,1 +1,1 @@
-Add presigned URL support for direct browser-to-Supabase uploads
+Implement presigned URL direct browser-to-Supabase uploads to bypass Vercel body limit

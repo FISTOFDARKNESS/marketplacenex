@@ -39,14 +39,24 @@ export default function UploadPage() {
   const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
   const uploadFile = async (file, type) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
-    const res = await fetch('/api/upload', { method: 'POST', body: formData });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    return data.url;
-  };
+  const ext = file.name.split('.').pop() || 'png';
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const filePath = `assets/${filename}`;
+
+  const presignedRes = await fetch(`/api/upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}`);
+  const presignedData = await presignedRes.json();
+  if (!presignedData.success) throw new Error(presignedData.error);
+
+  const putRes = await fetch(presignedData.signedUrl, {
+    method: 'PUT',
+    body: file,
+    headers: { 'Content-Type': file.type },
+  });
+
+  if (!putRes.ok) throw new Error('Upload failed: ' + putRes.status);
+
+  return presignedData.publicUrl;
+};
 
   const handleSubmit = async () => {
     if (!name || !thumbnail || !assetFile) {
