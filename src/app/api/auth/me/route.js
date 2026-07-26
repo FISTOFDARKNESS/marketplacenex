@@ -9,12 +9,12 @@ export async function GET(req) {
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
+      return NextResponse.json({ authenticated: false, db_url_set: !!process.env.DATABASE_URL }, { status: 401 });
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
+      return NextResponse.json({ authenticated: false, db_url_set: !!process.env.DATABASE_URL }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -31,17 +31,12 @@ export async function GET(req) {
     });
 
     if (!user) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
+      return NextResponse.json({ authenticated: false, db_url_set: !!process.env.DATABASE_URL }, { status: 401 });
     }
 
-    // NOTE: we intentionally do NOT require the session (decoded.sid) to
-    // still exist. Sessions can be pruned/ended, which would otherwise
-    // invalidate a perfectly valid token and bounce authenticated users
-    // (e.g. out of the admin panel). The JWT itself is the source of truth;
-    // role is read fresh from the DB below.
     return NextResponse.json({ authenticated: true, user });
   } catch (error) {
     console.error('Auth check error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', db_url_set: !!process.env.DATABASE_URL }, { status: 500 });
   }
 }
