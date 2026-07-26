@@ -73,7 +73,7 @@ export default function UploadPage() {
     }
 
 setUploading(true);
-      const currentFolderId = folderId || `${randomUUID}_uploads`;
+      const currentFolderId = folderId || `${randomUUID()}_uploads`;
       if (!folderId) setFolderId(currentFolderId);
       try {
         const thumbUrl = await uploadFile(thumbnail, 'image', currentFolderId);
