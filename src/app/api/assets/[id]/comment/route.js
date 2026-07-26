@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getAuthUser } from '@/lib/auth';
+import { rateLimit, getIP } from '@/lib/rateLimit';
 
 export async function POST(req, { params }) {
   const user = await getAuthUser(req);
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const ip = getIP(req);
+  const limit = rateLimit('comment-' + ip, 10, 60000);
+  if (!limit.success) {
+    return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429 });
   }
 
   const { id } = params;

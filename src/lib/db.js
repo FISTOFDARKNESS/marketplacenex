@@ -33,7 +33,7 @@ const TABLE = {
   user: 'User', session: 'Session', otpChallenge: 'OtpChallenge',
   auditLog: 'AuditLog', pushSubscription: 'PushSubscription',
   asset: 'Asset', assetLike: 'AssetLike', assetDownload: 'AssetDownload',
-  assetReview: 'AssetReview', assetComment: 'AssetComment',
+  assetPurchase: 'AssetPurchase', assetReview: 'AssetReview', assetComment: 'AssetComment',
   follow: 'Follow', notification: 'Notification', report: 'Report',
   item: 'Item', seller: 'Seller', sellerProfile: 'SellerProfile',
   sellerItem: 'SellerItem', userItem: 'UserItem', order: 'Order',
@@ -69,6 +69,8 @@ addRel('assetLike', 'asset', 'assetId', 'Asset');
 addRel('assetLike', 'user', 'userId', 'User');
 addRel('assetDownload', 'asset', 'assetId', 'Asset');
 addRel('assetDownload', 'user', 'userId', 'User');
+addRel('assetPurchase', 'asset', 'assetId', 'Asset');
+addRel('assetPurchase', 'user', 'userId', 'User');
 addRel('assetReview', 'asset', 'assetId', 'Asset');
 addRel('assetReview', 'user', 'userId', 'User');
 addRel('assetComment', 'asset', 'assetId', 'Asset');
@@ -98,6 +100,7 @@ addHasMany('asset', 'likes', 'assetId', 'AssetLike');
 addHasMany('asset', 'reviews', 'assetId', 'AssetReview');
 addHasMany('asset', 'comments', 'assetId', 'AssetComment');
 addHasMany('asset', 'downloadsRel', 'assetId', 'AssetDownload');
+addHasMany('asset', 'purchases', 'assetId', 'AssetPurchase');
 addHasMany('user', 'pushSubscriptions', 'userId', 'PushSubscription');
 addHasMany('user', 'sessions', 'userId', 'Session');
 addHasMany('user', 'assets', 'ownerId', 'Asset');

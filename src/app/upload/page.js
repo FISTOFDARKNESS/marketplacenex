@@ -171,7 +171,7 @@ setUploading(true);
         </p>
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
-          {['Details', 'Media', 'Pricing'].map((s, i) => (
+          {['Details', 'Media', 'Pricing', 'Preview'].map((s, i) => (
             <div key={s} style={{
               flex: 1, padding: '12px 16px', borderRadius: 10,
               border: `1px solid ${step === i + 1 ? 'var(--gold)' : 'var(--line)'}`,
@@ -276,41 +276,60 @@ setUploading(true);
           <div className="upload-form">
             <label style={{ fontWeight: 600, fontSize: 14 }}>Price</label>
             <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-              <button
-                className={`price-option ${price === 'Free' ? 'active' : ''}`}
-                onClick={() => setPrice('Free')}
-              >Free</button>
-              <button
-                className={`price-option ${price === 'Robux' ? 'active' : ''}`}
-                onClick={() => {
-                  if (!user?.verified) {
-                    addToast('info', 'Verify your account to set Robux prices');
-                    return;
-                  }
-                  setPrice('Robux');
-                }}
-              >
+              <button className={`price-option ${price === 'Free' ? 'active' : ''}`} onClick={() => setPrice('Free')}>Free</button>
+              <button className={`price-option ${price === 'Robux' ? 'active' : ''}`} onClick={() => { if (!user?.verified) { addToast('info', 'Verify your account to set Robux prices'); return; } setPrice('Robux'); }}>
                 <DollarSign size={14} /> Robux
               </button>
             </div>
-
             {price === 'Robux' && (
               <div>
                 <label style={{ fontWeight: 600, fontSize: 14 }}>Price in Robux</label>
                 <input className="upload-input" type="number" min="1" value={priceRobux} onChange={e => setPriceRobux(e.target.value)} placeholder="50" />
               </div>
             )}
-
             {!user?.verified && (
               <div style={{ background: 'rgba(234,200,71,0.1)', border: '1px solid rgba(234,200,71,0.2)', borderRadius: 10, padding: 16, marginTop: 16, fontSize: 13 }}>
-                To set Robux prices, you need to <a href="/verify" style={{ color: 'var(--gold)', fontWeight: 600 }}>verify your account</a> with your Roblox cookie and Universe ID.
+                To set Robux prices, you need to <a href="/verify" style={{ color: 'var(--gold)', fontWeight: 600 }}>verify your account</a>.
               </div>
             )}
-
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
               <button className="hero-cta-secondary" onClick={() => setStep(2)}>Back</button>
-              <button className="hero-cta-primary" onClick={handleSubmit} disabled={uploading} style={{ opacity: uploading ? 0.6 : 1 }}>
-                {uploading ? <><Loader size={14} className="spin" /> Submitting...</> : <><Upload size={14} /> Submit for Review</>}
+              <button className="hero-cta-primary" onClick={() => setStep(4)}>Next: Preview</button>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="upload-form">
+            <h3 style={{ marginBottom: 16 }}>Preview & Confirm</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+              <div>
+                <label style={{ fontWeight: 600, fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>Thumbnail</label>
+                {thumbnail && <img src={URL.createObjectURL(thumbnail)} alt="" style={{ width: '100%', borderRadius: 8, maxHeight: 200, objectFit: 'cover' }} />}
+              </div>
+              {video && (
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>Video Preview</label>
+                  <video src={URL.createObjectURL(video)} loop muted autoPlay playsInline style={{ width: '100%', borderRadius: 8, maxHeight: 200 }} />
+                </div>
+              )}
+            </div>
+            <div style={{ padding: 12, background: 'var(--bg-3)', borderRadius: 8, marginBottom: 12 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>{name}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>{description || 'No description'}</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                {tags.split(',').map(t => t.trim()).filter(Boolean).map(t => <span key={t} style={{ padding: '2px 8px', borderRadius: 12, background: 'var(--gold-soft)', fontSize: 10, color: 'var(--gold)' }}>{t}</span>)}
+              </div>
+              <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--muted)' }}>
+                <span>Price: <strong style={{ color: 'var(--text)' }}>{price === 'Free' ? 'Free' : `${priceRobux} R$`}</strong></span>
+                <span>Type: <strong style={{ color: 'var(--text)' }}>{assetFile?.name?.endsWith('.rbxl') ? 'RBXL' : 'RBXM'}</strong></span>
+                <span>Size: <strong style={{ color: 'var(--text)' }}>{assetFile ? `${(assetFile.size / 1024).toFixed(0)} KB` : '-'}</strong></span>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button className="hero-cta-secondary" onClick={() => setStep(3)} style={{ flex: 1 }}>Back</button>
+              <button className="hero-cta-primary" onClick={handleSubmit} disabled={uploading} style={{ flex: 1, opacity: uploading ? 0.6 : 1 }}>
+                {uploading ? <><Loader size={14} className="spin" /> Submitting...</> : <><Upload size={14} /> Confirm & Submit</>}
               </button>
             </div>
           </div>

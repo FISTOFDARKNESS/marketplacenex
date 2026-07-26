@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
 import { proxyUrl } from '@/lib/storage-url';
-import { Heart, Download, Star, User, Calendar, Tag, UserPlus, UserCheck, MessageCircle, Star as StarIcon } from 'lucide-react';
+import { Heart, Download, Star, User, Calendar, Tag, UserPlus, UserCheck, MessageCircle, Star as StarIcon, Flag, Edit, Trash2 } from 'lucide-react';
 
 export default function AssetDetailPage() {
   const { id } = useParams();
@@ -22,6 +22,9 @@ export default function AssetDetailPage() {
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [toasts, setToasts] = useState([]);
+  const [showReport, setShowReport] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => {
@@ -105,6 +108,37 @@ export default function AssetDetailPage() {
     }
   };
 
+  const handleReport = async () => {
+    if (!reportReason.trim() || reportReason.trim().length < 10) {
+      addToast('info', 'Please provide a reason (min 10 characters)');
+      return;
+    }
+    const res = await fetch('/api/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetId: id, reason: reportReason }),
+    });
+    const d = await res.json();
+    if (d.success) {
+      addToast('check-circle', 'Report submitted');
+      setShowReport(false);
+      setReportReason('');
+    } else {
+      addToast('alert-triangle', d.error || 'Failed to report');
+    }
+  };
+
+  const handleDelete = async () => {
+    const res = await fetch(`/api/assets/${id}`, { method: 'DELETE' });
+    const d = await res.json();
+    if (d.success) {
+      addToast('check-circle', 'Asset deleted');
+      setTimeout(() => router.push('/marketplace'), 1000);
+    } else {
+      addToast('alert-triangle', d.error || 'Failed to delete');
+    }
+  };
+
   const handleFollow = async () => {
     if (!user) { addToast('info', 'Login to follow users'); return; }
     const res = await fetch('/api/follow', {
@@ -181,6 +215,23 @@ export default function AssetDetailPage() {
                 <button className={`icon-btn ${isFollowing ? 'active' : ''}`} onClick={handleFollow} style={{ width: 48, height: 48 }}>
                   {isFollowing ? <UserCheck size={18} /> : <UserPlus size={18} />}
                 </button>
+              )}
+              {user && user.id !== asset.owner?.id && (
+                <button className="icon-btn" onClick={() => setShowReport(true)} style={{ width: 48, height: 48 }}>
+                  <Flag size={18} />
+                </button>
+              )}
+              {user && (user.id === asset.owner?.id || user.role === 'admin') && (
+                <>
+                  <button className="icon-btn" onClick={() => router.push(`/asset/${id}/edit`)} style={{ width: 48, height: 48 }}>
+                    <Edit size={18} />
+                  </button>
+                  {asset.status !== 'APPROVED' || user.role === 'admin' ? (
+                    <button className="icon-btn" onClick={() => setDeleteConfirm(true)} style={{ width: 48, height: 48, color: '#ef4444' }}>
+                      <Trash2 size={18} />
+                    </button>
+                  ) : null}
+                </>
               )}
             </div>
 
@@ -281,6 +332,32 @@ export default function AssetDetailPage() {
           </div>
         </div>
       </main>
+      {showReport && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 480, width: '90%' }}>
+            <h3 style={{ marginBottom: 12 }}>Report Asset</h3>
+            <textarea className="upload-textarea" value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Why are you reporting this asset? (min 10 characters)" rows={4} style={{ marginBottom: 12 }} />
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button className="hero-cta-secondary" onClick={() => { setShowReport(false); setReportReason(''); }} style={{ flex: 1 }}>Cancel</button>
+              <button className="hero-cta-primary" onClick={handleReport} style={{ flex: 1 }}>Submit Report</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 400, width: '90%' }}>
+            <h3 style={{ marginBottom: 8 }}>Delete Asset?</h3>
+            <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 16 }}>This action cannot be undone.</p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button className="hero-cta-secondary" onClick={() => setDeleteConfirm(false)} style={{ flex: 1 }}>Cancel</button>
+              <button className="hero-cta-primary" onClick={handleDelete} style={{ flex: 1, background: '#ef4444', borderColor: '#ef4444' }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer onScrollTo={() => {}} lang="en" />
       <div className="toast-wrap">
         {toasts.map(t => <Toast key={t.id} id={t.id} icon={t.icon} message={t.message} onRemove={removeToast} />)}

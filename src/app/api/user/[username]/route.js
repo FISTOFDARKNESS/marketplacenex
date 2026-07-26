@@ -1,33 +1,29 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { sql } from '@/lib/db';
 
 export async function GET(req, { params }) {
-  const { username } = params;
+  try {
+    const { username } = params;
 
-  const user = await prisma.user.findUnique({
-    where: { username },
-    select: {
-      id: true,
-      username: true,
-      avatarUrl: true,
-      aboutMe: true,
-      verified: true,
-      createdAt: true,
-      _count: { select: { followers: true, following: true, assets: true } },
-    },
-  });
+    const users = await sql('SELECT "id", "username", "avatarUrl", "aboutMe", "verified", "createdAt" FROM "User" WHERE "username" = $1 LIMIT 1', [username]);
+    if (users.length === 0) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    const user = users[0];
 
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    const [assets, assetsCount, followersCount, followingCount] = await Promise.all([
+      sql('SELECT * FROM "Asset" WHERE "ownerId" = $1 AND "status" = $2 ORDER BY "createdAt" DESC LIMIT 50', [user.id, 'APPROVED']),
+      sql('SELECT COUNT(*)::int AS count FROM "Asset" WHERE "ownerId" = $1 AND "status" = $2', [user.id, 'APPROVED']).then(r => r[0]?.count || 0),
+      sql('SELECT COUNT(*)::int AS count FROM "Follow" WHERE "followingId" = $1', [user.id]).then(r => r[0]?.count || 0),
+      sql('SELECT COUNT(*)::int AS count FROM "Follow" WHERE "followerId" = $1', [user.id]).then(r => r[0]?.count || 0),
+    ]);
+
+    user._count = { assets: assetsCount, followers: followersCount, following: followingCount };
+
+    return NextResponse.json({ success: true, user, assets });
+  } catch (err) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
-
-  const assets = await prisma.asset.findMany({
-    where: { ownerId: user.id, status: 'APPROVED' },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-  });
-
-  return NextResponse.json({ success: true, user, assets });
 }
 
 export async function PATCH(req, { params }) {

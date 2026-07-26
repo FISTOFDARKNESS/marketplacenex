@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Crown, Upload, Bell, User, Users, LogOut, Menu, Shield, CheckCircle, Download, Heart } from 'lucide-react';
+import { Crown, Search, Upload, Bell, User, Users, LogOut, Menu, Shield, CheckCircle, Download, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -59,6 +59,15 @@ export default function Navbar({ user, onOpenAuth, onLogout, onScrollTo }) {
           <Link href="/queue" className={isActive('/queue')}>Queue</Link>
         </div>
       </div>
+      <div className="search-box" style={{ position: 'relative', maxWidth: 240, margin: '0 12px' }}>
+        <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', opacity: 0.5, pointerEvents: 'none' }} />
+        <input
+          type="text"
+          placeholder="Search assets..."
+          onKeyDown={e => { if (e.key === 'Enter' && e.target.value.trim()) { window.location.href = `/marketplace?search=${encodeURIComponent(e.target.value.trim())}`; } }}
+          style={{ width: '100%', padding: '8px 12px 8px 32px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--bg-2)', color: 'var(--text)', fontSize: 12, outline: 'none' }}
+        />
+      </div>
       <div className="auth-buttons">
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} ref={menuRef}>
@@ -105,6 +114,9 @@ export default function Navbar({ user, onOpenAuth, onLogout, onScrollTo }) {
               </Link>
             )}
 
+            <Link href="/submissions" className="icon-btn" title="My Submissions" style={{ color: '#8b5cf6' }}>
+              <Upload size={16} />
+            </Link>
             <Link href="/likes" className="icon-btn" title="Liked Assets">
               <Heart size={16} />
             </Link>

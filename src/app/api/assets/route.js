@@ -12,8 +12,15 @@ export async function GET(req) {
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
   const userId = searchParams.get('userId') || '';
+  const ownerId = searchParams.get('ownerId') || '';
 
-  const where = { status: 'APPROVED' };
+  const where = {};
+
+  if (ownerId) {
+    where.ownerId = ownerId;
+  } else {
+    where.status = 'APPROVED';
+  }
 
   if (search) {
     where.OR = [
@@ -52,6 +59,7 @@ export async function GET(req) {
       take: limit,
       include: {
         owner: { select: { id: true, username: true, avatarUrl: true } },
+        _count: { select: { downloadsRel: true, likes: true, reviews: true } },
       },
     }),
     prisma.asset.count({ where }),

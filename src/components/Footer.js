@@ -22,6 +22,11 @@ export default function Footer({ onScrollTo, lang = 'en' }) {
               <a href="/queue">Queue</a>
             </div>
             <div className="footer-col">
+              <h4>Legal</h4>
+              <a href="/terms">Terms of Service</a>
+              <a href="/privacy">Privacy Policy</a>
+            </div>
+            <div className="footer-col">
               <h4>Support</h4>
               <a href="/help">Help</a>
               <a href="/contact">Contact</a>
