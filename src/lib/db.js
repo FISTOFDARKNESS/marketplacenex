@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { randomUUID } from 'crypto';
 
 const sql = neon(process.env.DATABASE_URL);
 
@@ -289,6 +290,7 @@ const OPERATIONS = {
 
   create(table, args) {
     const data = args?.data || {};
+    if (!data.id) data.id = randomUUID();
     const keys = Object.keys(data);
     const vals = keys.map(k => data[k]);
     return wrapResult(
