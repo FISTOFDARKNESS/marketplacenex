@@ -1,1 +1,1 @@
-Add Supabase env var validation in getSupabase with clear error message
+Fix Supabase storage bucket name from assets to marketplace

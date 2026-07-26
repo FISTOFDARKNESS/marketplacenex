@@ -40,7 +40,7 @@ export async function saveFile(file, type) {
 
   const supabase = getSupabase();
   const { data, error } = await supabase.storage
-    .from('assets')
+    .from('marketplace')
     .upload(filePath, buffer, {
       contentType: file.type,
       upsert: false,
@@ -51,7 +51,7 @@ export async function saveFile(file, type) {
   }
 
   const { data: urlData } = supabase.storage
-    .from('assets')
+    .from('marketplace')
     .getPublicUrl(filePath);
 
   return urlData.publicUrl;
