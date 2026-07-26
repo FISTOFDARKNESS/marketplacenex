@@ -1,1 +1,1 @@
-Fix upload.js syntax error (missing throw in else branch)
+Fix Supabase lazy client to avoid build errors when env vars missing
