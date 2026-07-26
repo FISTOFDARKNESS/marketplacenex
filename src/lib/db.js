@@ -8,8 +8,9 @@ function getPool() {
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       max: 1,
-      connectionTimeoutMillis: 10000,
+      connectionTimeoutMillis: 15000,
       ssl: { rejectUnauthorized: false },
+      statement_timeout: 10000,
     });
   }
   return pool;
