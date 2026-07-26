@@ -1,1 +1,1 @@
-Add Supabase URL and publishable key to .env
+Add Supabase env var validation in getSupabase with clear error message
