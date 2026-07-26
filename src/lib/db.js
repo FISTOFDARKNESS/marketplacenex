@@ -1,7 +1,28 @@
-import { neon } from '@neondatabase/serverless';
+import { Pool } from 'pg';
 import { randomUUID } from 'crypto';
 
-const sql = neon(process.env.DATABASE_URL);
+let pool;
+
+function getPool() {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      max: 1,
+      connectionTimeoutMillis: 5000,
+    });
+  }
+  return pool;
+}
+
+async function sql(sqlStr, params = []) {
+  const client = await getPool().connect();
+  try {
+    const result = await client.query(sqlStr, params);
+    return result.rows;
+  } finally {
+    client.release();
+  }
+}
 
 const TABLE = {
   user: 'User', session: 'Session', otpChallenge: 'OtpChallenge',
