@@ -292,7 +292,6 @@ const OPERATIONS = {
     const data = args?.data || {};
     if (!data.id) data.id = randomUUID();
     if (!data.createdAt) data.createdAt = new Date().toISOString();
-    if (!data.updatedAt) data.updatedAt = new Date().toISOString();
     const keys = Object.keys(data);
     const vals = keys.map(k => data[k]);
     return wrapResult(

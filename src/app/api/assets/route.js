@@ -97,6 +97,7 @@ export async function POST(req) {
         assetType: assetType || 'rbxm',
         fileSize: fileSize || 0,
         status: 'QUEUE',
+        updatedAt: new Date().toISOString(),
       },
     });
 
