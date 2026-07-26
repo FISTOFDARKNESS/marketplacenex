@@ -1,4 +1,4 @@
-import { put } from '@vercel/blob';
+import { supabase } from './supabase';
 import { randomUUID } from 'crypto';
 
 const MAX_SIZE = 25 * 1024 * 1024;
@@ -36,11 +36,22 @@ export async function saveFile(file, type) {
   }
 
   const filename = `${randomUUID()}.${ext}`;
+  const filePath = `assets/${filename}`;
 
-  const blob = await put(filename, buffer, {
-    access: 'public',
-    contentType: file.type,
-  });
+  const { data, error } = await supabase.storage
+    .from('assets')
+    .upload(filePath, buffer, {
+      contentType: file.type,
+      upsert: false,
+    });
 
-  return blob.url;
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const { data: urlData } = supabase.storage
+    .from('assets')
+    .getPublicUrl(filePath);
+
+  return urlData.publicUrl;
 }
