@@ -6,7 +6,7 @@ import { Upload, Image, Video, File, Tag, DollarSign, X, Loader, AlertTriangle }
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
-import { proxyUrl } from '@/lib/storage-url';
+import { getSupabase } from '@/lib/supabase';
 import { useLang } from '@/lib/LanguageProvider';
 
 const MAX_IMAGE = 5 * 1024 * 1024;
@@ -45,19 +45,17 @@ export default function UploadPage() {
   const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
   const uploadFile = async (file, type, folder) => {
-    const presignedRes = await fetch(`/api/upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}&folderId=${encodeURIComponent(folder)}`);
-    const presignedData = await presignedRes.json();
-    if (!presignedData.success) throw new Error(presignedData.error);
-
-    const putRes = await fetch(proxyUrl(presignedData.signedUrl), {
-      method: 'PUT',
-      body: file,
-      headers: { 'Content-Type': file.type },
-    });
-
-    if (!putRes.ok) throw new Error('Upload failed: ' + putRes.status);
-
-    return presignedData.publicUrl;
+    const supabase = getSupabase();
+    const ext = file.name.split('.').pop() || 'png';
+    const prefix = type === 'image' ? 'thumbnail' : type === 'video' ? 'video' : 'asset';
+    const timestamp = Date.now();
+    const randomId = crypto.randomUUID().slice(0, 8);
+    const filename = `${prefix}_${timestamp}_${randomId}.${ext}`;
+    const filePath = `${folder}/${filename}`;
+    const { error } = await supabase.storage.from('marketplace').upload(filePath, file, { contentType: file.type, upsert: false });
+    if (error) throw new Error(error.message);
+    const { data: urlData } = supabase.storage.from('marketplace').getPublicUrl(filePath);
+    return urlData.publicUrl;
   };
 
   const handleSubmit = async () => {
