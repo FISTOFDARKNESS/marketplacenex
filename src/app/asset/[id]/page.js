@@ -84,7 +84,7 @@ export default function AssetDetailPage() {
               <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={460} height={460} style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} unoptimized />
             )}
             {asset.videoUrl && (
-              <video src={proxyUrl(asset.videoUrl)} controls loop muted crossOrigin="anonymous" style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
+              <video src={proxyUrl(asset.videoUrl)} loop muted autoPlay playsInline crossOrigin="anonymous" style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
             )}
           </div>
           <div>
