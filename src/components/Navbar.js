@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Crown, Upload, Bell, User, Users, LogOut, Menu, Shield, CheckCircle } from 'lucide-react';
+import { Crown, Upload, Bell, User, Users, LogOut, Menu, Shield, CheckCircle, Download, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -104,6 +104,13 @@ export default function Navbar({ user, onOpenAuth, onLogout, onScrollTo }) {
                 <Shield className="icon" />
               </Link>
             )}
+
+            <Link href="/likes" className="icon-btn" title="Liked Assets">
+              <Heart size={16} />
+            </Link>
+            <Link href="/downloads" className="icon-btn" title="Download History">
+              <Download className="icon" />
+            </Link>
 
             <Link href={`/profile/${user.username}`} className="nav-link-btn" style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
               {user.username}
