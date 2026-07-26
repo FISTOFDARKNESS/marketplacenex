@@ -98,6 +98,6 @@ export async function POST(req) {
     return response;
   } catch (error) {
     console.error('Google Auth error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: error.message, db_url_set: !!process.env.DATABASE_URL }, { status: 500 });
   }
 }

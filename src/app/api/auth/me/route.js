@@ -50,7 +50,7 @@ export async function GET(req) {
       error: error.message,
       db_url_set: !!process.env.DATABASE_URL,
       db_ok,
-      db_test,
+      db_test: Array.isArray(db_test) ? db_test : db_test?.toString(),
       stack: error.stack?.split('\n').slice(0, 5).join(' | '),
     }, { status: 500 });
   }
