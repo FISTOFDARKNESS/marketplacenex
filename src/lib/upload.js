@@ -41,7 +41,7 @@ function getRandomId() {
   return randomUUID().slice(0, 8);
 }
 
-export async function saveFile(file, type) {
+export async function saveFile(file, type, customPath) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
   const cfg = TYPE_CONFIG[type];
@@ -73,7 +73,7 @@ export async function saveFile(file, type) {
     throw new Error('Unknown file type');
   }
 
-  const folderId = `${randomUUID()}_uploads`;
+  const folderId = customPath || `${randomUUID()}_uploads`;
   const timestamp = getTimestamp();
   const randomId = getRandomId();
   const ext = file.name.split('.').pop() || getFileExtension(type, file.name);

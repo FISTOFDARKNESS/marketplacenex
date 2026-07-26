@@ -42,7 +42,8 @@ export default function UploadPage() {
   };
   const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
-  const uploadFile = async (file, type) => {
+  const uploadFile = async (file, type, assetId) => {
+    const folder = `user_${user.id}/asset_${assetId}`;
     const CHUNK_SIZE = 3 * 1024 * 1024;
     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
@@ -50,13 +51,18 @@ export default function UploadPage() {
       const form = new FormData();
       form.append('file', file);
       form.append('type', type);
+      form.append('folder', folder);
       const res = await fetch('/api/upload', { method: 'POST', body: form });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
       return data.url;
     }
 
-    const initRes = await fetch('/api/upload/init', { method: 'POST' });
+    const initRes = await fetch('/api/upload/init', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assetId }),
+    });
     const initData = await initRes.json();
     if (!initData.success) throw new Error(initData.error);
     const { uploadId } = initData;
@@ -77,7 +83,7 @@ export default function UploadPage() {
     const completeRes = await fetch('/api/upload/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uploadId, type, fileName: file.name, fileType: file.type, totalChunks }),
+      body: JSON.stringify({ uploadId, type, fileName: file.name, fileType: file.type, totalChunks, assetId }),
     });
     const completeData = await completeRes.json();
     if (!completeData.success) throw new Error(completeData.error);
@@ -115,15 +121,17 @@ export default function UploadPage() {
 
 setUploading(true);
       try {
-        const thumbUrl = await uploadFile(thumbnail, 'image');
+        const assetId = crypto.randomUUID();
+        const thumbUrl = await uploadFile(thumbnail, 'image', assetId);
         let videoUrl = null;
-        if (video) videoUrl = await uploadFile(video, 'video');
-        const assetUrl = await uploadFile(assetFile, 'asset');
+        if (video) videoUrl = await uploadFile(video, 'video', assetId);
+        const assetUrl = await uploadFile(assetFile, 'asset', assetId);
 
         const res = await fetch('/api/assets', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            id: assetId,
             name,
             description,
             tags: tags.split(',').map(t => t.trim()).filter(Boolean),

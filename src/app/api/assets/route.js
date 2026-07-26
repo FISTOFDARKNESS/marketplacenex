@@ -68,7 +68,7 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { name, description, tags, price, priceRobux, thumbnailUrl, videoUrl, assetFileUrl, assetType, fileSize } = body;
+    const { id, name, description, tags, price, priceRobux, thumbnailUrl, videoUrl, assetFileUrl, assetType, fileSize } = body;
 
     if (!name || !thumbnailUrl || !assetFileUrl) {
       return NextResponse.json({ error: 'Name, thumbnail, and asset file are required' }, { status: 400 });
@@ -84,6 +84,7 @@ export async function POST(req) {
 
     const asset = await prisma.asset.create({
       data: {
+        id: id || undefined,
         ownerId: user.id,
         name,
         description: description || '',

@@ -12,12 +12,13 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get('file');
     const fileType = formData.get('type');
+    const folder = formData.get('folder');
 
     if (!file || !fileType) {
       return NextResponse.json({ error: 'Missing file or type' }, { status: 400 });
     }
 
-    const url = await saveFile(file, fileType);
+    const url = await saveFile(file, fileType, folder);
     return NextResponse.json({ success: true, url });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 400 });

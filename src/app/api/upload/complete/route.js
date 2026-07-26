@@ -16,8 +16,8 @@ export async function POST(req) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { uploadId, type, fileName, fileType, totalChunks } = await req.json();
-    if (!uploadId || !type || !fileName || totalChunks === undefined) {
+    const { uploadId, type, fileName, fileType, totalChunks, assetId } = await req.json();
+    if (!uploadId || !type || !fileName || totalChunks === undefined || !assetId) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
@@ -40,11 +40,11 @@ export async function POST(req) {
     }
 
     const ext = fileName.split('.').pop() || 'png';
-    const folderId = `${crypto.randomUUID()}_uploads`;
     const timestamp = Date.now();
     const randomId = crypto.randomUUID().slice(0, 8);
     const finalFilename = `${prefix}_${timestamp}_${randomId}.${ext}`;
-    const finalPath = `${folderId}/${finalFilename}`;
+    const folderPath = `user_${user.id}/asset_${assetId}`;
+    const finalPath = `${folderPath}/${finalFilename}`;
 
     const chunks = [];
     let totalSize = 0;
@@ -74,7 +74,7 @@ export async function POST(req) {
 
     const { data: urlData } = supabase.storage.from('marketplace').getPublicUrl(finalPath);
 
-    return NextResponse.json({ success: true, url: urlData.publicUrl, folderId });
+    return NextResponse.json({ success: true, url: urlData.publicUrl });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
