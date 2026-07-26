@@ -8,7 +8,8 @@ function getPool() {
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       max: 1,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 10000,
+      ssl: { rejectUnauthorized: false },
     });
   }
   return pool;
@@ -19,6 +20,9 @@ async function sql(sqlStr, params = []) {
   try {
     const result = await client.query(sqlStr, params);
     return result.rows;
+  } catch (err) {
+    console.error('db.sql error:', err.message, 'for:', sqlStr.slice(0, 100));
+    throw err;
   } finally {
     client.release();
   }
