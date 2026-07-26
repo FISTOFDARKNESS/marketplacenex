@@ -7,6 +7,13 @@ export function proxyUrl(url) {
   return `/supabase/${path}`;
 }
 
+export function getProxiedUploadUrl(signedUrl) {
+  if (!signedUrl || !signedUrl.includes(SUPABASE_BASE)) return signedUrl;
+  const path = signedUrl.split('/storage/v1/')[1];
+  if (!path) return signedUrl;
+  return `/supabase/${path}`;
+}
+
 export function proxyAsset(asset) {
   if (!asset) return asset;
   return {

@@ -1,10 +1,24 @@
 import { getSupabase } from './supabase';
 import { randomUUID } from 'crypto';
 
-const MAX_SIZE = 25 * 1024 * 1024;
+const MAX_SIZE_IMAGE = 6 * 1024 * 1024;
+const MAX_SIZE_VIDEO = 15 * 1024 * 1024;
+const MAX_SIZE_ASSET = 25 * 1024 * 1024;
 const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/jpg'];
 const ALLOWED_VIDEOS = ['video/mp4'];
 const ALLOWED_ASSETS = ['.rbxm', '.rbxl', '.rbxmx'];
+
+const SIZE_LIMITS = {
+  image: MAX_SIZE_IMAGE,
+  video: MAX_SIZE_VIDEO,
+  asset: MAX_SIZE_ASSET,
+};
+
+const TYPE_CONFIG = {
+  image: { prefix: 'thumbnail', maxSize: MAX_SIZE_IMAGE },
+  video: { prefix: 'video', maxSize: MAX_SIZE_VIDEO },
+  asset: { prefix: 'asset', maxSize: MAX_SIZE_ASSET },
+};
 
 export function getFileExtension(type, fileName) {
   if (type === 'image') {
@@ -30,9 +44,12 @@ function getRandomId() {
 export async function saveFile(file, type) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+  const cfg = TYPE_CONFIG[type];
+  if (!cfg) throw new Error('Unknown file type');
 
-  if (buffer.length > MAX_SIZE) {
-    throw new Error('File exceeds 25MB limit');
+  if (buffer.length > cfg.maxSize) {
+    const mb = cfg.maxSize / (1024 * 1024);
+    throw new Error(`File exceeds ${mb}MB limit`);
   }
 
   let prefix;

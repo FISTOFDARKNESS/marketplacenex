@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, Image, Video, File, Tag, DollarSign, X, Loader } from 'lucide-react';
+import { Upload, Image, Video, File, Tag, DollarSign, X, Loader, AlertTriangle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
+import { proxyUrl } from '@/lib/storage-url';
 import { useLang } from '@/lib/LanguageProvider';
+
+const MAX_IMAGE = 6 * 1024 * 1024;
+const MAX_VIDEO = 15 * 1024 * 1024;
+const MAX_ASSET = 25 * 1024 * 1024;
 
 export default function UploadPage() {
   const router = useRouter();
@@ -40,13 +45,19 @@ export default function UploadPage() {
   const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
   const uploadFile = async (file, type, folder) => {
-    const form = new FormData();
-    form.append('file', file);
-    form.append('type', type === 'image' ? 'image' : type === 'video' ? 'video' : 'asset');
-    const res = await fetch('/api/upload', { method: 'POST', body: form });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    return data.url;
+    const presignedRes = await fetch(`/api/upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}&folderId=${encodeURIComponent(folder)}`);
+    const presignedData = await presignedRes.json();
+    if (!presignedData.success) throw new Error(presignedData.error);
+
+    const putRes = await fetch(proxyUrl(presignedData.signedUrl), {
+      method: 'PUT',
+      body: file,
+      headers: { 'Content-Type': file.type },
+    });
+
+    if (!putRes.ok) throw new Error('Upload failed: ' + putRes.status);
+
+    return presignedData.publicUrl;
   };
 
   const handleSubmit = async () => {
@@ -62,6 +73,19 @@ export default function UploadPage() {
 
     if (price === 'Robux' && !user?.verified) {
       addToast('alert-triangle', 'You need a verified account to set Robux prices');
+      return;
+    }
+
+    if (thumbnail.size > MAX_IMAGE) {
+      addToast('alert-triangle', 'Thumbnail must be under 6MB');
+      return;
+    }
+    if (video && video.size > MAX_VIDEO) {
+      addToast('alert-triangle', 'Video must be under 15MB');
+      return;
+    }
+    if (assetFile.size > MAX_ASSET) {
+      addToast('alert-triangle', 'Asset file must be under 25MB');
       return;
     }
 
@@ -163,7 +187,7 @@ setUploading(true);
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <Image size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload thumbnail * (max 4MB)</div>
+                  <div>Click to upload thumbnail * (max 6MB)</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>PNG, JPEG</div>
                 </div>
               )}
@@ -183,7 +207,7 @@ setUploading(true);
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <Video size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload preview video (optional, max 4MB)</div>
+                  <div>Click to upload preview video (optional, max 15MB)</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>MP4 only</div>
                 </div>
               )}
@@ -205,7 +229,7 @@ setUploading(true);
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <File size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload asset file * (max 4MB)</div>
+                  <div>Click to upload asset file * (max 25MB)</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>.rbxm or .rbxl</div>
                 </div>
               )}
