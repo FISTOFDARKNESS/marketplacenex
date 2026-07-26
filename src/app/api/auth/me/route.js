@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { prisma, sql } from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
@@ -37,6 +37,21 @@ export async function GET(req) {
     return NextResponse.json({ authenticated: true, user });
   } catch (error) {
     console.error('Auth check error:', error);
-    return NextResponse.json({ error: 'Internal server error', db_url_set: !!process.env.DATABASE_URL }, { status: 500 });
+    let db_ok = false;
+    let db_test = null;
+    try {
+      const r = await sql('SELECT 1 AS ok');
+      db_ok = true;
+      db_test = r;
+    } catch (e2) {
+      db_test = e2.message;
+    }
+    return NextResponse.json({
+      error: error.message,
+      db_url_set: !!process.env.DATABASE_URL,
+      db_ok,
+      db_test,
+      stack: error.stack?.split('\n').slice(0, 5).join(' | '),
+    }, { status: 500 });
   }
 }
