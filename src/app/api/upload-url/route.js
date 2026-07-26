@@ -24,16 +24,20 @@ export async function GET(req) {
   const supabase = getSupabase();
   const { data, error } = await supabase.storage
     .from('marketplace')
-    .createSignedUrl(filePath, 60);
+    .createSignedUploadUrl(filePath);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
+  const { data: urlData } = supabase.storage
+    .from('marketplace')
+    .getPublicUrl(filePath);
+
   return NextResponse.json({
     success: true,
     signedUrl: data.signedUrl,
-    publicUrl: data.publicUrl,
+    publicUrl: urlData.publicUrl,
     folderId,
   });
 }

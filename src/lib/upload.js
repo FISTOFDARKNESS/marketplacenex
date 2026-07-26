@@ -94,11 +94,15 @@ export async function getPresignedUrl(fileName, fileType, folderId) {
   const supabase = getSupabase();
   const { data, error } = await supabase.storage
     .from('marketplace')
-    .createSignedUrl(filePath, 60);
+    .createSignedUploadUrl(filePath);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return { signedUrl: data.signedUrl, publicUrl: data.publicUrl };
+  const { data: urlData } = supabase.storage
+    .from('marketplace')
+    .getPublicUrl(filePath);
+
+  return { signedUrl: data.signedUrl, publicUrl: urlData.publicUrl };
 }
