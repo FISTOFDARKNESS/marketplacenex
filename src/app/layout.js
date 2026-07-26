@@ -22,6 +22,9 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self' blob:; media-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' blob:;" />
+      </head>
       <body>
         <LanguageProvider>{children}</LanguageProvider>
       </body>
