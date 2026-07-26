@@ -6,7 +6,6 @@ import { Upload, Image, Video, File, Tag, DollarSign, X, Loader, AlertTriangle }
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
-import { getSupabase } from '@/lib/supabase';
 import { useLang } from '@/lib/LanguageProvider';
 
 const MAX_IMAGE = 5 * 1024 * 1024;
@@ -29,7 +28,6 @@ export default function UploadPage() {
   const [assetFile, setAssetFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(1);
-  const [folderId, setFolderId] = useState(null);
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => {
@@ -44,18 +42,46 @@ export default function UploadPage() {
   };
   const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
-  const uploadFile = async (file, type, folder) => {
-    const supabase = getSupabase();
-    const ext = file.name.split('.').pop() || 'png';
-    const prefix = type === 'image' ? 'thumbnail' : type === 'video' ? 'video' : 'asset';
-    const timestamp = Date.now();
-    const randomId = crypto.randomUUID().slice(0, 8);
-    const filename = `${prefix}_${timestamp}_${randomId}.${ext}`;
-    const filePath = `${folder}/${filename}`;
-    const { error } = await supabase.storage.from('marketplace').upload(filePath, file, { contentType: file.type, upsert: false });
-    if (error) throw new Error(error.message);
-    const { data: urlData } = supabase.storage.from('marketplace').getPublicUrl(filePath);
-    return urlData.publicUrl;
+  const uploadFile = async (file, type) => {
+    const CHUNK_SIZE = 3 * 1024 * 1024;
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+    if (totalChunks <= 1 && file.size <= 3.5 * 1024 * 1024) {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('type', type);
+      const res = await fetch('/api/upload', { method: 'POST', body: form });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      return data.url;
+    }
+
+    const initRes = await fetch('/api/upload/init', { method: 'POST' });
+    const initData = await initRes.json();
+    if (!initData.success) throw new Error(initData.error);
+    const { uploadId } = initData;
+
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+      const form = new FormData();
+      form.append('uploadId', uploadId);
+      form.append('chunkIndex', String(i));
+      form.append('file', chunk, `chunk_${i}`);
+      const res = await fetch('/api/upload/chunk', { method: 'POST', body: form });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+    }
+
+    const completeRes = await fetch('/api/upload/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uploadId, type, fileName: file.name, fileType: file.type, totalChunks }),
+    });
+    const completeData = await completeRes.json();
+    if (!completeData.success) throw new Error(completeData.error);
+    return completeData.url;
   };
 
   const handleSubmit = async () => {
@@ -88,13 +114,11 @@ export default function UploadPage() {
     }
 
 setUploading(true);
-      const currentFolderId = folderId || `${crypto.randomUUID()}_uploads`;
-      if (!folderId) setFolderId(currentFolderId);
       try {
-        const thumbUrl = await uploadFile(thumbnail, 'image', currentFolderId);
+        const thumbUrl = await uploadFile(thumbnail, 'image');
         let videoUrl = null;
-        if (video) videoUrl = await uploadFile(video, 'video', currentFolderId);
-        const assetUrl = await uploadFile(assetFile, 'asset', currentFolderId);
+        if (video) videoUrl = await uploadFile(video, 'video');
+        const assetUrl = await uploadFile(assetFile, 'asset');
 
         const res = await fetch('/api/assets', {
           method: 'POST',
@@ -108,7 +132,6 @@ setUploading(true);
             thumbnailUrl: thumbUrl,
             videoUrl,
             assetFileUrl: assetUrl,
-            folderId: currentFolderId,
             assetType: assetFile.name.endsWith('.rbxl') ? 'rbxl' : 'rbxm',
             fileSize: Math.round(assetFile.size / 1024),
           }),
