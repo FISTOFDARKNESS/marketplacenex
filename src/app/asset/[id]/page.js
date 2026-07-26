@@ -83,7 +83,7 @@ export default function AssetDetailPage() {
               <Image src={asset.thumbnailUrl} alt={asset.name} width={460} height={460} style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} unoptimized />
             )}
             {asset.videoUrl && (
-              <video src={asset.videoUrl} controls style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
+              <video src={asset.videoUrl} controls crossOrigin="anonymous" style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
             )}
           </div>
           <div>
