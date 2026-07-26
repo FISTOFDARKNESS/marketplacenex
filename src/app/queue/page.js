@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
+import { proxyUrl } from '@/lib/storage-url';
 import { Clock, CheckCircle, XCircle, Shield, Eye, ExternalLink } from 'lucide-react';
 import { useLang } from '@/lib/LanguageProvider';
 
@@ -102,7 +103,7 @@ export default function QueuePage() {
                 {queue.map(asset => (
                   <div key={asset.id} style={{ display: 'flex', gap: 16, padding: 16, background: 'var(--bg-2)', borderRadius: 12, border: '1px solid var(--line)', alignItems: 'center' }}>
                     {asset.thumbnailUrl && (
-                      <img src={asset.thumbnailUrl} alt="" style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover' }} />
+                      <img src={proxyUrl(asset.thumbnailUrl)} alt="" style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover' }} />
                     )}
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600 }}>{asset.name}</div>
@@ -141,7 +142,7 @@ export default function QueuePage() {
                 {myAssets.map(asset => (
                   <div key={asset.id} className="item-card" style={{ cursor: 'pointer' }} onClick={() => router.push(`/asset/${asset.id}`)}>
                     <div className="item-card-img">
-                      {asset.thumbnailUrl ? <Image src={asset.thumbnailUrl} alt={asset.name} width={180} height={180} sizes="180px" unoptimized /> : <div style={{ width: 80, height: 80, background: 'var(--bg-3)', borderRadius: 8 }} />}
+                      {asset.thumbnailUrl ? <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={180} height={180} sizes="180px" unoptimized /> : <div style={{ width: 80, height: 80, background: 'var(--bg-3)', borderRadius: 8 }} />}
                     </div>
                     <div className="item-card-info">
                       <h3 className="item-card-name">{asset.name}</h3>

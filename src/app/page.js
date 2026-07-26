@@ -11,6 +11,7 @@ const AuthModal = dynamic(() => import('@/components/Modals').then(m => m.AuthMo
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { proxyUrl } from '@/lib/storage-url';
 import { Heart, Download, Star, Clock, Users, Upload, CheckCircle, ShoppingBag, TrendingUp } from 'lucide-react';
 
 export default function Home() {
@@ -137,7 +138,7 @@ export default function Home() {
             >
               <div className="item-card-img">
                 {asset.thumbnailUrl ? (
-                  <Image src={asset.thumbnailUrl} alt={asset.name} width={180} height={180} sizes="180px" unoptimized />
+                  <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={180} height={180} sizes="180px" unoptimized />
                 ) : (
                   <div style={{ width: 80, height: 80, background: 'var(--bg-3)', borderRadius: 8 }} />
                 )}

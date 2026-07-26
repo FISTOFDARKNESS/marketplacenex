@@ -23,7 +23,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self' blob: data:; media-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' blob: https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' blob: https://fonts.googleapis.com; img-src 'self' blob: data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://accounts.google.com https://www.google.com https://www.gstatic.com;" />
       </head>
       <body>
         <LanguageProvider>{children}</LanguageProvider>

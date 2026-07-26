@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
+import { proxyUrl } from '@/lib/storage-url';
 import { Heart, Download, Star, MessageCircle, User, Calendar, Tag, ExternalLink, ThumbsUp } from 'lucide-react';
 
 export default function AssetDetailPage() {
@@ -80,10 +81,10 @@ export default function AssetDetailPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 32 }}>
           <div>
             {asset.thumbnailUrl && (
-              <Image src={asset.thumbnailUrl} alt={asset.name} width={460} height={460} style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} unoptimized />
+              <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={460} height={460} style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} unoptimized />
             )}
             {asset.videoUrl && (
-              <video src={asset.videoUrl} controls crossOrigin="anonymous" style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
+              <video src={proxyUrl(asset.videoUrl)} controls crossOrigin="anonymous" style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
             )}
           </div>
           <div>

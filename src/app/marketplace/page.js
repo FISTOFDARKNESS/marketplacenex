@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { proxyUrl } from '@/lib/storage-url';
 import { Heart, Download, Search, LayoutGrid, ArrowUpDown } from 'lucide-react';
 import { useLang } from '@/lib/LanguageProvider';
 
@@ -72,7 +73,7 @@ export default function MarketplacePage() {
           ) : assets.map((asset, idx) => (
             <div key={asset.id} className="item-card" style={{ animationDelay: `${idx * 0.03}s` }} onClick={() => router.push(`/asset/${asset.id}`)}>
               <div className="item-card-img">
-                {asset.thumbnailUrl ? <Image src={asset.thumbnailUrl} alt={asset.name} width={180} height={180} sizes="180px" unoptimized /> : <div style={{ width: 80, height: 80, background: 'var(--bg-3)', borderRadius: 8 }} />}
+                {asset.thumbnailUrl ? <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={180} height={180} sizes="180px" unoptimized /> : <div style={{ width: 80, height: 80, background: 'var(--bg-3)', borderRadius: 8 }} />}
               </div>
               <div className="item-card-info">
                 <h3 className="item-card-name">{asset.name}</h3>

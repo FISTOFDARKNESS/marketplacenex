@@ -10,15 +10,19 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/supabase/:path*',
+        destination: 'https://yezbggqtthgrpjjvnlgd.supabase.co/storage/v1/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self' blob: data:; media-src 'self' blob: data:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' blob: https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' blob: https://fonts.googleapis.com; img-src 'self' blob: data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://accounts.google.com https://www.google.com https://www.gstatic.com;",
-          },
           {
             key: 'X-Frame-Options',
             value: 'DENY',

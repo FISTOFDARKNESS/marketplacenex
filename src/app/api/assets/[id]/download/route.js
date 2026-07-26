@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getAuthUser } from '@/lib/auth';
+import { proxyUrl } from '@/lib/storage-url';
 
 export async function POST(req, { params }) {
   const user = await getAuthUser(req);
@@ -28,5 +29,5 @@ export async function POST(req, { params }) {
     },
   });
 
-  return NextResponse.json({ success: true, downloadUrl: asset.assetFileUrl });
+  return NextResponse.json({ success: true, downloadUrl: proxyUrl(asset.assetFileUrl) });
 }

@@ -40,20 +40,14 @@ export default function UploadPage() {
   const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
   const uploadFile = async (file, type, folder) => {
-  const presignedRes = await fetch(`/api/upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}&folderId=${encodeURIComponent(folder)}`);
-  const presignedData = await presignedRes.json();
-  if (!presignedData.success) throw new Error(presignedData.error);
-
-  const putRes = await fetch(presignedData.signedUrl, {
-    method: 'PUT',
-    body: file,
-    headers: { 'Content-Type': file.type },
-  });
-
-  if (!putRes.ok) throw new Error('Upload failed: ' + putRes.status);
-
-  return presignedData.publicUrl;
-};
+    const form = new FormData();
+    form.append('file', file);
+    form.append('type', type === 'image' ? 'image' : type === 'video' ? 'video' : 'asset');
+    const res = await fetch('/api/upload', { method: 'POST', body: form });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    return data.url;
+  };
 
   const handleSubmit = async () => {
     if (!name || !thumbnail || !assetFile) {
@@ -158,15 +152,19 @@ setUploading(true);
           <div className="upload-form">
             <div className="upload-dropzone" onClick={() => document.getElementById('thumbInput').click()}>
               {thumbnail ? (
-                <div style={{ position: 'relative' }}>
-                  <img src={URL.createObjectURL(thumbnail)} alt="" style={{ maxHeight: 200, borderRadius: 8 }} />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Image size={24} />
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{thumbnail.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>{Math.round(thumbnail.size / 1024)} KB</div>
+                  </div>
                   <button className="upload-remove" onClick={(e) => { e.stopPropagation(); setThumbnail(null); }}><X size={14} /></button>
                 </div>
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <Image size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload thumbnail * (max 25MB)</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>PNG, JPEG, WebP</div>
+                  <div>Click to upload thumbnail * (max 4MB)</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>PNG, JPEG</div>
                 </div>
               )}
               <input id="thumbInput" type="file" accept="image/png,image/jpeg,image/jpg" style={{ display: 'none' }} onChange={e => setThumbnail(e.target.files[0])} />
@@ -174,14 +172,18 @@ setUploading(true);
 
             <div className="upload-dropzone" onClick={() => document.getElementById('videoInput').click()}>
               {video ? (
-                <div style={{ position: 'relative' }}>
-                  <video src={URL.createObjectURL(video)} style={{ maxHeight: 150, borderRadius: 8 }} controls />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Video size={24} />
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{video.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>{Math.round(video.size / 1024)} KB</div>
+                  </div>
                   <button className="upload-remove" onClick={(e) => { e.stopPropagation(); setVideo(null); }}><X size={14} /></button>
                 </div>
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <Video size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload preview video (optional, max 25MB)</div>
+                  <div>Click to upload preview video (optional, max 4MB)</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>MP4 only</div>
                 </div>
               )}
@@ -203,7 +205,7 @@ setUploading(true);
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <File size={32} style={{ opacity: 0.4, marginBottom: 8 }} />
-                  <div>Click to upload asset file * (max 25MB)</div>
+                  <div>Click to upload asset file * (max 4MB)</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>.rbxm or .rbxl</div>
                 </div>
               )}
