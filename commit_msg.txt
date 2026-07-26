@@ -1,1 +1,1 @@
-Restore asset uploads (.rbxm/.rbxl) in upload.js
+Update upload allowed types to match Supabase policies

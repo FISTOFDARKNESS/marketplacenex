@@ -2,9 +2,9 @@ import { supabase } from './supabase';
 import { randomUUID } from 'crypto';
 
 const MAX_SIZE = 25 * 1024 * 1024;
-const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/jpg'];
 const ALLOWED_VIDEOS = ['video/mp4'];
-const ALLOWED_ASSETS = ['.rbxm', '.rbxl'];
+const ALLOWED_ASSETS = ['.rbxm', '.rbxl', '.rbxmx'];
 
 export async function saveFile(file, type) {
   const bytes = await file.arrayBuffer();
@@ -17,7 +17,7 @@ export async function saveFile(file, type) {
   let ext;
   if (type === 'image') {
     if (!ALLOWED_IMAGES.includes(file.type)) {
-      throw new Error('Invalid image format. Use PNG, JPEG, JPG, WebP, or GIF.');
+      throw new Error('Invalid image format. Use PNG, JPEG, or JPG.');
     }
     ext = file.name.split('.').pop() || 'png';
   } else if (type === 'video') {
