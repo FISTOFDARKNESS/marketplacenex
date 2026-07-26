@@ -87,11 +87,15 @@ function convertRow(row) {
   return out;
 }
 
-function wrapResult(promise, withInclude) {
+function wrapResult(promise) {
   return promise.then(r => {
     if (r === null || r === undefined) return r;
     return Array.isArray(r) ? r.map(convertRow) : convertRow(r);
   });
+}
+
+function exec(sqlStr, params = []) {
+  return params.length > 0 ? sql(sqlStr, params) : sql(sqlStr);
 }
 
 function buildWhereConds(where) {
@@ -189,7 +193,7 @@ async function attachIncludes(rows, include, model, isMany) {
       const order = buildOrderBy(relOrderBy);
       const fields = buildSelect(relSelect);
       const qStr = `SELECT ${fields} FROM ${q(relDef.target)} ${clause} ${order}`;
-      const related = await sql(qStr, ...params);
+      const related = await exec(qStr, params);
       const relatedMap = {};
       for (const r of related) { relatedMap[r.id] = r; }
       for (const item of items) {
@@ -209,7 +213,7 @@ async function attachIncludes(rows, include, model, isMany) {
       const order = buildOrderBy(relOrderBy);
       const fields = buildSelect(relSelect);
       const qStr = `SELECT ${fields} FROM ${q(relDef.target)} ${wClause} ${order}`;
-      const related = await sql(qStr, ...wParams);
+      const related = await exec(qStr, wParams);
 
       if (relInclude) {
         await attachIncludes(related, relInclude, relDef.target, true);
@@ -238,7 +242,7 @@ const OPERATIONS = {
     const { clause, params } = buildWhereConds(where);
     const fields = buildSelect(select);
     return wrapResult(
-      sql(`SELECT ${fields} FROM ${q(table)} ${clause} LIMIT 1`, ...params)
+      exec(`SELECT ${fields} FROM ${q(table)} ${clause} LIMIT 1`, params)
         .then(r => r[0] || null)
         .then(r => r && include ? attachIncludes(r, include, table, false) : r)
     );
@@ -253,7 +257,7 @@ const OPERATIONS = {
     const order = buildOrderBy(orderBy);
     const fields = buildSelect(select);
     return wrapResult(
-      sql(`SELECT ${fields} FROM ${q(table)} ${clause} ${order} LIMIT 1`, ...params)
+      exec(`SELECT ${fields} FROM ${q(table)} ${clause} ${order} LIMIT 1`, params)
         .then(r => r[0] || null)
         .then(r => r && include ? attachIncludes(r, include, table, false) : r)
     );
@@ -273,14 +277,14 @@ const OPERATIONS = {
     if (take !== undefined) qStr += ` LIMIT ${take}`;
     if (skip !== undefined) qStr += ` OFFSET ${skip}`;
     return wrapResult(
-      sql(qStr, ...params).then(r => include ? attachIncludes(r, include, table, true) : r)
+      exec(qStr, params).then(r => include ? attachIncludes(r, include, table, true) : r)
     );
   },
 
   count(table, args) {
     const where = args?.where || {};
     const { clause, params } = buildWhereConds(where);
-    return sql(`SELECT COUNT(*)::int AS count FROM ${q(table)} ${clause}`, ...params).then(r => r[0]?.count || 0);
+    return exec(`SELECT COUNT(*)::int AS count FROM ${q(table)} ${clause}`, params).then(r => r[0]?.count || 0);
   },
 
   create(table, args) {
@@ -288,9 +292,9 @@ const OPERATIONS = {
     const keys = Object.keys(data);
     const vals = keys.map(k => data[k]);
     return wrapResult(
-      sql(
+      exec(
         `INSERT INTO ${q(table)} (${keys.map(k => q(k)).join(', ')}) VALUES (${keys.map((_, i) => `$${i + 1}`).join(', ')}) RETURNING *`,
-        ...vals
+        vals
       ).then(r => r[0])
     );
   },
@@ -300,10 +304,10 @@ const OPERATIONS = {
     const data = args?.data || {};
     const { clause: wClause, params: wParams } = buildWhereConds(where);
     const { clause: sClause, params: sParams } = buildSet(data);
-    if (!sClause) return sql(`SELECT * FROM ${q(table)} ${wClause} LIMIT 1`, ...wParams).then(r => r[0] || null);
+    if (!sClause) return exec(`SELECT * FROM ${q(table)} ${wClause} LIMIT 1`, wParams).then(r => r[0] || null);
     const allP = [...sParams, ...wParams];
     const adjusted = adjustParams(wClause, wParams, sParams.length);
-    return wrapResult(sql(`UPDATE ${q(table)} SET ${sClause} ${adjusted} RETURNING *`, ...allP).then(r => r[0] || null));
+    return wrapResult(exec(`UPDATE ${q(table)} SET ${sClause} ${adjusted} RETURNING *`, allP).then(r => r[0] || null));
   },
 
   updateMany(table, args) {
@@ -314,19 +318,19 @@ const OPERATIONS = {
     if (!sClause) return Promise.resolve([]);
     const allP = [...sParams, ...wParams];
     const adjusted = adjustParams(wClause, wParams, sParams.length);
-    return sql(`UPDATE ${q(table)} SET ${sClause} ${adjusted}`, ...allP);
+    return exec(`UPDATE ${q(table)} SET ${sClause} ${adjusted}`, allP);
   },
 
   delete(table, args) {
     const where = args?.where || {};
     const { clause, params } = buildWhereConds(where);
-    return wrapResult(sql(`DELETE FROM ${q(table)} ${clause}`, ...params).then(r => r[0] || null));
+    return wrapResult(exec(`DELETE FROM ${q(table)} ${clause}`, params).then(r => r[0] || null));
   },
 
   deleteMany(table, args) {
     const where = args?.where || {};
     const { clause, params } = buildWhereConds(where);
-    return sql(`DELETE FROM ${q(table)} ${clause}`, ...params);
+    return exec(`DELETE FROM ${q(table)} ${clause}`, params);
   },
 
   upsert(table, args) {
@@ -346,9 +350,9 @@ const OPERATIONS = {
     const cVals = cKeys.map(k => createData[k]);
     const { clause: sClause } = buildSet(updateData);
 
-    return wrapResult(sql(
+    return wrapResult(exec(
       `INSERT INTO ${q(table)} (${cKeys.map(k => q(k)).join(', ')}) VALUES (${cKeys.map((_, i) => `$${i + 1}`).join(', ')}) ON CONFLICT (${conflictCols}) DO UPDATE SET ${sClause} RETURNING *`,
-      ...cVals
+      cVals
     ).then(r => r[0]));
   },
 
@@ -358,9 +362,9 @@ const OPERATIONS = {
     const sum = args?._sum;
     if (sum) {
       const field = Object.keys(sum)[0];
-      return wrapResult(sql(`SELECT COALESCE(SUM(${q(field)}), 0)::int AS sum FROM ${q(table)} ${clause}`, ...params).then(r => r[0]));
+      return wrapResult(exec(`SELECT COALESCE(SUM(${q(field)}), 0)::int AS sum FROM ${q(table)} ${clause}`, params).then(r => r[0]));
     }
-    return wrapResult(sql(`SELECT * FROM ${q(table)} ${clause}`, ...params));
+    return wrapResult(exec(`SELECT * FROM ${q(table)} ${clause}`, params));
   },
 };
 
