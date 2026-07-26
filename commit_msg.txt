@@ -1,1 +1,1 @@
-Fix Supabase lazy client to avoid build errors when env vars missing
+Add CSP media-src headers to vercel.json for video/blob preview support
