@@ -1,1 +1,1 @@
-Update upload allowed types to match Supabase policies
+Update upload page accept attributes to match allowed types

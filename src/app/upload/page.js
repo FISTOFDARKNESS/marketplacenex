@@ -159,7 +159,7 @@ export default function UploadPage() {
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>PNG, JPEG, WebP</div>
                 </div>
               )}
-              <input id="thumbInput" type="file" accept="image/*" style={{ display: 'none' }} onChange={e => setThumbnail(e.target.files[0])} />
+              <input id="thumbInput" type="file" accept="image/png,image/jpeg,image/jpg" style={{ display: 'none' }} onChange={e => setThumbnail(e.target.files[0])} />
             </div>
 
             <div className="upload-dropzone" onClick={() => document.getElementById('videoInput').click()}>
@@ -197,7 +197,7 @@ export default function UploadPage() {
                   <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>.rbxm or .rbxl</div>
                 </div>
               )}
-              <input id="assetInput" type="file" accept=".rbxm,.rbxl" style={{ display: 'none' }} onChange={e => setAssetFile(e.target.files[0])} />
+              <input id="assetInput" type="file" accept=".rbxm,.rbxl,.rbxmx" style={{ display: 'none' }} onChange={e => setAssetFile(e.target.files[0])} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
