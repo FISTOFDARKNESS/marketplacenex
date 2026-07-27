@@ -5,10 +5,11 @@ export function proxyUrl(url) {
   const path = url.split('/storage/v1/')[1];
   if (!path) return url;
   const parts = path.split('/');
-  if (parts.length < 4) return url;
-  const userId = parts[2].replace('user_', '');
-  const assetId = parts[3].replace('asset_', '');
-  const filename = parts.slice(4).join('/');
+  if (parts.length < 6) return url;
+  const userId = parts[4].replace('user_', '');
+  const assetId = parts[5].replace('asset_', '');
+  const filename = parts.slice(6).join('/');
+  if (!userId || !assetId || !filename) return url;
   return `/api/storage/media/${userId}/${assetId}/${filename}`;
 }
 
