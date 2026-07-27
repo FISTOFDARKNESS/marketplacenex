@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
 import { proxyUrl } from '@/lib/storage-url';
+import { sanitizeHtml, sanitizeText } from '@/lib/sanitize';
 import { Heart, Download, Star, User, Calendar, Tag, UserPlus, UserCheck, MessageCircle, Star as StarIcon, Flag, Edit, Trash2 } from 'lucide-react';
 
 export default function AssetDetailPage() {
@@ -250,7 +251,7 @@ const handleDownload = async () => {
               )}
             </div>
 
-            <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.6 }}>{asset.description || 'No description provided.'}</p>
+            <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.6 }}>{asset.description ? sanitizeText(asset.description) : 'No description provided.'}</p>
           </div>
         </div>
 
@@ -288,7 +289,7 @@ const handleDownload = async () => {
                   </div>
                   <span style={{ color: 'var(--muted)' }}>{new Date(r.createdAt).toLocaleDateString()}</span>
                 </div>
-                {r.comment && <div style={{ fontSize: 13 }}>{r.comment}</div>}
+                {r.comment && <div style={{ fontSize: 13 }}>{sanitizeText(r.comment)}</div>}
               </div>
             ))}
             {(!asset.reviews || asset.reviews.length === 0) && (

@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { Pool } from 'pg';
+import { getAuthUser } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req) {
+  const user = await getAuthUser(req);
+  if (!user || user.role !== 'admin') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const url = process.env.DATABASE_URL;
   if (!url) {
     return NextResponse.json({ error: 'DATABASE_URL not set' }, { status: 500 });

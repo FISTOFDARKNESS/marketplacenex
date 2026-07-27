@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   const response = NextResponse.next();
 
+  // Security headers
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://unpkg.com https://www.google.com https://www.gstatic.com;
@@ -19,6 +20,9 @@ export function middleware(request) {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  
+  // HSTS - enforce HTTPS for 1 year (31536000 seconds)
+  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
 
   return response;
 }
