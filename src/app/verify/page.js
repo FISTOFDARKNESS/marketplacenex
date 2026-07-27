@@ -58,6 +58,12 @@ export default function VerifyPage() {
         setVerified(true);
         setVerifyInfo({ robloxUsername: d.robloxUsername, robloxUserId, universeId });
         addToast('check-circle', 'Account verified successfully!');
+        // Refresh user to update verified status globally
+        const userRes = await fetch('/api/auth/me');
+        const userData = await userRes.json();
+        if (userData.authenticated && userData.user) {
+          window.dispatchEvent(new CustomEvent('auth-user-updated', { detail: userData.user }));
+        }
       } else {
         addToast('alert-triangle', d.error || 'Verification failed');
       }

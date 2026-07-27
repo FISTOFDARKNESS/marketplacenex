@@ -36,6 +36,12 @@ export default function UploadPage() {
     }).catch(() => router.push('/'));
   }, []);
 
+  useEffect(() => {
+    const handler = (e) => setUser(e.detail);
+    window.addEventListener('auth-user-updated', handler);
+    return () => window.removeEventListener('auth-user-updated', handler);
+  }, []);
+
   const addToast = (icon, message) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, icon, message }]);
