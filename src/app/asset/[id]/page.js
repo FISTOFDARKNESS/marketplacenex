@@ -62,13 +62,28 @@ export default function AssetDetailPage() {
     }
   };
 
-  const handleDownload = async () => {
+const handleDownload = async () => {
     if (!user) { addToast('info', 'Login to download assets'); return; }
-    const res = await fetch(`/api/assets/${id}/download`, { method: 'POST' });
-    const d = await res.json();
-    if (d.success) {
+    try {
+      const res = await fetch(`/api/storage/download/${id}`);
+      if (!res.ok) {
+        const d = await res.json();
+        addToast('alert-triangle', d.error || 'Download failed');
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const filename = `asset_${id}.rbxm`;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
       setAsset(prev => prev ? { ...prev, downloads: prev.downloads + 1 } : prev);
-      window.open(d.downloadUrl, '_blank');
+    } catch (err) {
+      addToast('alert-triangle', 'Download failed');
     }
   };
 

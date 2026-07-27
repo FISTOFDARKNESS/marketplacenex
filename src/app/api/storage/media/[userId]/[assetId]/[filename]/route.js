@@ -44,6 +44,8 @@ export async function GET(req, { params }) {
         'Cache-Control': `public, max-age=${CACHE_MAX_AGE}, immutable`,
         'Content-Length': fileBuffer.length.toString(),
         'Accept-Ranges': 'bytes',
+        'Access-Control-Allow-Origin': '*',
+        'Cross-Origin-Resource-Policy': 'cross-origin',
       },
     });
   } catch (err) {

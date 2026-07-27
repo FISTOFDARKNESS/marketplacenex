@@ -4,7 +4,12 @@ export function proxyUrl(url) {
   if (!url || !url.includes(SUPABASE_BASE)) return url;
   const path = url.split('/storage/v1/')[1];
   if (!path) return url;
-  return `/supabase/${path}`;
+  const parts = path.split('/');
+  if (parts.length < 4) return url;
+  const userId = parts[2].replace('user_', '');
+  const assetId = parts[3].replace('asset_', '');
+  const filename = parts.slice(4).join('/');
+  return `/api/storage/media/${userId}/${assetId}/${filename}`;
 }
 
 export function getProxiedUploadUrl(signedUrl) {
