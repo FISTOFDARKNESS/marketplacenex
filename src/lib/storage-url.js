@@ -5,10 +5,12 @@ export function proxyUrl(url) {
   const path = url.split('/storage/v1/')[1];
   if (!path) return url;
   const parts = path.split('/');
+  // Path: object/public/marketplace/user_<userId>/asset_<assetId>/<filename>
+  // Skip 'object', 'public', 'marketplace' (bucket name)
   if (parts.length < 6) return url;
-  const userId = parts[4].replace('user_', '');
-  const assetId = parts[5].replace('asset_', '');
-  const filename = parts.slice(6).join('/');
+  const userId = parts[3].replace('user_', '');
+  const assetId = parts[4].replace('asset_', '');
+  const filename = parts.slice(5).join('/');
   if (!userId || !assetId || !filename) return url;
   return `/api/storage/media/${userId}/${assetId}/${filename}`;
 }
