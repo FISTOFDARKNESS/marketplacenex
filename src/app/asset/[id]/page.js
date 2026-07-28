@@ -65,24 +65,34 @@ export default function AssetDetailPage() {
 
   const handleDownload = async () => {
     if (!user) { addToast('info', 'Login to download assets'); return; }
+    if (!user.robloxUserId) {
+      addToast('alert-triangle', 'Link your Roblox account first in Settings');
+      return;
+    }
     try {
-      const res = await fetch(`/api/storage/download/${id}`);
+      addToast('info', 'Verifying purchase...');
+      const res = await fetch('/api/assets/purchase-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assetId: id, robloxUserId: user.robloxUserId }),
+      });
+      const d = await res.json();
       if (!res.ok) {
-        const d = await res.json();
-        addToast('alert-triangle', d.error || 'Download failed');
+        addToast('alert-triangle', d.error || 'Verification failed');
         return;
       }
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const filename = `asset_${id}.rbxm`;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      setAsset(prev => prev ? { ...prev, downloads: prev.downloads + 1 } : prev);
+      if (d.downloadUrl) {
+        const a = document.createElement('a');
+        a.href = d.downloadUrl;
+        const filename = `asset_${id}.rbxm`;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(a.href);
+        document.body.removeChild(a);
+        setAsset(prev => prev ? { ...prev, downloads: prev.downloads + 1 } : prev);
+        addToast('check-circle', 'Download started');
+      }
     } catch (err) {
       addToast('alert-triangle', 'Download failed');
     }

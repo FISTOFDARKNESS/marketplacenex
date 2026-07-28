@@ -106,7 +106,9 @@ CREATE TABLE "AssetPurchase" (
   "userId" UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
   "assetId" UUID NOT NULL REFERENCES "Asset"(id) ON DELETE CASCADE,
   "priceRobux" INTEGER NOT NULL,
+  "status" TEXT NOT NULL DEFAULT 'PENDING',
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
+  "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE("userId", "assetId")
 );
 

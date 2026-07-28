@@ -3,7 +3,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
-const BUCKET = 'marketplace';
+const BUCKET = 'marketplace-assets';
 
 export async function GET(req, { params }) {
   const { assetId } = params;

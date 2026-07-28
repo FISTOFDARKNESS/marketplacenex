@@ -55,11 +55,25 @@ export async function createGamePass(name, priceRobux) {
   return passId;
 }
 
-export async function checkUserOwnsGamePass(userId, passId) {
-  const res = await fetch(`https://inventory.roblox.com/v1/users/${userId}/items/GamePass/${passId}`, {
-    headers: { 'User-Agent': USER_AGENT },
-  });
-  if (!res.ok) return false;
+export async function checkUserOwnsGamePass(userId, gamePassId) {
+  const apiKey = getApiKey();
+
+  const res = await fetch(
+    `https://apis.roblox.com/ownership/v1/users/${userId}/items/GamePass/${gamePassId}`,
+    {
+      headers: {
+        'x-api-key': apiKey,
+        'User-Agent': USER_AGENT,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Roblox ownership check failed: ${res.status} ${text}`);
+  }
+
   const data = await res.json();
-  return data.data && data.data.length > 0;
+  const ownership = data.ownership || data.items || [];
+  return Array.isArray(ownership) ? ownership.length > 0 : !!ownership;
 }
