@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, DollarSign, TrendingUp, Bell, CheckCircle } from 'lucide-react';
+import { ShoppingBag, Download, TrendingUp, Bell, CheckCircle, Eye } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { useLang } from '@/lib/LanguageProvider';
 import { appLocales } from '@/lib/appLocales';
@@ -48,7 +48,7 @@ export default function DashboardPage() {
         <div className="dash-metrics">
           <div className="dash-card">
             <div className="dash-card-icon" style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
-              <ShoppingBag size={20} />
+              <Download size={20} />
             </div>
             <div className="dash-card-body">
               <div className="dash-card-label">{t.ordersToday}</div>
@@ -57,11 +57,11 @@ export default function DashboardPage() {
           </div>
           <div className="dash-card">
             <div className="dash-card-icon" style={{ background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}>
-              <DollarSign size={20} />
+              <Eye size={20} />
             </div>
             <div className="dash-card-body">
               <div className="dash-card-label">{t.todayRevenue}</div>
-              <div className="dash-card-value">${(s?.todayRevenue ?? 0).toFixed(2)}</div>
+              <div className="dash-card-value">{s?.todayRevenue ?? 0}</div>
             </div>
           </div>
           <div className="dash-card">
@@ -70,7 +70,7 @@ export default function DashboardPage() {
             </div>
             <div className="dash-card-body">
               <div className="dash-card-label">{t.totalProfit}</div>
-              <div className="dash-card-value">${(s?.totalProfit ?? 0).toFixed(2)}</div>
+              <div className="dash-card-value">{s?.totalProfit ?? 0}</div>
             </div>
           </div>
         </div>
@@ -81,11 +81,11 @@ export default function DashboardPage() {
             <div className="dash-revenue-stats">
               <div>
                 <div className="dash-revenue-label">{t.average}</div>
-                <div className="dash-revenue-value">${(r?.avgRevenue ?? 0).toFixed(2)}</div>
+                <div className="dash-revenue-value">{(r?.avgRevenue ?? 0).toFixed(1)}</div>
               </div>
               <div>
                 <div className="dash-revenue-label">{t.peak}</div>
-                <div className="dash-revenue-value">${(r?.peakRevenue ?? 0).toFixed(2)}</div>
+                <div className="dash-revenue-value">{(r?.peakRevenue ?? 0).toFixed(1)}</div>
               </div>
             </div>
             <div className="dash-chart">
@@ -93,7 +93,7 @@ export default function DashboardPage() {
                 const max = r?.peakRevenue || 1;
                 const h = max > 0 ? (d.revenue / max) * 100 : 0;
                 return (
-                  <div key={d.date} className="dash-bar-wrap" title={`${d.date}: $${d.revenue.toFixed(2)}`}>
+                  <div key={d.date} className="dash-bar-wrap" title={`${d.date}: ${d.revenue.toFixed(1)}`}>
                     <div className="dash-bar" style={{ height: `${Math.max(h, 2)}%` }} />
                     <span className="dash-bar-label">{d.date.slice(5)}</span>
                   </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Package, Tag, LayoutDashboard, Plus, Eye, ChevronDown } from 'lucide-react';
+import { Search, Package, Tag, LayoutDashboard, Plus, Eye, ChevronDown, Download } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { useLang } from '@/lib/LanguageProvider';
 import { appLocales } from '@/lib/appLocales';
@@ -113,7 +113,7 @@ export default function OrdersPage() {
                 <tr><td colSpan={5} className="table-empty" style={{color:'#ef4444'}}>{error}</td></tr>
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={5} className="table-empty">
-                  <Package size={32} style={{opacity:0.3}} />
+                  <Download size={32} style={{opacity:0.3}} />
                   <span>{t.noOrders}</span>
                 </td></tr>
               ) : (
@@ -132,7 +132,7 @@ export default function OrdersPage() {
                       </div>
                     </td>
                     <td className="hide-mobile">{o.robloxUser || '—'}</td>
-                    <td className="cell-price">${item.price ? Number(item.price).toFixed(2) : '0.00'}</td>
+                    <td className="cell-price">{item.price ? Number(item.price).toFixed(2) : '0.00'} R$</td>
                     <td>
                       <span className={`badge-status status-${status}`}>
                         {o.status || 'PENDING'}

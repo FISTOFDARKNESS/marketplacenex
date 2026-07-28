@@ -75,6 +75,7 @@ CREATE TABLE "Asset" (
   "assetType" TEXT NOT NULL DEFAULT 'rbxm',
   "fileSize" INTEGER NOT NULL DEFAULT 0,
   "folderId" TEXT,
+  "gamePassId" TEXT,
   "status" TEXT NOT NULL DEFAULT 'QUEUE',
   "rejectionReason" TEXT,
   "likesCount" INTEGER NOT NULL DEFAULT 0,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Tag, LayoutDashboard, Plus, Eye, ChevronDown, User, DollarSign, Package, TrendingUp } from 'lucide-react';
+import { Tag, LayoutDashboard, Plus, Eye, ChevronDown, User, Download, Package, TrendingUp } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { useLang } from '@/lib/LanguageProvider';
 import { appLocales } from '@/lib/appLocales';
@@ -44,7 +44,7 @@ export default function SellPage() {
     router.push('/');
   }
 
-  const totalValue = items.reduce((s, i) => s + i.priceUsd, 0);
+  const totalValue = items.reduce((s, i) => s + i.priceRobux, 0);
 
   return (
     <div className="app-layout">
@@ -102,11 +102,11 @@ export default function SellPage() {
               </div>
               <div className="dash-card">
                 <div className="dash-card-icon" style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
-                  <DollarSign size={20} />
+                  <Download size={20} />
                 </div>
                 <div className="dash-card-body">
                   <div className="dash-card-label">{t.totalValue}</div>
-                  <div className="dash-card-value">${totalValue.toFixed(2)}</div>
+                  <div className="dash-card-value">{totalValue.toLocaleString()} R$</div>
                 </div>
               </div>
             </div>
@@ -154,7 +154,6 @@ export default function SellPage() {
                       <div className="inv-card-foot">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                           <span className="inv-card-price">{si.priceRobux.toLocaleString()} <span style={{ fontSize: 11, color: '#9ca3af' }}>R$</span></span>
-                          <span style={{ fontSize: 11, color: '#6b7280' }}>${si.priceUsd.toFixed(2)}</span>
                         </div>
                       </div>
                     </div>

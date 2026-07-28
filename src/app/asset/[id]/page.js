@@ -63,7 +63,7 @@ export default function AssetDetailPage() {
     }
   };
 
-const handleDownload = async () => {
+  const handleDownload = async () => {
     if (!user) { addToast('info', 'Login to download assets'); return; }
     try {
       const res = await fetch(`/api/storage/download/${id}`);
@@ -178,25 +178,34 @@ const handleDownload = async () => {
       <main style={{ maxWidth: 960, margin: '32px auto', padding: '0 24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 32 }}>
           <div>
-            {asset.thumbnailUrl && (
-              <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={460} height={460} style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} unoptimized />
-            )}
+            <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', background: 'var(--bg-2)', border: '1px solid var(--line)' }}>
+              {asset.thumbnailUrl && (
+                <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={460} height={460} style={{ width: '100%', borderRadius: 16, objectFit: 'cover' }} unoptimized />
+              )}
+              {asset.assetType && (
+                <span className={`asset-type-badge type-${asset.assetType}`} style={{ top: 12, left: 12, fontSize: 10, padding: '4px 10px' }}>
+                  {asset.assetType}
+                </span>
+              )}
+            </div>
             {asset.videoUrl && (
               <video src={proxyUrl(asset.videoUrl)} loop muted autoPlay playsInline crossOrigin="anonymous" style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
             )}
           </div>
           <div>
-            <h1 style={{ fontSize: 28, marginBottom: 8 }}>{asset.name}</h1>
-            <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8, fontSize: 13, color: 'var(--muted)' }}>
+            <h1 style={{ fontSize: 28, marginBottom: 8, fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>{asset.name}</h1>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8, fontSize: 13, color: 'var(--muted)', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <User size={14} /> <a href={`/profile/${asset.owner?.username}`} style={{ color: 'var(--gold)' }}>{asset.owner?.username}</a>
+                <User size={14} /> <a href={`/profile/${asset.owner?.username}`} style={{ color: 'var(--gold)', textDecoration: 'none' }}>{asset.owner?.username}</a>
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Calendar size={14} /> {new Date(asset.createdAt).toLocaleDateString()}
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Tag size={14} /> {asset.assetType?.toUpperCase()}
-              </span>
+              {asset.assetType && (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Tag size={14} /> {asset.assetType.toUpperCase()}
+                </span>
+              )}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -216,7 +225,7 @@ const handleDownload = async () => {
               </div>
             )}
 
-            <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--gold)', marginBottom: 20 }}>
+            <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--gold)', marginBottom: 20, fontFamily: "'JetBrains Mono', monospace" }}>
               {asset.price === 'Free' ? 'Free' : `${asset.priceRobux} R$`}
             </div>
 
@@ -251,14 +260,16 @@ const handleDownload = async () => {
               )}
             </div>
 
-            <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.6 }}>{asset.description ? sanitizeText(asset.description) : 'No description provided.'}</p>
+            <div style={{ background: 'var(--bg-2)', border: '1px solid var(--line)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, fontFamily: "'Poppins', sans-serif" }}>Description</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{asset.description ? sanitizeText(asset.description) : 'No description provided.'}</p>
+            </div>
           </div>
         </div>
 
         <div style={{ marginBottom: 32 }}>
-          <h3 style={{ marginBottom: 16 }}>
-            <Star size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />
-            Reviews ({asset.reviewCount || 0})
+          <h3 style={{ marginBottom: 16, fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Star size={16} style={{ color: 'var(--gold)' }} /> Reviews ({asset.reviewCount || 0})
           </h3>
           {user && !userReview && user.id !== asset.owner?.id && (
             <div style={{ padding: 16, background: 'var(--bg-2)', borderRadius: 12, border: '1px solid var(--line)', marginBottom: 16 }}>
@@ -299,17 +310,16 @@ const handleDownload = async () => {
         </div>
 
         <div style={{ marginBottom: 32 }}>
-          <h3 style={{ marginBottom: 16 }}>
-            <User size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />
-            About the Creator
+          <h3 style={{ marginBottom: 16, fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <User size={16} style={{ color: 'var(--gold)' }} /> About the Creator
           </h3>
           <div style={{ padding: 16, background: 'var(--bg-2)', borderRadius: 12, border: '1px solid var(--line)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-3)', overflow: 'hidden' }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-3)', overflow: 'hidden', flexShrink: 0 }}>
                 {asset.owner?.avatarUrl ? <img src={asset.owner.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={20} style={{ padding: 10, opacity: 0.4 }} />}
               </div>
               <div>
-                <a href={`/profile/${asset.owner?.username}`} style={{ fontWeight: 600, color: 'var(--gold)' }}>{asset.owner?.username}</a>
+                <a href={`/profile/${asset.owner?.username}`} style={{ fontWeight: 600, color: 'var(--gold)', textDecoration: 'none' }}>{asset.owner?.username}</a>
                 {asset.owner?.aboutMe && <div style={{ fontSize: 12, color: 'var(--muted)' }}>{asset.owner.aboutMe}</div>}
               </div>
               {user && user.id !== asset.owner?.id && (
@@ -322,9 +332,8 @@ const handleDownload = async () => {
         </div>
 
         <div style={{ marginBottom: 32 }}>
-          <h3 style={{ marginBottom: 16 }}>
-            <MessageCircle size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }} />
-            Comments ({(asset.comments || []).length})
+          <h3 style={{ marginBottom: 16, fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <MessageCircle size={16} style={{ color: 'var(--gold)' }} /> Comments ({(asset.comments || []).length})
           </h3>
           {user && (
             <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
@@ -350,8 +359,8 @@ const handleDownload = async () => {
       </main>
       {showReport && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 480, width: '90%' }}>
-            <h3 style={{ marginBottom: 12 }}>Report Asset</h3>
+          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 480, width: '90%', border: '1px solid var(--line)' }}>
+            <h3 style={{ marginBottom: 12, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>Report Asset</h3>
             <textarea className="upload-textarea" value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Why are you reporting this asset? (min 10 characters)" rows={4} style={{ marginBottom: 12 }} />
             <div style={{ display: 'flex', gap: 12 }}>
               <button className="hero-cta-secondary" onClick={() => { setShowReport(false); setReportReason(''); }} style={{ flex: 1 }}>Cancel</button>
@@ -363,8 +372,8 @@ const handleDownload = async () => {
 
       {deleteConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 400, width: '90%' }}>
-            <h3 style={{ marginBottom: 8 }}>Delete Asset?</h3>
+          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 400, width: '90%', border: '1px solid var(--line)' }}>
+            <h3 style={{ marginBottom: 8, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>Delete Asset?</h3>
             <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 16 }}>This action cannot be undone.</p>
             <div style={{ display: 'flex', gap: 12 }}>
               <button className="hero-cta-secondary" onClick={() => setDeleteConfirm(false)} style={{ flex: 1 }}>Cancel</button>

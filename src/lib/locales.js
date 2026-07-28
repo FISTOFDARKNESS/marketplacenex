@@ -12,111 +12,111 @@ export const locales = {
       wishlist: "Wishlist"
     },
     hero: {
-      eyebrow: "Live market · updating in real time",
-      title: "Buy Roblox limiteds ",
-      titleSpan: "with NexBlox",
-      subtitle: "Verified sellers, live RAP tracking, and instant payouts. Your experience, our pleasure.",
-      browseBtn: "Browse items",
+      eyebrow: "Roblox Studio Asset Marketplace",
+      title: "Upload & Sell ",
+      titleSpan: "Roblox Studio Assets",
+      subtitle: "Share your creations with the community. VFX, models, scripts, and more. Get verified to start selling.",
+      browseBtn: "Browse Assets",
       howBtn: "See how it works",
       stats: {
-        itemsListed: "Items listed",
-        tradedMo: "Traded / mo",
-        cleanTrades: "Clean trades"
+        itemsListed: "Assets",
+        tradedMo: "Downloads",
+        cleanTrades: "Creators"
       }
     },
     catalog: {
-      eyebrow: "The catalog",
-      title: "Browse limiteds",
-      description: "Every listing below is admin-verified and ready to trade.",
+      eyebrow: "Marketplace",
+      title: "Featured Assets",
+      description: "Discover top assets from verified creators.",
       category: "Category",
       rarity: "Rarity",
       priceRange: "Price range",
       payment: "Payment",
-      all: "All items",
-      hats: "Hats",
-      faces: "Face accessories",
-      gear: "Gear",
-      legendary: "Legendary",
-      rare: "Rare",
+      all: "All Assets",
+      hats: "Models",
+      faces: "Decals",
+      gear: "Audio",
+      legendary: "Meshes",
+      rare: "Plugins",
       min: "Min",
       max: "Max",
-      sellP: "Got limiteds sitting idle? List them and get paid out same day.",
+      sellP: "Got assets sitting idle? Upload them and start earning.",
       sellBtn: "Start selling",
-      listingsHead: "Open listings",
-      verified: "verified listing",
-      verifiedPlural: "verified listings",
+      listingsHead: "Latest Assets",
+      verified: "asset",
+      verifiedPlural: "assets",
       sortedBy: "sorted by",
       sortOptions: {
-        demand: "Sort: High demand",
+        demand: "Sort: Popular",
         high: "Sort: Price high → low",
         low: "Sort: Price low → high"
       },
-      empty: "No items match your filters. Try clearing them.",
-      buyNow: "Buy now"
+      empty: "No assets found. Be the first to upload!",
+      buyNow: "Download"
     },
     how: {
-      eyebrow: "Process",
-      title: "How trading works",
-      subtitle: "Three steps between browsing and owning.",
-      step1Title: "Find your item",
-      step1Text: "Filter by rarity, category, or price and check live RAP before you commit.",
-      step2Title: "Admin verifies the trade",
-      step2Text: "Every transaction is checked by our team before funds or items move.",
-      step3Title: "Get paid or delivered",
-      step3Text: "Buyers receive items instantly. Sellers get paid via crypto, PayPal, or Cash App."
+      eyebrow: "How It Works",
+      title: "For Creators",
+      subtitle: "Share your Roblox Studio creations with the world.",
+      step1Title: "Upload Your Asset",
+      step1Text: "Submit your .rbxm or .rbxl files with a name, description, tags, and preview media.",
+      step2Title: "Admin Review",
+      step2Text: "Your asset goes through a quick moderation queue. Admins review and approve quality content.",
+      step3Title: "Get Downloads",
+      step3Text: "Once approved, your asset is live. Users can download, rate, and follow you for updates."
     },
     faq: {
       eyebrow: "Questions",
       title: "Frequently asked",
-      subtitle: "Everything you need to know before your first trade.",
+      subtitle: "Everything you need to know about the marketplace.",
       items: [
         {
-          q: "How fast are payouts?",
-          a: "Crypto payouts are near-instant after admin verification. PayPal and Cash App typically settle within a few hours."
+          q: "How do I upload assets?",
+          a: "Click the Upload button in the navbar, fill in the details, and submit your .rbxm or .rbxl files. An admin will review and approve it."
         },
         {
-          q: "Is every trade verified?",
-          a: "Yes. Every listing and trade passes through admin review before items or funds change hands."
+          q: "Are assets reviewed?",
+          a: "Yes. Every asset goes through admin review to ensure quality and compliance with our guidelines."
         },
         {
-          q: "What happens if there's a dispute?",
-          a: "Open a ticket with evidence from both sides. Our team reviews and resolves disputes within 24 hours."
+          q: "How do I price my assets?",
+          a: "You can set your asset as Free or set a price in Robux (R$). You are responsible for setting a fair price."
         },
         {
-          q: "Do you take a fee?",
-          a: "A small marketplace fee applies to sellers at payout. Buyers never pay extra beyond the listed price."
+          q: "How do I get paid?",
+          a: "Earnings from sales can be withdrawn to your Robux balance or processed through our payment system."
         }
       ]
     },
     testimonials: {
       eyebrow: "Reviews",
-      title: "Loved by traders",
+      title: "Loved by creators",
       subtitle: "Here's what our community has to say.",
       items: [
         {
-          author: "roblox_trader99",
-          role: "Power Seller",
-          text: "Sold my Frozen Horns in under 10 minutes. The payout was instant. Insanely smooth experience!"
+          author: "roblox_dev99",
+          role: "Creator",
+          text: "Uploaded my VFX pack and got 50 downloads in the first week. The admin review was fast and easy!"
         },
         {
-          author: "blox_king",
-          role: "Collector",
-          text: "Found Clockwork's Shades here cheaper than anywhere else. Admin verify gives real peace of mind."
+          author: "blox_builder",
+          role: "Modeler",
+          text: "Great platform for selling my models. The community here really appreciates quality assets."
         },
         {
-          author: "limited_hustle",
-          role: "Casual Trader",
-          text: "Great support team, helped me resolve a trade issue within hours. Highly recommend!"
+          author: "script_master",
+          role: "Scripter",
+          text: "Finally a marketplace focused on Roblox Studio assets. Clean, fast, and easy to use."
         }
       ]
     },
     footer: {
-      desc: "NexBlox is a secure secondary marketplace for trading Roblox limited collectibles. We are not affiliated with Roblox Corporation.",
+      desc: "Roblox Studio Marketplace is a platform for creators to share and sell Roblox Studio assets. We are not affiliated with Roblox Corporation.",
       links: "Links",
       legal: "Legal",
       terms: "Terms of Service",
       privacy: "Privacy Policy",
-      copy: "© 2026 NexBlox. All rights reserved."
+      copy: "© 2026 Roblox Studio Marketplace. All rights reserved."
     },
     auth: {
       welcome: "Welcome Back",
@@ -155,111 +155,111 @@ export const locales = {
       wishlist: "Lista de Desejos"
     },
     hero: {
-      eyebrow: "Mercado ao vivo · atualizado em tempo real",
-      title: "Compre limiteds do Roblox ",
-      titleSpan: "com NexBlox",
-      subtitle: "Vendedores verificados, rastreamento de RAP ao vivo e pagamentos instantâneos. Sua experiência, nosso prazer.",
-      browseBtn: "Navegar nos itens",
+      eyebrow: "Mercado Roblox Studio",
+      title: "Envie e Venda ",
+      titleSpan: "Assets do Roblox Studio",
+      subtitle: "Compartilhe suas criações com a comunidade. VFX, modelos, scripts e mais. Comece a vender hoje.",
+      browseBtn: "Ver Assets",
       howBtn: "Veja como funciona",
       stats: {
-        itemsListed: "Itens listados",
-        tradedMo: "Negociado / mês",
-        cleanTrades: "Trocas limpas"
+        itemsListed: "Assets",
+        tradedMo: "Downloads",
+        cleanTrades: "Criadores"
       }
     },
     catalog: {
-      eyebrow: "O catálogo",
-      title: "Explorar limiteds",
-      description: "Todas as ofertas abaixo são verificadas pela administração e prontas para negociação.",
+      eyebrow: "Mercado",
+      title: "Assets em Destaque",
+      description: "Descubra os melhores assets de criadores verificados.",
       category: "Categoria",
       rarity: "Raridade",
       priceRange: "Faixa de preço",
       payment: "Pagamento",
-      all: "Todos os itens",
-      hats: "Chapéus",
-      faces: "Acessórios de Rosto",
-      gear: "Equipamentos",
-      legendary: "Lendário",
-      rare: "Raro",
+      all: "Todos Assets",
+      hats: "Modelos",
+      faces: "Decalques",
+      gear: "Áudio",
+      legendary: "Malhas",
+      rare: "Plugins",
       min: "Mín",
       max: "Máx",
-      sellP: "Tem limiteds parados? Anuncie-os e receba o pagamento no mesmo dia.",
+      sellP: "Tem assets parados? Envie e comece a ganhar.",
       sellBtn: "Começar a vender",
-      listingsHead: "Ofertas abertas",
-      verified: "oferta verificada",
-      verifiedPlural: "ofertas verificadas",
+      listingsHead: "Assets Recentes",
+      verified: "asset",
+      verifiedPlural: "assets",
       sortedBy: "ordenado por",
       sortOptions: {
-        demand: "Ordenar: Alta demanda",
+        demand: "Ordenar: Popular",
         high: "Ordenar: Preço maior → menor",
         low: "Ordenar: Preço menor → maior"
       },
-      empty: "Nenhum item corresponde aos filtros. Tente limpá-los.",
-      buyNow: "Comprar agora"
+      empty: "Nenhum asset encontrado. Seja o primeiro a enviar!",
+      buyNow: "Download"
     },
     how: {
-      eyebrow: "Processo",
-      title: "Como funcionam as trocas",
-      subtitle: "Três etapas entre navegar e possuir.",
-      step1Title: "Encontre seu item",
-      step1Text: "Filtre por raridade, categoria ou preço e verifique o RAP ao vivo antes de se comprometer.",
-      step2Title: "Admin verifica a transação",
-      step2Text: "Cada transação é verificada por nossa equipe antes que os fundos ou itens sejam transferidos.",
-      step3Title: "Receba ou entregue",
-      step3Text: "Compradores recebem itens instantaneamente. Vendedores recebem via cripto, PayPal ou Cash App."
+      eyebrow: "Como Funciona",
+      title: "Para Criadores",
+      subtitle: "Compartilhe suas criações do Roblox Studio com o mundo.",
+      step1Title: "Envie seu Asset",
+      step1Text: "Envie seus arquivos .rbxm ou .rbxl com nome, descrição, tags e preview.",
+      step2Title: "Revisão do Admin",
+      step2Text: "Seu asset passa por uma fila de moderação. Admins revisam e aprovam conteúdo de qualidade.",
+      step3Title: "Receba Downloads",
+      step3Text: "Depois de aprovado, seu asset fica visível. Usuários podem baixar, avaliar e seguir você."
     },
     faq: {
       eyebrow: "Dúvidas",
       title: "Perguntas frequentes",
-      subtitle: "Tudo o que você precisa saber antes da sua primeira troca.",
+      subtitle: "Tudo o que você precisa saber sobre o marketplace.",
       items: [
         {
-          q: "Quão rápidos são os pagamentos?",
-          a: "Os pagamentos em cripto são quase instantâneos após a verificação do admin. PayPal e Cash App geralmente levam algumas horas."
+          q: "Como faço para enviar assets?",
+          a: "Clique no botão Enviar na navbar, preencha os detalhes e envie seus arquivos .rbxm ou .rbxl. Um admin irá revisar e aprovar."
         },
         {
-          q: "Toda troca é verificada?",
-          a: "Sim. Cada anúncio e troca passa pela revisão da administração antes que os itens ou fundos mudem de mãos."
+          q: "Os assets são revisados?",
+          a: "Sim. Cada asset passa por revisão admin para garantir qualidade e conformidade com nossas diretrizes."
         },
         {
-          q: "O que acontece se houver uma disputa?",
-          a: "Abra um tíquete com provas de ambos os lados. Nossa equipe analisa e resolve disputas em até 24 horas."
+          q: "Como definir o preço dos meus assets?",
+          a: "Você pode definir seu asset como Gratuito ou definir um preço em Robux (R$). Você é responsável por definir um preço justo."
         },
         {
-          q: "Vocês cobram taxa?",
-          a: "Uma pequena taxa de mercado é aplicada aos vendedores no momento do pagamento. Compradores nunca pagam nada além do preço listado."
+          q: "Como recebo meus ganhos?",
+          a: "Os ganhos das vendas podem ser sacados para seu saldo Robux ou processados através do nosso sistema de pagamento."
         }
       ]
     },
     testimonials: {
       eyebrow: "Avaliações",
-      title: "Amado por negociantes",
+      title: "Amado por criadores",
       subtitle: "Veja o que nossa comunidade tem a dizer.",
       items: [
         {
-          author: "roblox_trader99",
-          role: "Vendedor Elite",
-          text: "Vendi meus Frozen Horns em menos de 10 minutos. O pagamento foi instantâneo. Experiência incrivelmente fluida!"
+          author: "roblox_dev99",
+          role: "Criador",
+          text: "Enviei meu pacote de VFX e consegui 50 downloads na primeira semana. A revisão admin foi rápida e fácil!"
         },
         {
-          author: "blox_king",
-          role: "Colecionador",
-          text: "Encontrei Clockwork's Shades aqui mais barato do que em qualquer outro lugar. A verificação do admin dá muita paz de espírito."
+          author: "blox_builder",
+          role: "Modeler",
+          text: "Ótima plataforma para vender meus modelos. A comunidade aqui realmente aprecia assets de qualidade."
         },
         {
-          author: "limited_hustle",
-          role: "Negociante Casual",
-          text: "Equipe de suporte excelente, me ajudou a resolver um problema de troca em poucas horas. Recomendo muito!"
+          author: "script_master",
+          role: "Scripter",
+          text: "Finalmente um marketplace focado em assets do Roblox Studio. Limpo, rápido e fácil de usar."
         }
       ]
     },
     footer: {
-      desc: "NexBlox é um mercado secundário seguro para negociar colecionáveis Roblox limitados. Não somos afiliados à Roblox Corporation.",
+      desc: "Roblox Studio Marketplace é uma plataforma para criadores compartilharem e venderem assets do Roblox Studio. Não somos afiliados à Roblox Corporation.",
       links: "Links",
       legal: "Legal",
       terms: "Termos de Serviço",
       privacy: "Política de Privacidade",
-      copy: "© 2026 NexBlox. Todos os direitos reservados."
+      copy: "© 2026 Roblox Studio Marketplace. Todos os direitos reservados."
     },
     auth: {
       welcome: "Bem-vindo de Volta",
@@ -298,87 +298,111 @@ export const locales = {
       wishlist: "Lista desideri"
     },
     hero: {
-      eyebrow: "Mercato live · aggiornamento in tempo reale",
-      title: "Acquista i limiteds di Roblox ",
-      titleSpan: "con NexBlox",
-      subtitle: "Venditori verificati, monitoraggio RAP live e pagamenti istantanei. La tua esperienza, il nostro piacere.",
-      browseBtn: "Sfoglia oggetti",
+      eyebrow: "Marketplace Roblox Studio",
+      title: "Carica e Vendi ",
+      titleSpan: "Asset Roblox Studio",
+      subtitle: "Condividi le tue creazioni con la comunità. VFX, modelli, script e altro. Inizia a vendere oggi.",
+      browseBtn: "Vedi Assets",
       howBtn: "Scopri come funziona",
       stats: {
-        itemsListed: "Oggetti in lista",
-        tradedMo: "Scambiati / mese",
-        cleanTrades: "Scambi puliti"
+        itemsListed: "Assets",
+        tradedMo: "Downloads",
+        cleanTrades: "Creatori"
       }
     },
     catalog: {
-      eyebrow: "Il catalogo",
-      title: "Sfoglia i limiteds",
-      description: "Ogni annuncio è verificato dagli admin ed è pronto per lo scambio.",
+      eyebrow: "Mercato",
+      title: "Asset in Evidenza",
+      description: "Scopri i migliori asset di creatori verificati.",
       category: "Categoria",
       rarity: "Rarità",
       priceRange: "Fascia di prezzo",
       payment: "Pagamento",
-      all: "Tutti gli oggetti",
-      hats: "Cappelli",
-      faces: "Accessori viso",
-      gear: "Equipaggiamento",
-      legendary: "Leggendario",
-      rare: "Raro",
+      all: "Tutti gli Assets",
+      hats: "Modelli",
+      faces: "Decalcomanie",
+      gear: "Audio",
+      legendary: "Mesh",
+      rare: "Plugin",
       min: "Min",
       max: "Max",
-      sellP: "Hai dei limiteds inutilizzati? Mettili in vendita e ricevi il pagamento in giornata.",
+      sellP: "Hai asset inattivi? Caricali e inizia a guadagnare.",
       sellBtn: "Inizia a vendere",
-      listingsHead: "Annunci aperti",
-      verified: "annuncio verificato",
-      verifiedPlural: "annunci verificati",
+      listingsHead: "Asset Recenti",
+      verified: "asset",
+      verifiedPlural: "assets",
       sortedBy: "ordinato per",
       sortOptions: {
-        demand: "Ordina: Alta richiesta",
+        demand: "Ordina: Popolare",
         high: "Ordina: Prezzo alto → basso",
         low: "Ordina: Prezzo basso → alto"
       },
-      empty: "Nessun oggetto corrisponde ai filtri. Prova a rimuoverli.",
-      buyNow: "Acquista ora"
+      empty: "Nessun asset trovato. Sii il primo a caricare!",
+      buyNow: "Download"
     },
     how: {
-      eyebrow: "Processo",
-      title: "Come funziona il trading",
-      subtitle: "Tre passi tra la navigazione e il possesso.",
-      step1Title: "Trova il tuo oggetto",
-      step1Text: "Filtra per rarità, categoria o prezzo e controlla il RAP live prima di concludere.",
-      step2Title: "L'admin verifica lo scambio",
-      step2Text: "Ogni transazione è controllata dal nostro team prima che fondi o oggetti vengano trasferiti.",
-      step3Title: "Ricevi o consegna",
-      step3Text: "Gli acquirenti ricevono gli oggetti all'istante. I venditori vengono pagati tramite crypto, PayPal o Cash App."
+      eyebrow: "Come Funziona",
+      title: "Per i Creatori",
+      subtitle: "Condividi le tue creazioni Roblox Studio con il mondo.",
+      step1Title: "Carica il tuo Asset",
+      step1Text: "Invia i tuoi file .rbxm o .rbxl con nome, descrizione, tag e anteprima.",
+      step2Title: "Revisione Admin",
+      step2Text: "Il tuo asset passa per una coda di moderazione. Gli admin revisionano e approvano contenuti di qualità.",
+      step3Title: "Ricevi Download",
+      step3Text: "Una volta approvato, il tuo asset è visibile. Gli utenti possono scaricare, valutare e seguirti."
     },
     faq: {
       eyebrow: "Domande",
       title: "Domande frequenti",
-      subtitle: "Tutto ciò che devi sapere prima del tuo primo scambio.",
+      subtitle: "Tutto ciò che devi sapere sul marketplace.",
       items: [
-        { q: "Quanto sono veloci i pagamenti?", a: "I pagamenti in crypto sono quasi istantanei dopo la verifica dell'admin. PayPal e Cash App di solito si liquidano in poche ore." },
-        { q: "Ogni scambio è verificato?", a: "Sì. Ogni annuncio e scambio passa attraverso la revisione dell'admin prima che oggetti o fondi cambino mano." },
-        { q: "Cosa succede in caso di disputa?", a: "Apri un ticket con prove da entrambe le parti. Il nostro team esamina e risolve le dispute entro 24 ore." },
-        { q: "Applicate commissioni?", a: "Una piccola commissione di mercato viene applicata ai venditori al momento del pagamento. Gli acquirenti non pagano mai nulla oltre al prezzo elencato." }
+        {
+          q: "Come carico gli asset?",
+          a: "Clicca sul pulsante Carica nella navbar, compila i dettagli e invia i tuoi file .rbxm o .rbxl. Un admin revisionerà e approverà."
+        },
+        {
+          q: "Gli asset sono revisionati?",
+          a: "Sì. Ogni asset passa per una revisione admin per garantire qualità e conformità alle nostre linee guida."
+        },
+        {
+          q: "Come fisso il prezzo dei miei asset?",
+          a: "Puoi impostare il tuo asset come Gratuito o impostare un prezzo in Robux (R$). Sei responsabile del prezzo giusto."
+        },
+        {
+          q: "Come ricevo i miei guadagni?",
+          a: "I guadagni dalle vendite possono essere ritirati sul tuo saldo Robux o elaborati tramite il nostro sistema di pagamento."
+        }
       ]
     },
     testimonials: {
       eyebrow: "Recensioni",
-      title: "Amato dai trader",
-      subtitle: "Ecco cosa dice la nostra community.",
+      title: "Amato dai creatori",
+      subtitle: "Ecco cosa dice la nostra comunità.",
       items: [
-        { author: "roblox_trader99", role: "Venditore Pro", text: "Ho venduto i miei Frozen Horns in meno di 10 minuti. Il pagamento è stato istantaneo. Un'esperienza incredibilmente fluida!" },
-        { author: "blox_king", role: "Collezionista", text: "Ho trovato i Clockwork's Shades qui più economici che altrove. La verifica dell'admin è una vera garanzia." },
-        { author: "limited_hustle", role: "Trader Casual", text: "Team di supporto fantastico, mi ha aiutato a risolvere un problema di scambio in poche ore. Consiglio vivamente!" }
+        {
+          author: "roblox_dev99",
+          role: "Creatore",
+          text: "Ho caricato il mio pacchetto VFX e ottenuto 50 download nella prima settimana. La revisione admin è stata veloce e facile!"
+        },
+        {
+          author: "blox_builder",
+          role: "Modellatore",
+          text: "Ottima piattaforma per vendere i miei modelli. La comunità qui apprezza veramente gli asset di qualità."
+        },
+        {
+          author: "script_master",
+          role: "Programmatore",
+          text: "Finalmente un marketplace focalizzato sugli asset Roblox Studio. Pulito, veloce e facile da usare."
+        }
       ]
     },
     footer: {
-      desc: "NexBlox è un mercato secondario sicuro per lo scambio di oggetti da collezione limitati di Roblox. Non siamo affiliati a Roblox Corporation.",
+      desc: "Roblox Studio Marketplace è una piattaforma per creatori per condividere e vendere asset Roblox Studio. Non siamo affiliati a Roblox Corporation.",
       links: "Link",
       legal: "Legale",
       terms: "Termini di servizio",
-      privacy: "Informativa sulla privacy",
-      copy: "© 2026 NexBlox. Tutti i diritti riservati."
+      privacy: "Politica sulla privacy",
+      copy: "© 2026 Roblox Studio Marketplace. Tutti i diritti riservati."
     },
     auth: {
       welcome: "Bentornato",
@@ -417,87 +441,111 @@ export const locales = {
       wishlist: "Lista de deseos"
     },
     hero: {
-      eyebrow: "Mercado en vivo · actualizando en tiempo real",
-      title: "Compra limiteds de Roblox ",
-      titleSpan: "con NexBlox",
-      subtitle: "Vendedores verificados, seguimiento RAP en vivo y pagos instantáneos. Tu experiencia, nuestro placer.",
-      browseBtn: "Explorar artículos",
-      howBtn: "Ver cómo funciona",
+      eyebrow: "Mercado Roblox Studio",
+      title: "Envia y Vende ",
+      titleSpan: "Assets de Roblox Studio",
+      subtitle: "Comparte tus creaciones con la comunidad. VFX, modelos, scripts y más. Empieza a vender hoy.",
+      browseBtn: "Ver Assets",
+      howBtn: "Descubre cómo funciona",
       stats: {
-        itemsListed: "Artículos listados",
-        tradedMo: "Intercambiado / mes",
-        cleanTrades: "Intercambios limpios"
+        itemsListed: "Assets",
+        tradedMo: "Downloads",
+        cleanTrades: "Creadores"
       }
     },
     catalog: {
-      eyebrow: "El catálogo",
-      title: "Explorar limiteds",
-      description: "Cada anuncio está verificado por los admins y listo para intercambiar.",
+      eyebrow: "Mercado",
+      title: "Assets Destacados",
+      description: "Descubre los mejores assets de creadores verificados.",
       category: "Categoría",
       rarity: "Rareza",
       priceRange: "Rango de precio",
       payment: "Pago",
-      all: "Todos los artículos",
-      hats: "Sombreros",
-      faces: "Accesorios de cara",
-      gear: "Equipo",
-      legendary: "Legendario",
-      rare: "Raro",
+      all: "Todos los Assets",
+      hats: "Modelos",
+      faces: "Calcomanías",
+      gear: "Audio",
+      legendary: "Mallas",
+      rare: "Plugins",
       min: "Mín",
       max: "Máx",
-      sellP: "¿Tienes limiteds sin usar? Publícalos y recibe el pago el mismo día.",
+      sellP: "¿Tienes assets parados? Envíalos y empieza a ganar.",
       sellBtn: "Empezar a vender",
-      listingsHead: "Anuncios abiertos",
-      verified: "anuncio verificado",
-      verifiedPlural: "anuncios verificados",
+      listingsHead: "Assets Recientes",
+      verified: "asset",
+      verifiedPlural: "assets",
       sortedBy: "ordenado por",
       sortOptions: {
-        demand: "Ordenar: Alta demanda",
+        demand: "Ordenar: Popular",
         high: "Ordenar: Precio alto → bajo",
         low: "Ordenar: Precio bajo → alto"
       },
-      empty: "Ningún artículo coincide con los filtros. Intenta borrarlos.",
-      buyNow: "Comprar ahora"
+      empty: "No se encontraron assets. ¡Sé el primero en enviar!",
+      buyNow: "Descargar"
     },
     how: {
-      eyebrow: "Proceso",
-      title: "Cómo funciona el trading",
-      subtitle: "Tres pasos entre explorar y poseer.",
-      step1Title: "Encuentra tu artículo",
-      step1Text: "Filtra por rareza, categoría o precio y comprueba el RAP en vivo antes de comprometerte.",
-      step2Title: "El admin verifica el intercambio",
-      step2Text: "Cada transacción es revisada por nuestro equipo antes de que se transfieran fondos o artículos.",
-      step3Title: "Recibe o entrega",
-      step3Text: "Los compradores reciben artículos al instante. Los vendedores cobran por crypto, PayPal o Cash App."
+      eyebrow: "Cómo Funciona",
+      title: "Para Creadores",
+      subtitle: "Comparte tus creaciones de Roblox Studio con el mundo.",
+      step1Title: "Envía tu Asset",
+      step1Text: "Envía tus archivos .rbxm o .rbxl con nombre, descripción, etiquetas y vista previa.",
+      step2Title: "Revisión del Admin",
+      step2Text: "Tu asset pasa por una cola de moderación. Los admins revisan y aprueban contenido de calidad.",
+      step3Title: "Recibe Downloads",
+      step3Text: "Una vez aprobado, tu asset estará visible. Los usuarios pueden descargar, valorar y seguirte."
     },
     faq: {
       eyebrow: "Preguntas",
       title: "Preguntas frecuentes",
-      subtitle: "Todo lo que necesitas saber antes de tu primer intercambio.",
+      subtitle: "Todo lo que necesitas saber sobre el marketplace.",
       items: [
-        { q: "¿Qué tan rápidos son los pagos?", a: "Los pagos en crypto son casi instantáneos tras la verificación del admin. PayPal y Cash App suelen liquidarse en pocas horas." },
-        { q: "¿Cada intercambio está verificado?", a: "Sí. Cada anuncio e intercambio pasa por revisión admin antes de que artículos o fondos cambien de manos." },
-        { q: "¿Qué pasa si hay una disputa?", a: "Abre un ticket con evidencia de ambas partes. Nuestro equipo revisa y resuelve disputas en 24 horas." },
-        { q: "¿Cobran comisión?", a: "Se aplica una pequeña comisión de mercado a los vendedores al cobrar. Los compradores nunca pagan más del precio listado." }
+        {
+          q: "¿Cómo envío assets?",
+          a: "Haz clic en el botón Enviar en la navbar, completa los detalles y envía tus archivos .rbxm o .rbxl. Un admin revisará y aprobará."
+        },
+        {
+          q: "¿Los assets son revisados?",
+          a: "Sí. Cada asset pasa por revisión admin para garantizar calidad y cumplimiento con nuestras directrices."
+        },
+        {
+          q: "¿Cómo fijo el precio de mis assets?",
+          a: "Puedes definir tu asset como Gratuito o establecer un precio en Robux (R$). Eres responsable de fijar un precio justo."
+        },
+        {
+          q: "Cómo recibo mis ganancias?",
+          a: "Las ganancias de las ventas se pueden retirar a tu saldo Robux o procesarse a través de nuestro sistema de pagos."
+        }
       ]
     },
     testimonials: {
       eyebrow: "Reseñas",
-      title: "Amado por traders",
-      subtitle: "Esto es lo que dice nuestra comunidad.",
+      title: "Amado por creadores",
+      subtitle: "Esto es lo que nuestra comunidad dice.",
       items: [
-        { author: "roblox_trader99", role: "Vendedor Pro", text: "Vendí mis Frozen Horns en menos de 10 minutos. El pago fue instantáneo. ¡Una experiencia increíblemente fluida!" },
-        { author: "blox_king", role: "Coleccionista", text: "Encontré Clockwork's Shades aquí más baratos que en cualquier otro lugar. La verificación del admin da mucha tranquilidad." },
-        { author: "limited_hustle", role: "Trader Casual", text: "Equipo de soporte genial, me ayudó a resolver un problema de intercambio en pocas horas. ¡Muy recomendado!" }
+        {
+          author: "roblox_dev99",
+          role: "Creador",
+          text: "Subí mi paquete de VFX y conseguí 50 descargas en la primera semana. La revisión admin fue rápida y sencilla!"
+        },
+        {
+          author: "blox_builder",
+          role: "Modelador",
+          text: "Gran plataforma para vender mis modelos. La comunidad aquí realmente aprecia assets de calidad."
+        },
+        {
+          author: "script_master",
+          role: "Programador",
+          text: "Por fin un marketplace centrado en assets de Roblox Studio. Limpio, rápido y fácil de usar."
+        }
       ]
     },
     footer: {
-      desc: "NexBlox es un mercado secundario seguro para intercambiar coleccionables limitados de Roblox. No estamos afiliados a Roblox Corporation.",
+      desc: "Roblox Studio Marketplace es una plataforma para que los creadores compartan y vendan assets de Roblox Studio. No estamos afiliados a Roblox Corporation.",
       links: "Enlaces",
       legal: "Legal",
-      terms: "Términos de servicio",
-      privacy: "Política de privacidad",
-      copy: "© 2026 NexBlox. Todos los derechos reservados."
+      terms: "Términos de Servicio",
+      privacy: "Política de Privacidad",
+      copy: "© 2026 Roblox Studio Marketplace. Todos los derechos reservados."
     },
     auth: {
       welcome: "Bienvenido de nuevo",
@@ -536,87 +584,111 @@ export const locales = {
       wishlist: "Liste de souhaits"
     },
     hero: {
-      eyebrow: "Marché en direct · mise à jour en temps réel",
-      title: "Achetez des limiteds Roblox ",
-      titleSpan: "avec NexBlox",
-      subtitle: "Vendeurs vérifiés, suivi RAP en direct et paiements instantanés. Votre expérience, notre plaisir.",
-      browseBtn: "Parcourir les articles",
-      howBtn: "Voir comment ça marche",
+      eyebrow: "Marché Roblox Studio",
+      title: "Envoyez et Vendez ",
+      titleSpan: "des Assets Roblox Studio",
+      subtitle: "Partagez vos créations avec la communauté. VFX, modèles, scripts et plus. Commencez à vendre aujourd'hui.",
+      browseBtn: "Voir les Assets",
+      howBtn: "Découvrir comment ça marche",
       stats: {
-        itemsListed: "Articles listés",
-        tradedMo: "Échangés / mois",
-        cleanTrades: "Échanges propres"
+        itemsListed: "Assets",
+        tradedMo: "Downloads",
+        cleanTrades: "Créateurs"
       }
     },
     catalog: {
-      eyebrow: "Le catalogue",
-      title: "Parcourir les limiteds",
-      description: "Chaque annonce est vérifiée par les admins et prête à l'échange.",
+      eyebrow: "Marché",
+      title: "Assets en Vedette",
+      description: "Découvrez les meilleurs assets de créateurs vérifiés.",
       category: "Catégorie",
       rarity: "Rareté",
       priceRange: "Fourchette de prix",
       payment: "Paiement",
-      all: "Tous les articles",
-      hats: "Chapeaux",
-      faces: "Accessoires visage",
-      gear: "Équipement",
-      legendary: "Légendaire",
-      rare: "Rare",
+      all: "Tous les Assets",
+      hats: "Modèles",
+      faces: "Décals",
+      gear: "Audio",
+      legendary: "Maillages",
+      rare: "Plugins",
       min: "Min",
       max: "Max",
-      sellP: "Des limiteds qui traînent ? Mettez-les en vente et soyez payé le jour même.",
+      sellP: "Des assets qui traînent ? Envoyez-les et commencez à gagner.",
       sellBtn: "Commencer à vendre",
-      listingsHead: "Annonces ouvertes",
-      verified: "annonce vérifiée",
-      verifiedPlural: "annonces vérifiées",
+      listingsHead: "Assets Récents",
+      verified: "asset",
+      verifiedPlural: "assets",
       sortedBy: "trié par",
       sortOptions: {
-        demand: "Trier : Forte demande",
+        demand: "Trier : Populaire",
         high: "Trier : Prix élevé → bas",
         low: "Trier : Prix bas → élevé"
       },
-      empty: "Aucun article ne correspond aux filtres. Essayez de les effacer.",
-      buyNow: "Acheter maintenant"
+      empty: "Aucun asset trouvé. Soyez le premier à envoyer !",
+      buyNow: "Télécharger"
     },
     how: {
-      eyebrow: "Processus",
-      title: "Comment fonctionne le trading",
-      subtitle: "Trois étapes entre la navigation et la possession.",
-      step1Title: "Trouvez votre article",
-      step1Text: "Filtrez par rareté, catégorie ou prix et vérifiez le RAP en direct avant de vous engager.",
-      step2Title: "L'admin vérifie l'échange",
-      step2Text: "Chaque transaction est contrôlée par notre équipe avant que des fonds ou articles ne soient transférés.",
-      step3Title: "Recevez ou livrez",
-      step3Text: "Les acheteurs reçoivent les articles instantanément. Les vendeurs sont payés via crypto, PayPal ou Cash App."
+      eyebrow: "Comment Ça Marche",
+      title: "Pour les Créateurs",
+      subtitle: "Partagez vos créations Roblox Studio avec le monde.",
+      step1Title: "Envoyez votre Asset",
+      step1Text: "Envoyez vos fichiers .rbxm ou .rbxl avec nom, description, tags et aperçu.",
+      step2Title: "Révision Admin",
+      step2Text: "Votre asset passe par une file de modération. Les admins révisent et approuvent le contenu de qualité.",
+      step3Title: "Recevez des Downloads",
+      step3Text: "Une fois approuvé, votre asset est visible. Les utilisateurs peuvent télécharger, noter et vous suivre."
     },
     faq: {
       eyebrow: "Questions",
       title: "Foire aux questions",
-      subtitle: "Tout ce que vous devez savoir avant votre premier échange.",
+      subtitle: "Tout ce que vous devez savoir sur le marketplace.",
       items: [
-        { q: "Les paiements sont-ils rapides ?", a: "Les paiements en crypto sont quasi-instantanés après vérification de l'admin. PayPal et Cash App se règlent généralement en quelques heures." },
-        { q: "Chaque échange est-il vérifié ?", a: "Oui. Chaque annonce et échange passe par la vérification admin avant que les articles ou fonds ne changent de mains." },
-        { q: "Que se passe-t-il en cas de litige ?", a: "Ouvrez un ticket avec des preuves des deux parties. Notre équipe examine et résout les litiges dans les 24 heures." },
-        { q: "Prenez-vous des frais ?", a: "De petits frais de marché s'appliquent aux vendeurs lors du paiement. Les acheteurs ne paient jamais plus que le prix affiché." }
+        {
+          q: "Comment envoyer des assets ?",
+          a: "Cliquez sur le bouton Envoyer dans la navbar, remplissez les détails et envoyez vos fichiers .rbxm ou .rbxl. Un admin révisera et approuvera."
+        },
+        {
+          q: "Les assets sont-ils révisés ?",
+          a: "Oui. Chaque asset passe par une révision admin pour garantir la qualité et le respect de nos directives."
+        },
+        {
+          q: "Comment fixer le prix de mes assets ?",
+          a: "Vous pouvez définir votre asset comme Gratuit ou fixer un prix en Robux (R$). Vous êtes responsable du prix just."
+        },
+        {
+          q: "Comment recevoir mes gains ?",
+          a: "Les gains des ventes peuvent être retirés sur votre solde Robux ou traités via notre système de paiement."
+        }
       ]
     },
     testimonials: {
       eyebrow: "Avis",
-      title: "Adoré par les traders",
+      title: "Adoré par les créateurs",
       subtitle: "Voici ce que dit notre communauté.",
       items: [
-        { author: "roblox_trader99", role: "Vendeur Pro", text: "J'ai vendu mes Frozen Horns en moins de 10 minutes. Le paiement était instantané. Une expérience incroyablement fluide !" },
-        { author: "blox_king", role: "Collectionneur", text: "J'ai trouvé les Clockwork's Shades ici moins chers que partout ailleurs. La vérification admin donne vraiment la tranquillité d'esprit." },
-        { author: "limited_hustle", role: "Trader Casual", text: "Super équipe de support, m'a aidé à résoudre un problème d'échange en quelques heures. Je recommande vivement !" }
+        {
+          author: "roblox_dev99",
+          role: "Créateur",
+          text: "J'ai envoyé mon pack VFX et obtenu 50 téléchargements la première semaine. La révision admin était rapide et facile !"
+        },
+        {
+          author: "blox_builder",
+          role: "Modeleur",
+          text: "Excellente plateforme pour vendre mes modèles. La communauté ici apprécie vraiment les assets de qualité."
+        },
+        {
+          author: "script_master",
+          role: "Scripteur",
+          text: "Enfin un marketplace axé sur les assets Roblox Studio. Propre, rapide et facile à utiliser."
+        }
       ]
     },
     footer: {
-      desc: "NexBlox est un marché secondaire sécurisé pour échanger des objets de collection Roblox limités. Nous ne sommes pas affiliés à Roblox Corporation.",
+      desc: "Roblox Studio Marketplace est une plateforme permettant aux créateurs de partager et vendre des assets Roblox Studio. Nous ne sommes pas affiliés à Roblox Corporation.",
       links: "Liens",
-      legal: "Légal",
+      legal: "Mentions légales",
       terms: "Conditions d'utilisation",
       privacy: "Politique de confidentialité",
-      copy: "© 2026 NexBlox. Tous droits réservés."
+      copy: "© 2026 Roblox Studio Marketplace. Tous droits réservés."
     },
     auth: {
       welcome: "Bon retour",

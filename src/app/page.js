@@ -5,14 +5,22 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
 import { useLang } from '@/lib/LanguageProvider';
-
-const AuthModal = dynamic(() => import('@/components/Modals').then(m => m.AuthModal), { ssr: false });
-
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { proxyUrl } from '@/lib/storage-url';
-import { Heart, Download, Star, Clock, Users, Upload, CheckCircle, ShoppingBag, TrendingUp } from 'lucide-react';
+import { Heart, Download, Star, Upload, CheckCircle, ShoppingBag, TrendingUp, Box, Image as ImageIcon, Music, Puzzle, Code, Sparkles } from 'lucide-react';
+
+const AuthModal = dynamic(() => import('@/components/Modals').then(m => m.AuthModal), { ssr: false });
+
+const ASSET_TYPES = [
+  { key: 'model', icon: Box, label: 'Models' },
+  { key: 'decal', icon: ImageIcon, label: 'Decals' },
+  { key: 'audio', icon: Music, label: 'Audio' },
+  { key: 'plugin', icon: Puzzle, label: 'Plugins' },
+  { key: 'script', icon: Code, label: 'Scripts' },
+  { key: 'vfx', icon: Sparkles, label: 'VFX' },
+];
 
 export default function Home() {
   const { lang } = useLang();
@@ -92,7 +100,7 @@ export default function Home() {
           </div>
           <div className="stat">
             <div className="stat-num">
-              {assets.reduce((s, a) => s + a.downloads, 0)}+
+              {assets.reduce((s, a) => s + (a.downloads || 0), 0)}+
             </div>
             <div className="stat-label">Downloads</div>
           </div>
@@ -109,7 +117,7 @@ export default function Home() {
         <div className="trust-item"><CheckCircle className="icon" /> Admin Reviewed</div>
         <div className="trust-item"><Download className="icon" /> Instant Downloads</div>
         <div className="trust-item"><Star className="icon" /> Community Ratings</div>
-        <div className="trust-item"><Users className="icon" /> Follow Creators</div>
+        <div className="trust-item"><TrendingUp className="icon" /> Follow Creators</div>
       </div>
 
       <section className="catalog-section section-wrap" id="catalog">
@@ -117,6 +125,13 @@ export default function Home() {
           <div className="section-eyebrow">Marketplace</div>
           <h2>Featured Assets</h2>
           <p>Discover top assets from verified creators</p>
+        </div>
+        <div className="catalog-categories">
+          {ASSET_TYPES.map(cat => (
+            <button key={cat.key} className="catalog-category-pill" onClick={() => router.push(`/marketplace?assetType=${cat.key}`)}>
+              <cat.icon size={14} /> {cat.label}
+            </button>
+          ))}
         </div>
         <div className="item-grid">
           {loading ? Array.from({ length: 8 }).map((_, i) => (
@@ -141,6 +156,11 @@ export default function Home() {
                   <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={180} height={180} sizes="180px" unoptimized />
                 ) : (
                   <div style={{ width: 80, height: 80, background: 'var(--bg-3)', borderRadius: 8 }} />
+                )}
+                {asset.assetType && (
+                  <span className={`asset-type-badge type-${asset.assetType}`}>
+                    {asset.assetType}
+                  </span>
                 )}
               </div>
               <div className="item-card-info">
