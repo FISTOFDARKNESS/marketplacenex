@@ -679,7 +679,7 @@ input:focus-visible {
   background: rgba(255,215,0,0.02);
 }
 
-
+.sidebar-cta {
   margin-top: 20px;
   background: linear-gradient(135deg, rgba(255,215,0,0.06) 0%, rgba(217,119,6,0.04) 100%);
   border: 1px solid rgba(255,215,0,0.15);
@@ -1003,6 +1003,7 @@ input:focus-visible {
 }
 
 /* ---------- EMPTY STATE ---------- */
+.empty-state {
   grid-column: 1 / -1;
   text-align: center;
   padding: var(--s6) 0;
