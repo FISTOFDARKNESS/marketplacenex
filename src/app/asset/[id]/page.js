@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
 import { proxyUrl } from '@/lib/storage-url';
-import { sanitizeHtml, sanitizeText } from '@/lib/sanitize';
+import { sanitizeText } from '@/lib/sanitize';
 import { Heart, Download, Star, User, Calendar, Tag, UserPlus, UserCheck, MessageCircle, Star as StarIcon, Flag, Edit, Trash2 } from 'lucide-react';
 
 export default function AssetDetailPage() {
@@ -169,116 +169,108 @@ export default function AssetDetailPage() {
   const userReview = asset?.reviews?.find(r => r.user?.id === user?.id);
   const avgRating = asset?.averageRating || 0;
 
-  if (loading) return <div style={{ padding: 48, textAlign: 'center' }}>Loading...</div>;
-  if (!asset) return <div style={{ padding: 48, textAlign: 'center' }}>Asset not found</div>;
+  if (loading) return <div className="table-empty" style={{ padding: 48, textAlign: 'center' }}>Loading...</div>;
+  if (!asset) return <div className="table-empty" style={{ padding: 48, textAlign: 'center' }}>Asset not found</div>;
 
   return (
     <>
       <Navbar user={user} onOpenAuth={() => {}} onLogout={() => router.push('/')} onScrollTo={() => {}} />
-      <main style={{ maxWidth: 960, margin: '32px auto', padding: '0 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 32 }}>
-          <div>
-            <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', background: 'var(--bg-2)', border: '1px solid var(--line)' }}>
+      <main className="main-content" style={{ maxWidth: 960, margin: '0 auto', padding: '32px 24px' }}>
+        <div className="asset-detail-layout">
+          <div className="asset-detail-media">
+            <div className="asset-media-wrap">
               {asset.thumbnailUrl && (
-                <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={460} height={460} style={{ width: '100%', borderRadius: 16, objectFit: 'cover' }} unoptimized />
+                <Image src={proxyUrl(asset.thumbnailUrl)} alt={asset.name} width={460} height={460} className="asset-media-img" unoptimized />
               )}
               {asset.assetType && (
-                <span className={`asset-type-badge type-${asset.assetType}`} style={{ top: 12, left: 12, fontSize: 10, padding: '4px 10px' }}>
-                  {asset.assetType}
-                </span>
+                <span className={`asset-type-badge type-${asset.assetType}`}>{asset.assetType}</span>
               )}
             </div>
             {asset.videoUrl && (
-              <video src={proxyUrl(asset.videoUrl)} loop muted autoPlay playsInline crossOrigin="anonymous" style={{ width: '100%', borderRadius: 12, marginTop: 12 }} />
+              <video src={proxyUrl(asset.videoUrl)} loop muted autoPlay playsInline crossOrigin="anonymous" className="asset-video" />
             )}
           </div>
-          <div>
-            <h1 style={{ fontSize: 28, marginBottom: 8, fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>{asset.name}</h1>
-            <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8, fontSize: 13, color: 'var(--muted)', flexWrap: 'wrap' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <User size={14} /> <a href={`/profile/${asset.owner?.username}`} style={{ color: 'var(--gold)', textDecoration: 'none' }}>{asset.owner?.username}</a>
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Calendar size={14} /> {new Date(asset.createdAt).toLocaleDateString()}
-              </span>
+
+          <div className="asset-detail-info">
+            <h1 className="asset-detail-title">{asset.name}</h1>
+            <div className="asset-detail-meta">
+              <a href={`/profile/${asset.owner?.username}`} className="asset-detail-creator">
+                <User size={14} /> {asset.owner?.username}
+              </a>
+              <span className="asset-detail-date"><Calendar size={14} /> {new Date(asset.createdAt).toLocaleDateString()}</span>
               {asset.assetType && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Tag size={14} /> {asset.assetType.toUpperCase()}
-                </span>
+                <span className="asset-detail-type-badge">{asset.assetType.toUpperCase()}</span>
               )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <div style={{ display: 'flex', gap: 2 }}>
+            <div className="asset-detail-rating">
+              <div className="asset-stars">
                 {[1,2,3,4,5].map(s => (
-                  <StarIcon key={s} size={14} fill={s <= Math.round(avgRating) ? 'var(--gold)' : 'var(--bg-3)'} color={s <= Math.round(avgRating) ? 'var(--gold)' : 'var(--line)'} />
+                  <StarIcon key={s} size={16} fill={s <= Math.round(avgRating) ? 'var(--gold)' : 'var(--bg-3)'} color={s <= Math.round(avgRating) ? 'var(--gold)' : 'var(--line)'} />
                 ))}
               </div>
-              <span style={{ fontSize: 12, color: 'var(--muted)' }}>{avgRating > 0 ? avgRating.toFixed(1) : 'No ratings'} ({asset.reviewCount || 0})</span>
+              <span className="asset-rating-text">{avgRating > 0 ? avgRating.toFixed(1) : 'No ratings'} ({asset.reviewCount || 0})</span>
             </div>
 
             {asset.tags?.length > 0 && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+              <div className="asset-detail-tags">
                 {asset.tags.map(t => (
-                  <span key={t} style={{ padding: '3px 10px', borderRadius: 20, background: 'var(--bg-3)', fontSize: 11, color: 'var(--muted)' }}>{t}</span>
+                  <span key={t} className="asset-tag">{t}</span>
                 ))}
               </div>
             )}
 
-            <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--gold)', marginBottom: 20, fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="asset-detail-price">
               {asset.price === 'Free' ? 'Free' : `${asset.priceRobux} R$`}
             </div>
 
-            <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
+            <div className="asset-detail-actions">
               <button className="hero-cta-primary" onClick={handleDownload}>
                 <Download size={16} /> Download ({asset.downloads})
               </button>
-              <button className={`icon-btn ${liked ? 'active' : ''}`} onClick={handleLike} style={{ width: 48, height: 48 }}>
+              <button className={`icon-btn ${liked ? 'active' : ''}`} onClick={handleLike}>
                 <Heart size={18} /> {asset.likesCount}
               </button>
               {user && user.id !== asset.owner?.id && (
-                <button className={`icon-btn ${isFollowing ? 'active' : ''}`} onClick={handleFollow} style={{ width: 48, height: 48 }}>
+                <button className={`icon-btn ${isFollowing ? 'active' : ''}`} onClick={handleFollow}>
                   {isFollowing ? <UserCheck size={18} /> : <UserPlus size={18} />}
                 </button>
               )}
               {user && user.id !== asset.owner?.id && (
-                <button className="icon-btn" onClick={() => setShowReport(true)} style={{ width: 48, height: 48 }}>
+                <button className="icon-btn" onClick={() => setShowReport(true)}>
                   <Flag size={18} />
                 </button>
               )}
               {user && (user.id === asset.owner?.id || user.role === 'admin') && (
                 <>
-                  <button className="icon-btn" onClick={() => router.push(`/asset/${id}/edit`)} style={{ width: 48, height: 48 }}>
+                  <button className="icon-btn" onClick={() => router.push(`/asset/${id}/edit`)}>
                     <Edit size={18} />
                   </button>
-                  {asset.status !== 'APPROVED' || user.role === 'admin' ? (
-                    <button className="icon-btn" onClick={() => setDeleteConfirm(true)} style={{ width: 48, height: 48, color: '#ef4444' }}>
+                  {(asset.status !== 'APPROVED' || user.role === 'admin') && (
+                    <button className="icon-btn" onClick={() => setDeleteConfirm(true)} style={{ color: '#ef4444' }}>
                       <Trash2 size={18} />
                     </button>
-                  ) : null}
+                  )}
                 </>
               )}
             </div>
 
-            <div style={{ background: 'var(--bg-2)', border: '1px solid var(--line)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, fontFamily: "'Poppins', sans-serif" }}>Description</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{asset.description ? sanitizeText(asset.description) : 'No description provided.'}</p>
+            <div className="asset-detail-desc">
+              <h3 className="asset-detail-section-title">Description</h3>
+              <p className="asset-detail-desc-text">{asset.description ? sanitizeText(asset.description) : 'No description provided.'}</p>
             </div>
           </div>
         </div>
 
-        <div style={{ marginBottom: 32 }}>
-          <h3 style={{ marginBottom: 16, fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Star size={16} style={{ color: 'var(--gold)' }} /> Reviews ({asset.reviewCount || 0})
-          </h3>
+        <div className="asset-detail-section">
+          <h3 className="asset-detail-section-title"><Star size={16} style={{ color: 'var(--gold)' }} /> Reviews ({asset.reviewCount || 0})</h3>
           {user && !userReview && user.id !== asset.owner?.id && (
-            <div style={{ padding: 16, background: 'var(--bg-2)', borderRadius: 12, border: '1px solid var(--line)', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 13 }}>Your rating:</span>
-                <div style={{ display: 'flex', gap: 4 }} onMouseLeave={() => setHoverRating(0)}>
+            <div className="asset-review-box" style={{ marginBottom: 16 }}>
+              <div className="asset-review-row">
+                <span className="asset-review-label">Your rating:</span>
+                <div className="asset-stars" onMouseLeave={() => setHoverRating(0)}>
                   {[1,2,3,4,5].map(s => (
-                    <button key={s} onClick={() => setRating(s)} onMouseEnter={() => setHoverRating(s)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                    <button key={s} onClick={() => setRating(s)} onMouseEnter={() => setHoverRating(s)} className="star-btn">
                       <StarIcon size={22} fill={s <= (hoverRating || rating) ? 'var(--gold)' : 'var(--bg-3)'} color={s <= (hoverRating || rating) ? 'var(--gold)' : 'var(--line)'} />
                     </button>
                   ))}
@@ -288,79 +280,78 @@ export default function AssetDetailPage() {
               <button className="hero-cta-primary" style={{ padding: '8px 20px', fontSize: 12 }} onClick={handleReview}>Submit Review</button>
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="asset-reviews-list">
             {(asset.reviews || []).map(r => (
-              <div key={r.id} style={{ padding: 12, background: 'var(--bg-2)', borderRadius: 10, border: '1px solid var(--line)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 12 }}>
+              <div key={r.id} className="asset-review-card">
+                <div className="asset-review-header">
                   <strong>{r.user?.username}</strong>
-                  <div style={{ display: 'flex', gap: 2 }}>
+                  <div className="asset-stars">
                     {[1,2,3,4,5].map(s => (
                       <StarIcon key={s} size={12} fill={s <= r.rating ? 'var(--gold)' : 'var(--bg-3)'} color={s <= r.rating ? 'var(--gold)' : 'var(--line)'} />
                     ))}
                   </div>
-                  <span style={{ color: 'var(--muted)' }}>{new Date(r.createdAt).toLocaleDateString()}</span>
+                  <span className="asset-review-date">{new Date(r.createdAt).toLocaleDateString()}</span>
                 </div>
-                {r.comment && <div style={{ fontSize: 13 }}>{sanitizeText(r.comment)}</div>}
+                {r.comment && <div className="asset-review-text">{sanitizeText(r.comment)}</div>}
               </div>
             ))}
             {(!asset.reviews || asset.reviews.length === 0) && (
-              <div style={{ textAlign: 'center', padding: 24, color: 'var(--muted)', fontSize: 13 }}>No reviews yet</div>
+              <div className="table-empty" style={{ padding: 24 }}>No reviews yet</div>
             )}
           </div>
         </div>
 
-        <div style={{ marginBottom: 32 }}>
-          <h3 style={{ marginBottom: 16, fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <User size={16} style={{ color: 'var(--gold)' }} /> About the Creator
-          </h3>
-          <div style={{ padding: 16, background: 'var(--bg-2)', borderRadius: 12, border: '1px solid var(--line)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-3)', overflow: 'hidden', flexShrink: 0 }}>
-                {asset.owner?.avatarUrl ? <img src={asset.owner.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={20} style={{ padding: 10, opacity: 0.4 }} />}
-              </div>
-              <div>
-                <a href={`/profile/${asset.owner?.username}`} style={{ fontWeight: 600, color: 'var(--gold)', textDecoration: 'none' }}>{asset.owner?.username}</a>
-                {asset.owner?.aboutMe && <div style={{ fontSize: 12, color: 'var(--muted)' }}>{asset.owner.aboutMe}</div>}
-              </div>
-              {user && user.id !== asset.owner?.id && (
-                <button className={`signup-btn ${isFollowing ? 'purchase-btn-secondary' : ''}`} style={{ marginLeft: 'auto', padding: '6px 14px', fontSize: 11 }} onClick={handleFollow}>
-                  {isFollowing ? 'Following' : 'Follow'}
-                </button>
+        <div className="asset-detail-section">
+          <h3 className="asset-detail-section-title"><User size={16} style={{ color: 'var(--gold)' }} /> About the Creator</h3>
+          <div className="asset-creator-card">
+            <div className="asset-creator-avatar">
+              {asset.owner?.avatarUrl ? (
+                <img src={asset.owner.avatarUrl} alt="" className="asset-creator-img" />
+              ) : (
+                <div className="asset-creator-placeholder"><User size={20} /></div>
               )}
             </div>
+            <div className="asset-creator-info">
+              <a href={`/profile/${asset.owner?.username}`} className="asset-creator-name">{asset.owner?.username}</a>
+              {asset.owner?.aboutMe && <div className="asset-creator-bio">{asset.owner.aboutMe}</div>}
+            </div>
+            {user && user.id !== asset.owner?.id && (
+              <button className={`signup-btn ${isFollowing ? 'purchase-btn-secondary' : ''}`} style={{ marginLeft: 'auto', padding: '6px 14px', fontSize: 11 }} onClick={handleFollow}>
+                {isFollowing ? 'Following' : 'Follow'}
+              </button>
+            )}
           </div>
         </div>
 
-        <div style={{ marginBottom: 32 }}>
-          <h3 style={{ marginBottom: 16, fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <MessageCircle size={16} style={{ color: 'var(--gold)' }} /> Comments ({(asset.comments || []).length})
-          </h3>
+        <div className="asset-detail-section">
+          <h3 className="asset-detail-section-title"><MessageCircle size={16} style={{ color: 'var(--gold)' }} /> Comments ({(asset.comments || []).length})</h3>
           {user && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-              <input className="upload-input" value={comment} onChange={e => setComment(e.target.value)} placeholder="Write a comment..." style={{ flex: 1 }} />
-              <button className="hero-cta-primary" onClick={handleComment} style={{ padding: '10px 20px' }}>Post</button>
+            <div className="asset-comment-form">
+              <input className="upload-input" value={comment} onChange={e => setComment(e.target.value)} placeholder="Write a comment..." />
+              <button className="hero-cta-primary" onClick={handleComment}>Post</button>
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="asset-comments-list">
             {(asset.comments || []).map(c => (
-              <div key={c.id} style={{ padding: 12, background: 'var(--bg-2)', borderRadius: 10, border: '1px solid var(--line)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, fontSize: 12 }}>
+              <div key={c.id} className="asset-comment-card">
+                <div className="asset-comment-header">
                   <strong>{c.user?.username}</strong>
-                  <span style={{ color: 'var(--muted)' }}>{new Date(c.createdAt).toLocaleDateString()}</span>
+                  <span className="asset-comment-date">{new Date(c.createdAt).toLocaleDateString()}</span>
                 </div>
-                <div style={{ fontSize: 13 }}>{c.content}</div>
+                <div className="asset-comment-text">{c.content}</div>
               </div>
             ))}
             {(!asset.comments || asset.comments.length === 0) && (
-              <div style={{ textAlign: 'center', padding: 24, color: 'var(--muted)', fontSize: 13 }}>No comments yet</div>
+              <div className="table-empty" style={{ padding: 24 }}>No comments yet</div>
             )}
           </div>
         </div>
       </main>
+
       {showReport && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 480, width: '90%', border: '1px solid var(--line)' }}>
-            <h3 style={{ marginBottom: 12, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>Report Asset</h3>
+        <div className="modal-overlay" onClick={() => { setShowReport(false); setReportReason(''); }}>
+          <div className="modal-box" onClick={e => e.stopPropagation()}>
+            <h3 className="modal-title">Report Asset</h3>
             <textarea className="upload-textarea" value={reportReason} onChange={e => setReportReason(e.target.value)} placeholder="Why are you reporting this asset? (min 10 characters)" rows={4} style={{ marginBottom: 12 }} />
             <div style={{ display: 'flex', gap: 12 }}>
               <button className="hero-cta-secondary" onClick={() => { setShowReport(false); setReportReason(''); }} style={{ flex: 1 }}>Cancel</button>
@@ -371,9 +362,9 @@ export default function AssetDetailPage() {
       )}
 
       {deleteConfirm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--bg-2)', padding: 24, borderRadius: 16, maxWidth: 400, width: '90%', border: '1px solid var(--line)' }}>
-            <h3 style={{ marginBottom: 8, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>Delete Asset?</h3>
+        <div className="modal-overlay" onClick={() => setDeleteConfirm(false)}>
+          <div className="modal-box" onClick={e => e.stopPropagation()}>
+            <h3 className="modal-title">Delete Asset?</h3>
             <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 16 }}>This action cannot be undone.</p>
             <div style={{ display: 'flex', gap: 12 }}>
               <button className="hero-cta-secondary" onClick={() => setDeleteConfirm(false)} style={{ flex: 1 }}>Cancel</button>
